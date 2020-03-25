@@ -10,6 +10,10 @@ The datalogger only option of DSMR (https://dsmr-reader.readthedocs.io). This wi
 [armv7-shield]: https://img.shields.io/badge/armv7-yes-green.svg
 [i386-shield]: https://img.shields.io/badge/i386-yes-green.svg
 
+#### Configure the repository
+
+See config instructions here: https://github.com/sanderdw/hassio-addons
+
 #### Prepare API
 Make sure to prepare the API at the DSMR-reader instance you’ll forward the telegrams to. For more information configuring it, see the API settings (https://dsmr-reader.readthedocs.io/en/v3/admin/api.html).
 
@@ -27,8 +31,6 @@ If you're using Home Assistant you may find the correct value for this on the
 3. Replace `<YOUR_API_KEY>` in the `DSMR_API_KEY` option to your API key (see https://dsmr-reader.readthedocs.io/nl/v3/admin/api.html for help).
 4. Click on "SAVE" to save the add-on configuration.
 5. Start the add-on.
-
-
 
 ### Note for DSMR v2
 If your smart meter only supports DSMR v2, let me know!

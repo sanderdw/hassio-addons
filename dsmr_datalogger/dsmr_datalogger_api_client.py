@@ -1,70 +1,71 @@
-from time import sleep
-from logging.handlers import RotatingFileHandler
-from serial.serialutil import SerialException
+"""
+    https://dsmr-reader.readthedocs.io/en/latest/installation/datalogger.html
+
+    Installation:
+        pip3 install pyserial==3.4 requests==2.22.0
+"""
+import datetime
 import logging
-import requests
+import time
+
 import serial
+import requests
 import os
 
+"""
+    These settings are only used when using this script as a dedicated remote datalogger.
+"""
+SLEEP = 0.5
+SERIAL_PORT = os.getenv('DSMR_USB_PORT', "/dev/ttyUSB0")
+SERIAL_BAUDRATE = 115200
+
+SERIAL_SETTINGS = dict(
+    port=SERIAL_PORT,
+    baudrate=SERIAL_BAUDRATE,
+    bytesize=serial.EIGHTBITS,
+    parity=serial.PARITY_NONE,
+    stopbits=serial.STOPBITS_ONE,
+    xonxoff=1,
+    rtscts=0,
+)
 API_SERVERS = (
+    # You can add multiple hosts here... just uncomment the line below.
     (os.getenv('DSMR_API_URL', "127.0.0.1"), os.getenv('DSMR_API_KEY', "API-KEY")),
+    # ('http://HOST-OR-IP-2/api/v1/datalogger/dsmrreading', 'APIKEY-2'),
 )
 
-# Set up the logger instance. Create a maximum of 10 log files of 1MB each.
-log_level = getattr(logging, os.getenv('LOG_LEVEL', 'WARNING').upper(), None)
-if not isinstance(log_level, int):
-    raise ValueError('Invalid log level: %s' % os.getenv('log'))
 
-# Configure the logging instance.
-handler = RotatingFileHandler('/etc/dsmr_logs/dsmr-datalogger.log', maxBytes=1e6, backupCount=10)
-handler.setFormatter(logging.Formatter('[%(asctime)s - %(levelname)s] %(message)s'))
-
-logger = logging.getLogger('dsmr-datalogger')
-logger.addHandler(handler)
-logger.setLevel(log_level)
-
-
-def main():
-    print('Starting...')
-
-    for telegram in read_telegram():
-        for current_server in API_SERVERS:
-            api_url, api_key = current_server
-
-            send_telegram(telegram, api_url, api_key)
-
-        sleep(1)
-
-
-def read_telegram():
-    """ Reads the serial port until we can create a reading point. """
-    serial_handle = serial.Serial()
-    serial_handle.port = os.getenv('DSMR_USB_PORT', "/dev/ttyUSB0")
-    serial_handle.baudrate = 115200
-    serial_handle.bytesize = serial.EIGHTBITS
-    serial_handle.parity = serial.PARITY_NONE
-    serial_handle.stopbits = serial.STOPBITS_ONE
-    serial_handle.xonxoff = 1
-    serial_handle.rtscts = 0
-    serial_handle.timeout = 20
-
-    try:
-        # This might fail, but nothing we can do so just let it crash.
-        serial_handle.open()
-    except SerialException as error:
-        print('Serial connection failed: {}'.format(str(error)))
+def read_serial_port(port, baudrate, bytesize, parity, stopbits, xonxoff, rtscts, **kwargs):  # noqa: C901
+    """
+    Opens the serial port, keeps reading until we have a full telegram and yields the result to preserve the connection.
+    """
+    logging.info('[%s] Opening serial port: %s', datetime.datetime.now(), port)
+    serial_handle = serial.Serial(
+        port=port,
+        baudrate=baudrate,
+        bytesize=bytesize,
+        parity=parity,
+        stopbits=stopbits,
+        xonxoff=xonxoff,
+        rtscts=rtscts,
+        timeout=20,  # Max time to wait for data.
+    )
 
     telegram_start_seen = False
     buffer = ''
 
-    # Just keep fetching data until we got what we were looking for.
     while True:
         try:
+            # We use an infinite datalogger loop and signals to break out of it. Serial
+            # operations however do not work well with interrupts, so we'll have to check for E-INTR error.
             data = serial_handle.readline()
-        except SerialException as error:
+        except serial.SerialException as error:
+            if str(error) == 'read failed: [Errno 4] Interrupted system call':
+                # If we were signaled to stop, we still have to finish our loop.
+                continue
+
             # Something else and unexpected failed.
-            print('Serial connection failed: {}'.format(str(error)))
-            return  # Break out of yield.
+            raise
 
         try:
             # Make sure weird characters are converted properly.
@@ -72,40 +73,54 @@ def read_telegram():
         except TypeError:
             pass
 
-        # This guarantees we will only parse complete telegrams. (issue #74)
         if data.startswith('/'):
             telegram_start_seen = True
-
-            # But make sure to RESET any data collected as well! (issue #212)
             buffer = ''
 
-        # Delay any logging until we've seen the start of a telegram.
         if telegram_start_seen:
             buffer += data
 
-        # Telegrams ends with '!' AND we saw the start. We should have a complete telegram now.
         if data.startswith('!') and telegram_start_seen:
+            # Keep connection open.
             yield buffer
 
-            # Reset the flow again.
-            telegram_start_seen = False
-            buffer = ''
 
-
-def send_telegram(telegram, api_url, api_key):
-    # Register telegram by simply sending it to the application with a POST request.
+def send_telegram_to_remote_dsmrreader(telegram, api_url, api_key):
+    """ Registers a telegram by simply sending it to the application with a POST request. """
     response = requests.post(
         api_url,
-        headers={'X-AUTHKEY': api_key},
+        headers={'Authorization': 'Token {}'.format(api_key)},
         data={'telegram': telegram},
-        timeout=60,
+        timeout=60,  # Prevents this script from hanging indefinitely when the server or network is unavailable.
     )
 
-    # Old versions of DSMR-reader return 200, new ones 201.
-    if response.status_code not in (200, 201):
-        # Or you will find the error (hint) in the response body on failure.
-        print('API error: {}'.format(response.text))
+    if response.status_code != 201:
+        logging.error('[%s] API error: HTTP %d - %s', datetime.datetime.now(), response.status_code, response.text)
 
 
-if __name__ == '__main__':
+def main():
+    """ Entrypoint for command line execution. """
+    logging.getLogger().setLevel(logging.INFO)
+    logging.info('[%s] Starting...', datetime.datetime.now())
+
+    for telegram in read_serial_port(**SERIAL_SETTINGS):
+        logging.info('[%s] Telegram read', datetime.datetime.now())
+
+        for current_server in API_SERVERS:
+            current_api_url, current_api_key = current_server
+            logging.info('[%s] Sending telegram to: %s', datetime.datetime.now(), current_api_url)
+
+            try:
+                send_telegram_to_remote_dsmrreader(
+                    telegram=telegram,
+                    api_url=current_api_url,
+                    api_key=current_api_key
+                )
+            except Exception as error:
+                logging.exception(error)
+
+        time.sleep(SLEEP)
+
+
+if __name__ == '__main__':  # pragma: no cover
     main()
