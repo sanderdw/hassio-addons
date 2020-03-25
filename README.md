@@ -20,7 +20,7 @@ If you're using Home Assistant you may find the correct value for this on the
 
 1. Replace `/dev/ttyUSBX` in the `DSMR_USB_PORT` option in the add-on configuration and specify
    the device name.
-2. Specifiy the DSMR API Url by changing `https://<YOUR_DSMR_HOST>/api/v1/datalogger/dsmrreading` in the `DSMR_API_URL` option in the add-on configuration.
+2. Specifiy the correct `https://<YOUR_DSMR_HOST>/api/v1/datalogger/dsmrreading` url in the `DSMR_API_URL` option in the add-on configuration.
 3. Replace `<YOUR_API_KEY>` in the `DSMR_API_KEY` option to your API key (see https://dsmr-reader.readthedocs.io/nl/v3/admin/api.html for help).
 4. Click on "SAVE" to save the add-on configuration.
 5. Start the add-on.
