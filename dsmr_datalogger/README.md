@@ -11,7 +11,7 @@ The datalogger only option of DSMR (https://dsmr-reader.readthedocs.io). This wi
 [i386-shield]: https://img.shields.io/badge/i386-yes-green.svg
 
 #### Note: Prepare API
-Make sure to prepare the API at the DSMR-reader instance you’ll forward the telegrams to. For more information configuring it, see the API settings.
+Make sure to prepare the API at the DSMR-reader instance you’ll forward the telegrams to. For more information configuring it, see the API settings (https://dsmr-reader.readthedocs.io/en/v3/admin/api.html).
 
 ### Configure the add-on
 
