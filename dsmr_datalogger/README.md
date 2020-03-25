@@ -1,6 +1,6 @@
 # Home Assistant Add-on: DSMR Datalogger
 
-The datalogger only option of DSMR (https://dsmr-reader.readthedocs.io).
+The datalogger only option of DSMR (https://dsmr-reader.readthedocs.io). This will install a datalogger that will forward telegrams to another fully installed instance of DSMR-reader, using its API.
 
 ![Supports aarch64 Architecture][aarch64-shield] ![Supports amd64 Architecture][amd64-shield] ![Supports armhf Architecture][armhf-shield] ![Supports armv7 Architecture][armv7-shield] ![Supports i386 Architecture][i386-shield]
 
@@ -9,6 +9,9 @@ The datalogger only option of DSMR (https://dsmr-reader.readthedocs.io).
 [armhf-shield]: https://img.shields.io/badge/armhf-yes-green.svg
 [armv7-shield]: https://img.shields.io/badge/armv7-yes-green.svg
 [i386-shield]: https://img.shields.io/badge/i386-yes-green.svg
+
+#### Note: Prepare API
+Make sure to prepare the API at the DSMR-reader instance you’ll forward the telegrams to. For more information configuring it, see the API settings.
 
 ### Configure the add-on
 
@@ -24,3 +27,8 @@ If you're using Home Assistant you may find the correct value for this on the
 3. Replace `<YOUR_API_KEY>` in the `DSMR_API_KEY` option to your API key (see https://dsmr-reader.readthedocs.io/nl/v3/admin/api.html for help).
 4. Click on "SAVE" to save the add-on configuration.
 5. Start the add-on.
+
+
+
+### Note for DSMR v2
+If your smart meter only supports DSMR v2, let me know!
