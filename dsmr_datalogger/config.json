@@ -1,10 +1,10 @@
 {
   "name": "DSMR Datalogger",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "slug": "dsmr_datalogger",
   "description": "The datalogger only option of DSMR (https://dsmr-reader.readthedocs.io)",
-  "arch": ["amd64", "armv7", "armhf", "aarch64", "i386"],
-  "url": "https://github.com/sanderdw/hassio-addons/",
+  "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
+  "url": "https://github.com/sanderdw/hassio-addons",
   "startup": "system",
   "boot": "auto",
   "auto_uart": true,
