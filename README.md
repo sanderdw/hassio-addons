@@ -15,4 +15,4 @@ The datalogger only option of DSMR (https://dsmr-reader.readthedocs.io). This wi
 1. Go to Supervisor -> Add-on store
 2. Specify https://github.com/sanderdw/hassio-addons as the new repository URL
 3. Install the DSMR Datalogger which should appear after a refresh.
-4. See config instructions here: https://github.com/sanderdw/hassio-addons/tree/master/dsmr_datalogger
+4. See config instructions here: https://github.com/sanderdw/hassio-addons/blob/master/dsmr_datalogger/README.md
