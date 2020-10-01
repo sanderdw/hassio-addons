@@ -15,7 +15,7 @@ The datalogger only option of DSMR (https://dsmr-reader.readthedocs.io). This wi
 See config instructions here: https://github.com/sanderdw/hassio-addons
 
 #### Prepare API
-Make sure to prepare the API at the DSMR-reader instance you’ll forward the telegrams to. For more information configuring it, see the API settings (https://dsmr-reader.readthedocs.io/en/v3/admin/api.html).
+Make sure to prepare the API at the DSMR-reader instance you’ll forward the telegrams to. For more information configuring it, see the API settings (https://dsmr-reader.readthedocs.io/en/v4/api.html).
 
 ### Configure the add-on
 
@@ -25,12 +25,13 @@ you'll need to configure the add-on to point to the right device.
 If you're using Home Assistant you may find the correct value for this on the
 `Supervisor -> System -> Host system -> Hardware` page.
 
-1. Replace `/dev/ttyUSBX` in the `DSMR_USB_PORT` option in the add-on configuration and specify
+1. When updated, please reset configuration to it's default first ("RESET TO DEFAULTS" on the Configuration tab after installing/updating).
+2. Replace `/dev/ttyUSBX` in the `DATALOGGER_SERIAL_PORT` option in the add-on configuration and specify
    the device name.
-2. Specifiy the correct `http(s)://<YOUR_DSMR_HOST>/api/v1/datalogger/dsmrreading` url in the `DSMR_API_URL` option in the add-on configuration.
-3. Replace `<YOUR_API_KEY>` in the `DSMR_API_KEY` option to your API key (see https://dsmr-reader.readthedocs.io/nl/v3/admin/api.html for help).
-4. Click on "SAVE" to save the add-on configuration.
-5. Start the add-on.
+3. Specifiy the correct `http(s)://<YOUR_DSMR_HOST>:<PORT>` url in the `DATALOGGER_API_HOSTS` option in the add-on configuration.
+4. Replace `<YOUR_API_KEY>` in the `DATALOGGER_API_KEYS` option to your API key (see https://dsmr-reader.readthedocs.io/en/v4/api.html for help).
+5. Click on "SAVE" to save the add-on configuration.
+6. Start the add-on.
 
 ### Note for DSMR v2
 If your smart meter only supports DSMR v2, let me know!

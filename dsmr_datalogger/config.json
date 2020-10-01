@@ -1,6 +1,6 @@
 {
   "name": "DSMR Datalogger",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "slug": "dsmr_datalogger",
   "description": "The datalogger only option of DSMR (https://dsmr-reader.readthedocs.io)",
   "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
@@ -9,13 +9,17 @@
   "boot": "auto",
   "auto_uart": true,
   "options": {
-    "DSMR_USB_PORT": "/dev/ttyUSBX",
-    "DSMR_API_URL": "https://<YOUR_DSMR_HOST>/api/v1/datalogger/dsmrreading",
-    "DSMR_API_KEY": "<YOUR_API_KEY>"
+    "DATALOGGER_INPUT_METHOD": "serial",
+    "DATALOGGER_API_HOSTS": "http(s)://<YOUR_DSMR_HOST>:<PORT>",
+    "DATALOGGER_API_KEYS": "<YOUR_API_KEY>",
+    "DATALOGGER_SERIAL_PORT": "/dev/ttyUSB0",
+    "DATALOGGER_SERIAL_BAUDRATE": "115200"
   },
   "schema": {
-    "DSMR_USB_PORT": "str",
-    "DSMR_API_URL": "str",
-    "DSMR_API_KEY": "str"
+    "DATALOGGER_INPUT_METHOD": "str",
+    "DATALOGGER_API_HOSTS": "str",
+    "DATALOGGER_API_KEYS": "str",
+    "DATALOGGER_SERIAL_PORT": "str",
+    "DATALOGGER_SERIAL_BAUDRATE": "str"
   }
 }

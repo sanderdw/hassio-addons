@@ -2,124 +2,177 @@
     https://dsmr-reader.readthedocs.io/en/latest/installation/datalogger.html
 
     Installation:
-        pip3 install pyserial==3.4 requests==2.22.0
+        pip3 install pyserial==3.4 requests==2.24.0 python-decouple==3.3
 """
 import datetime
 import logging
 import time
+import re
 
 import serial
 import requests
-import os
-
-"""
-    These settings are only used when using this script as a dedicated remote datalogger.
-"""
-SLEEP = 0.5
-SERIAL_PORT = os.getenv('DSMR_USB_PORT', "/dev/ttyUSB0")
-SERIAL_BAUDRATE = 115200
-
-SERIAL_SETTINGS = dict(
-    port=SERIAL_PORT,
-    baudrate=SERIAL_BAUDRATE,
-    bytesize=serial.EIGHTBITS,
-    parity=serial.PARITY_NONE,
-    stopbits=serial.STOPBITS_ONE,
-    xonxoff=1,
-    rtscts=0,
-)
-API_SERVERS = (
-    # You can add multiple hosts here... just uncomment the line below.
-    (os.getenv('DSMR_API_URL', "127.0.0.1"), os.getenv('DSMR_API_KEY', "API-KEY")),
-    # ('http://HOST-OR-IP-2/api/v1/datalogger/dsmrreading', 'APIKEY-2'),
-)
+import decouple
 
 
-def read_serial_port(port, baudrate, bytesize, parity, stopbits, xonxoff, rtscts, **kwargs):  # noqa: C901
-    """
-    Opens the serial port, keeps reading until we have a full telegram and yields the result to preserve the connection.
-    """
-    logging.info('[%s] Opening serial port: %s', datetime.datetime.now(), port)
-    serial_handle = serial.Serial(
-        port=port,
-        baudrate=baudrate,
-        bytesize=bytesize,
-        parity=parity,
-        stopbits=stopbits,
-        xonxoff=xonxoff,
-        rtscts=rtscts,
-        timeout=20,  # Max time to wait for data.
+logger = logging.getLogger('dsmrreader')
+
+
+def read_telegram(url_or_port, telegram_timeout, **serial_kwargs):  # noqa: C901
+    """ Opens a serial/network connection and reads it until we have a full telegram. Yields the result """
+    MAX_BYTES_PER_READ = 2048
+    MAX_READ_TIMEOUT = 1.0 / 3  # Will cancel read() if it does not receive MAX_BYTES_PER_READ Bytes in time.
+
+    logger.info(
+        '[%s] Opening connection "%s" using options: %s',
+        datetime.datetime.now(),
+        url_or_port,
+        serial_kwargs
     )
 
-    telegram_start_seen = False
+    try:
+        serial_handle = serial.serial_for_url(url=url_or_port, timeout=MAX_READ_TIMEOUT, **serial_kwargs)
+    except Exception as error:
+        raise RuntimeError('Failed to connect: {}', error)
+
     buffer = ''
+    start_timestamp = time.time()
 
     while True:
-        try:
-            # We use an infinite datalogger loop and signals to break out of it. Serial
-            # operations however do not work well with interrupts, so we'll have to check for E-INTR error.
-            data = serial_handle.readline()
-        except serial.SerialException as error:
-            if str(error) == 'read failed: [Errno 4] Interrupted system call':
-                # If we were signaled to stop, we still have to finish our loop.
-                continue
+        # Abort the infinite loop at some point.
+        if time.time() - start_timestamp > telegram_timeout:
+            raise RuntimeError(
+                'It took too long to detect a telegram. Check connection params. Bytes currently in buffer: {}'.format(
+                    len(buffer)
+                )
+            )
 
-            # Something else and unexpected failed.
-            raise
+        incoming_bytes = serial_handle.read(MAX_BYTES_PER_READ)
+        logger.debug('[%s] Read %d Byte(s)', datetime.datetime.now(), len(incoming_bytes))
 
-        try:
-            # Make sure weird characters are converted properly.
-            data = str(data, 'utf-8')
-        except TypeError:
-            pass
+        if not incoming_bytes:
+            continue
 
-        if data.startswith('/'):
-            telegram_start_seen = True
-            buffer = ''
+        incoming_data = str(incoming_bytes, 'latin_1')
 
-        if telegram_start_seen:
-            buffer += data
+        # Just add data to the buffer until we detect a telegram in it.
+        buffer += incoming_data
 
-        if data.startswith('!') and telegram_start_seen:
-            # Keep connection open.
-            yield buffer
+        # Should work for 99% of the telegrams read. The checksum bits are optional due to legacy meters omitting them.
+        match = re.search(r'(/[^/]+![A-Z0-9]{0,4})', buffer, re.DOTALL)
+
+        if not match:
+            continue
+
+        yield match.group(1)
+
+        # Reset for next iteration.
+        buffer = ''
+        serial_handle.reset_input_buffer()
+        start_timestamp = time.time()
 
 
-def send_telegram_to_remote_dsmrreader(telegram, api_url, api_key):
+def _send_telegram_to_remote_dsmrreader(telegram, api_url, api_key, timeout):
     """ Registers a telegram by simply sending it to the application with a POST request. """
+    logger.debug('[%s] Sending telegram to API: %s', datetime.datetime.now(), api_url)
     response = requests.post(
         api_url,
         headers={'Authorization': 'Token {}'.format(api_key)},
         data={'telegram': telegram},
-        timeout=60,  # Prevents this script from hanging indefinitely when the server or network is unavailable.
+        timeout=timeout,  # Prevents this script from hanging indefinitely when the server or network is unavailable.
     )
 
     if response.status_code != 201:
-        logging.error('[%s] API error: HTTP %d - %s', datetime.datetime.now(), response.status_code, response.text)
+        logger.error('[%s] API error: HTTP %d - %s', datetime.datetime.now(), response.status_code, response.text)
+        return
+
+    logger.debug('[%s] API response OK: Telegram received successfully', datetime.datetime.now())
 
 
-def main():
-    """ Entrypoint for command line execution. """
-    logging.getLogger().setLevel(logging.INFO)
-    logging.info('[%s] Starting...', datetime.datetime.now())
+def _initialize_logging():
+    logging_level = logging.INFO
 
-    for telegram in read_serial_port(**SERIAL_SETTINGS):
-        logging.info('[%s] Telegram read', datetime.datetime.now())
+    if decouple.config('DATALOGGER_DEBUG_LOGGING', default=False, cast=bool):
+        logging_level = logging.DEBUG
 
-        for current_server in API_SERVERS:
-            current_api_url, current_api_key = current_server
-            logging.info('[%s] Sending telegram to: %s', datetime.datetime.now(), current_api_url)
+    logger.setLevel(logging_level)
+    logger.addHandler(logging.StreamHandler())
+
+
+def main():  # noqa: C901
+    """ Entrypoint for command line execution only. """
+    _initialize_logging()
+    logger.info('[%s] Starting...', datetime.datetime.now())
+
+    # Settings.
+    DATALOGGER_TIMEOUT = decouple.config('DATALOGGER_TIMEOUT', default=20, cast=float)
+    DATALOGGER_SLEEP = decouple.config('DATALOGGER_SLEEP', default=0.5, cast=float)
+    DATALOGGER_INPUT_METHOD = decouple.config('DATALOGGER_INPUT_METHOD')
+    DATALOGGER_API_HOSTS = decouple.config('DATALOGGER_API_HOSTS', cast=decouple.Csv(post_process=tuple))
+    DATALOGGER_API_KEYS = decouple.config('DATALOGGER_API_KEYS', cast=decouple.Csv(post_process=tuple))
+    DATALOGGER_MIN_SLEEP_FOR_RECONNECT = decouple.config('DATALOGGER_MIN_SLEEP_FOR_RECONNECT', default=1.0, cast=float)
+
+    if not DATALOGGER_API_HOSTS or not DATALOGGER_API_KEYS:
+        raise RuntimeError('API_HOSTS or API_KEYS not set')
+
+    if len(DATALOGGER_API_HOSTS) != len(DATALOGGER_API_KEYS):
+        raise RuntimeError('The number of API_HOSTS and API_KEYS given do not match each other')
+
+    serial_kwargs = dict(
+        telegram_timeout=DATALOGGER_TIMEOUT,
+    )
+
+    if DATALOGGER_INPUT_METHOD == 'serial':
+        serial_kwargs.update(dict(
+            url_or_port=decouple.config('DATALOGGER_SERIAL_PORT'),
+            baudrate=decouple.config('DATALOGGER_SERIAL_BAUDRATE', cast=int),
+            bytesize=serial.EIGHTBITS,
+            parity=serial.PARITY_NONE,
+            stopbits=serial.STOPBITS_ONE,
+            xonxoff=1,
+            rtscts=0,
+        ))
+    elif DATALOGGER_INPUT_METHOD == 'ipv4':
+        serial_kwargs.update(dict(
+            url_or_port='socket://{}:{}'.format(
+                decouple.config('DATALOGGER_NETWORK_HOST'),
+                decouple.config('DATALOGGER_NETWORK_PORT', cast=int),
+            )
+        ))
+    else:
+        raise RuntimeError('Unsupported DATALOGGER_INPUT_METHOD')
+
+    datasource = None
+
+    while True:
+        if not datasource:
+            datasource = read_telegram(**serial_kwargs)
+
+        telegram = next(datasource)
+
+        # Do not persist connections when the sleep is too high.
+        if DATALOGGER_SLEEP >= DATALOGGER_MIN_SLEEP_FOR_RECONNECT:
+            datasource = None
+
+        logger.info('[%s] Telegram read', datetime.datetime.now())
+        logger.debug("[%s] Telegram read:\n%s", datetime.datetime.now(), telegram)
+
+        for current_server_index in range(len(DATALOGGER_API_HOSTS)):
+            current_api_host = DATALOGGER_API_HOSTS[current_server_index]
+            current_api_url = '{}/api/v1/datalogger/dsmrreading'.format(current_api_host)
+            current_api_key = DATALOGGER_API_KEYS[current_server_index]
 
             try:
-                send_telegram_to_remote_dsmrreader(
+                _send_telegram_to_remote_dsmrreader(
                     telegram=telegram,
                     api_url=current_api_url,
-                    api_key=current_api_key
+                    api_key=current_api_key,
+                    timeout=DATALOGGER_TIMEOUT,
                 )
             except Exception as error:
-                logging.exception(error)
+                logger.exception(error)
 
-        time.sleep(SLEEP)
+        logger.debug("[%s] Sleeping for %s second(s)", datetime.datetime.now(), DATALOGGER_SLEEP)
+        time.sleep(DATALOGGER_SLEEP)
 
 
 if __name__ == '__main__':  # pragma: no cover
