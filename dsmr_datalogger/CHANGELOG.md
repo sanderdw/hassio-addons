@@ -3,6 +3,7 @@
 
 - Ready for DSMR meter versions 2/3 (Added DATALOGGER_SERIAL_BYTESIZE and DATALOGGER_SERIAL_PARITY configuration parameters)
 - NOTE: As the configuration options are updated, please reset configuration to it's default first after installing/updating ("RESET TO DEFAULTS" on the Configuration tab).
+
 ## 1.0.0
 
 - Switch to the most recent dsmr_datalogger_api_client.py v4
