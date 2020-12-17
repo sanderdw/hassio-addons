@@ -33,5 +33,9 @@ If you're using Home Assistant you may find the correct value for this on the
 5. Click on "SAVE" to save the add-on configuration.
 6. Start the add-on.
 
-### Note for DSMR v2
-If your smart meter only supports DSMR v2, let me know!
+### Note for DSMR v2/3 try to use this configuration:
+```
+DATALOGGER_SERIAL_BAUDRATE: '9600'
+DATALOGGER_SERIAL_BYTESIZE: '7'
+DATALOGGER_SERIAL_PARITY: 'E'
+```

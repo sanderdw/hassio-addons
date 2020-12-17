@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
     https://dsmr-reader.readthedocs.io/en/latest/installation/datalogger.html
 
@@ -124,9 +125,9 @@ def main():  # noqa: C901
     if DATALOGGER_INPUT_METHOD == 'serial':
         serial_kwargs.update(dict(
             url_or_port=decouple.config('DATALOGGER_SERIAL_PORT'),
-            baudrate=decouple.config('DATALOGGER_SERIAL_BAUDRATE', cast=int),
-            bytesize=serial.EIGHTBITS,
-            parity=serial.PARITY_NONE,
+            baudrate=decouple.config('DATALOGGER_SERIAL_BAUDRATE', cast=int, default=115200),
+            bytesize=decouple.config('DATALOGGER_SERIAL_BYTESIZE', cast=int, default=serial.EIGHTBITS),
+            parity=decouple.config('DATALOGGER_SERIAL_PARITY', cast=str, default=serial.PARITY_NONE),
             stopbits=serial.STOPBITS_ONE,
             xonxoff=1,
             rtscts=0,
@@ -153,8 +154,7 @@ def main():  # noqa: C901
         if DATALOGGER_SLEEP >= DATALOGGER_MIN_SLEEP_FOR_RECONNECT:
             datasource = None
 
-        logger.info('[%s] Telegram read', datetime.datetime.now())
-        logger.debug("[%s] Telegram read:\n%s", datetime.datetime.now(), telegram)
+        logger.info("[%s] Telegram read", datetime.datetime.now())
 
         for current_server_index in range(len(DATALOGGER_API_HOSTS)):
             current_api_host = DATALOGGER_API_HOSTS[current_server_index]
