@@ -1,0 +1,33 @@
+{
+  "name": "DSMR Reader",
+  "version": "0.1",
+  "slug": "dsmr_reader",
+  "description": "The Full version of DSMR (https://dsmr-reader.readthedocs.io)",
+  "arch": ["aarch64", "amd64", "armv7"],
+  "url": "https://github.com/sanderdw/hassio-addons",
+  "startup": "application",
+  "boot": "auto",
+  "uart": true,
+  "ports": {
+    "80/tcp": 7777,
+    "443/tcp": null
+  },
+  "ports_description": {
+    "80/tcp": "Web interface (Not required for Ingress)",
+    "443/tcp": "API"
+  },
+  "options": {
+    "DJANGO_DATABASE_NAME": "dsmrreader",
+    "DJANGO_DATABASE_USER": "postgres",
+    "DJANGO_DATABASE_PASSWORD": "homeassistant",
+    "DJANGO_DATABASE_HOST": "77b2833f-timescaledb",
+    "DATALOGGER_MODE": "standalone"
+  },
+  "schema": {
+    "DJANGO_DATABASE_NAME": "str",
+    "DJANGO_DATABASE_USER": "str",
+    "DJANGO_DATABASE_PASSWORD": "str",
+    "DJANGO_DATABASE_HOST": "str",
+    "DATALOGGER_MODE": "str"
+  }
+}
