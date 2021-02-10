@@ -3,9 +3,10 @@ FROM $BUILD_FROM
 
 ENV LANG C.UTF-8
 
-# Labels
+# INGRESS (Not working yet)
 RUN echo "X_FRAME_OPTIONS = 'ALLOWALL'" >> /dsmr/dsmrreader/settings.py
 
+# HOMEASSISTANT Add-On OVERRIDES
 COPY run.sh /app/run.sh
 RUN chmod a+x /app/run.sh
 #RUN echo "STATIC_URL = 'http://homeassistant:8123/static/'" >> /dsmr/dsmrreader/settings.py

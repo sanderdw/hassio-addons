@@ -1,6 +1,6 @@
-# Home Assistant Add-on: DSMR Reader
+# Home Assistant Add-on: DSMR Reader (Alpha)
 
-The Full version of DSMR (https://dsmr-reader.readthedocs.io).
+The Full version of DSMR (https://dsmr-reader.readthedocs.io) using the great work by xirixiz (https://github.com/xirixiz/dsmr-reader-docker).
 
 ![Supports aarch64 Architecture][aarch64-shield] ![Supports amd64 Architecture][amd64-shield] ![Supports armhf Architecture][armhf-shield] ![Supports armv7 Architecture][armv7-shield]
 
@@ -11,9 +11,13 @@ The Full version of DSMR (https://dsmr-reader.readthedocs.io).
 
 #### Configure the repository
 
-1. Install PostgresDB (TimescaleDB): https://community.home-assistant.io/t/home-assistant-add-on-postgresql-timescaledb/198176
-2. Add dsmrreader db to it's config
-3. Start addon
+1. Install PostgresDB (TimescaleDB) by Expaso: https://community.home-assistant.io/t/home-assistant-add-on-postgresql-timescaledb/198176
+2. Add the "dsmrreader" db as an exta database entry in the Configuration tab.
+3. Start TimescaleDB addon to initialize.
 4. Install this addon
-5. Configure
-6. Start
+5. Configure settings in the Configuration tab
+6. Start DSMR Reader addon
+7. Go to http://yourhomeassistant:7777/admin (wait untill add-on is initialized) - Note: Ingress not working yet
+8. Login with admin/admin
+9. Go to Datalogger -> Dataloggerconfiuratie -> Seriële poort and specify the correct USB port
+10. Opslaan/Save and restart add-on
