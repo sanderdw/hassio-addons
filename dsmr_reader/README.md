@@ -11,6 +11,10 @@ The full version of DSMR (https://dsmr-reader.readthedocs.io) using the great wo
 
 #### Configure the repository
 
+See config instructions here: https://github.com/sanderdw/hassio-addons
+
+### Configure the add-on
+
 1. Install PostgresDB (TimescaleDB) by Expaso: https://community.home-assistant.io/t/home-assistant-add-on-postgresql-timescaledb/198176
 2. Add the "dsmrreader" db as an exta database entry in the Configuration tab.
 3. Start TimescaleDB addon to initialize.
@@ -21,4 +25,4 @@ The full version of DSMR (https://dsmr-reader.readthedocs.io) using the great wo
 8. Login with admin/admin
 9. Go to Datalogger -> Dataloggerconfiguratie -> Seriële poort and specify the correct USB port
 10. Opslaan/Save and you should see telegrams coming in (http://yourhomeassistant:7777)
-11. [Optional] Install the Home Assistant integration (https://www.home-assistant.io/integrations/dsmr_reader)
+11. [Optional] Install the Home Assistant integration (https://www.home-assistant.io/integrations/dsmr_reader) or use https://www.home-assistant.io/integrations/sql/ to get the data in HA
