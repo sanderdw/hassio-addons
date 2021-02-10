@@ -22,7 +22,9 @@
     "DJANGO_DATABASE_PASSWORD": "homeassistant",
     "DJANGO_DATABASE_HOST": "77b2833f-timescaledb",
     "DATALOGGER_MODE": "standalone",
-    "DATALOGGER_SERIAL_PORT": "/dev/ttyUSB1"
+    "DATALOGGER_SERIAL_PORT": "/dev/ttyUSB1",
+    "DATALOGGER_INPUT_METHOD": "serial",
+    "DATALOGGER_SERIAL_BAUDRATE": "115200"
   },
   "schema": {
     "DJANGO_DATABASE_NAME": "str",
@@ -30,6 +32,8 @@
     "DJANGO_DATABASE_PASSWORD": "str",
     "DJANGO_DATABASE_HOST": "str",
     "DATALOGGER_MODE": "str",
-    "DATALOGGER_SERIAL_PORT": "str"
+    "DATALOGGER_SERIAL_PORT": "str",
+    "DATALOGGER_INPUT_METHOD": "str",
+    "DATALOGGER_SERIAL_BAUDRATE": "str"
   }
 }
