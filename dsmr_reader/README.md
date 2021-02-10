@@ -22,4 +22,4 @@ The full version of DSMR (https://dsmr-reader.readthedocs.io) using the great wo
 9. Go to Datalogger -> Dataloggerconfiguratie -> Seriële poort and specify the correct USB port
 10. Opslaan/Save and restart add-on
 11. http://yourhomeassistant:7777
-11. [Optional] Install the Home Assitant integration (https://www.home-assistant.io/integrations/dsmr_reader)
+11. [Optional] Install the Home Assistant integration (https://www.home-assistant.io/integrations/dsmr_reader)
