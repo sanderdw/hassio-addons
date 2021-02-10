@@ -15,5 +15,5 @@ See the DSMR reader webpage (https://dsmr-reader.readthedocs.io) for more backgr
 1. Go to Supervisor -> Add-on store
 2. Specify https://github.com/sanderdw/hassio-addons as the new repository URL
 3. Install the DSMR Reader or Datalogger which should appear after a refresh.
-4. [Option 1] See config instructions for the Reader here: https://github.com/sanderdw/hassio-addons/blob/master/dsmr_reader/README.md
-5. [Option 2] See config instructions for the Datalogger (Alpha) here: https://github.com/sanderdw/hassio-addons/blob/master/dsmr_datalogger/README.md
+4. [Option 1] See config instructions for the Reader (Alpha) here: https://github.com/sanderdw/hassio-addons/blob/master/dsmr_reader/README.md
+5. [Option 2] See config instructions for the Datalogger here: https://github.com/sanderdw/hassio-addons/blob/master/dsmr_datalogger/README.md
