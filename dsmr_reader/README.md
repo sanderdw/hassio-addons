@@ -15,11 +15,10 @@ The full version of DSMR (https://dsmr-reader.readthedocs.io) using the great wo
 2. Add the "dsmrreader" db as an exta database entry in the Configuration tab.
 3. Start TimescaleDB addon to initialize.
 4. Install this addon
-5. Configure settings in the Configuration tab
+5. Configure settings in the "Configuration" tab if defaults are changed by you
 6. Start DSMR Reader addon
 7. Go to http://yourhomeassistant:7777/admin (wait untill add-on is initialized) - Note: Ingress not working yet
 8. Login with admin/admin
 9. Go to Datalogger -> Dataloggerconfiguratie -> Seriële poort and specify the correct USB port
-10. Opslaan/Save and restart add-on
-11. http://yourhomeassistant:7777
+10. Opslaan/Save and you should see telegrams coming in (http://yourhomeassistant:7777)
 11. [Optional] Install the Home Assistant integration (https://www.home-assistant.io/integrations/dsmr_reader)

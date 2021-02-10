@@ -9,12 +9,10 @@
   "boot": "auto",
   "uart": true,
   "ports": {
-    "80/tcp": 7777,
-    "443/tcp": null
+    "80/tcp": 7777
   },
   "ports_description": {
-    "80/tcp": "Web interface (Not required for Ingress)",
-    "443/tcp": "API"
+    "80/tcp": "Web interface (Ingress not working yet)"
   },
   "options": {
     "DJANGO_DATABASE_NAME": "dsmrreader",
