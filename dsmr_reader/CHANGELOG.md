@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.3
+
+- Bugfix Webui link
+
 ## 0.0.2
 
 - Easy Webui link
