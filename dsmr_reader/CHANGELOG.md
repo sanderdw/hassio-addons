@@ -6,6 +6,7 @@
 - Added backup option and instructions (see step 10)
 - NOTE: Make sure to perform step 10 and configure the backup functionality, even after upgrading from 0.0.1
 - Added DJANGO_DATABASE_PORT option
+- Corrected mismatch version numbering from 0.1 to 0.0.2
 
 ## 0.0.1
 
