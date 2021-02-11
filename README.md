@@ -1,6 +1,6 @@
 # Home Assistant Add-ons: DSMR Reader & Datalogger
 
-See the DSMR reader webpage (https://dsmr-reader.readthedocs.io) for more background information.
+See the DSMR Reader webpage (https://dsmr-reader.readthedocs.io) for more background information.
 
 ![Supports aarch64 Architecture][aarch64-shield] ![Supports amd64 Architecture][amd64-shield] ![Supports armhf Architecture][armhf-shield] ![Supports armv7 Architecture][armv7-shield] ![Supports i386 Architecture][i386-shield]
 
@@ -15,5 +15,5 @@ See the DSMR reader webpage (https://dsmr-reader.readthedocs.io) for more backgr
 1. Go to Supervisor -> Add-on store
 2. Specify https://github.com/sanderdw/hassio-addons as the new repository URL
 3. Install the DSMR Reader or Datalogger which should appear after a refresh.
-4. [Option 1] See config instructions for the Reader (Alpha) here: https://github.com/sanderdw/hassio-addons/blob/master/dsmr_reader/README.md
-5. [Option 2] See config instructions for the Datalogger here: https://github.com/sanderdw/hassio-addons/blob/master/dsmr_datalogger/README.md
+4. [Option 1] See config instructions for the DSMR Reader (Alpha) here: https://github.com/sanderdw/hassio-addons/blob/master/dsmr_reader/README.md
+5. [Option 2] See config instructions for the DSMR Datalogger here: https://github.com/sanderdw/hassio-addons/blob/master/dsmr_datalogger/README.md

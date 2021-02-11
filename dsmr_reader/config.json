@@ -1,6 +1,6 @@
 {
   "name": "DSMR Reader",
-  "version": "0.1",
+  "version": "0.2",
   "slug": "dsmr_reader",
   "description": "The full version of DSMR (https://dsmr-reader.readthedocs.io)",
   "arch": ["aarch64", "amd64", "armv7"],
@@ -8,6 +8,8 @@
   "startup": "application",
   "boot": "auto",
   "uart": true,
+  "webui": "http://[HOST]:[PORT:2839]/dashboard",
+  "map": ["backup:rw"],
   "ports": {
     "80/tcp": 7777
   },
@@ -19,6 +21,7 @@
     "DJANGO_DATABASE_USER": "postgres",
     "DJANGO_DATABASE_PASSWORD": "homeassistant",
     "DJANGO_DATABASE_HOST": "77b2833f-timescaledb",
+    "DJANGO_DATABASE_PORT": "5432",
     "DATALOGGER_MODE": "standalone",
     "DATALOGGER_SERIAL_PORT": "/dev/ttyUSB1",
     "DATALOGGER_INPUT_METHOD": "serial",
@@ -29,6 +32,7 @@
     "DJANGO_DATABASE_USER": "str",
     "DJANGO_DATABASE_PASSWORD": "str",
     "DJANGO_DATABASE_HOST": "str",
+    "DJANGO_DATABASE_PORT": "str",
     "DATALOGGER_MODE": "str",
     "DATALOGGER_SERIAL_PORT": "str",
     "DATALOGGER_INPUT_METHOD": "str",
