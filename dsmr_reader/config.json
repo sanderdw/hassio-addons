@@ -1,6 +1,6 @@
 {
   "name": "DSMR Reader",
-  "version": "0.2",
+  "version": "0.0.2",
   "slug": "dsmr_reader",
   "description": "The full version of DSMR (https://dsmr-reader.readthedocs.io)",
   "arch": ["aarch64", "amd64", "armv7"],
