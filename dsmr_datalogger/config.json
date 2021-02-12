@@ -1,13 +1,13 @@
 {
   "name": "DSMR Datalogger",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "slug": "dsmr_datalogger",
   "description": "The datalogger only option of DSMR (https://dsmr-reader.readthedocs.io)",
   "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
   "url": "https://github.com/sanderdw/hassio-addons",
   "startup": "system",
   "boot": "auto",
-  "auto_uart": true,
+  "uart": true,
   "options": {
     "DATALOGGER_INPUT_METHOD": "serial",
     "DATALOGGER_API_HOSTS": "http(s)://<YOUR_DSMR_HOST>:<PORT>",

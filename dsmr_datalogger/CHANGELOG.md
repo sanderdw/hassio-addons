@@ -1,4 +1,9 @@
 # Changelog
+## 1.0.2
+
+- Changed auto_uart to uart config.json (https://github.com/home-assistant/supervisor/issues/2533). Make sure to run a recent version of Home Assistant before you upgrade
+- NOTE: Just released the DSMR Reader Add-on! See https://community.home-assistant.io/t/dsmr-reader-add-on-for-home-assistant/279087
+
 ## 1.0.1
 
 - Ready for DSMR meter versions 2/3 (Added DATALOGGER_SERIAL_BYTESIZE and DATALOGGER_SERIAL_PARITY configuration parameters)
