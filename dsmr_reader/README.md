@@ -28,5 +28,6 @@ See config instructions here: https://github.com/sanderdw/hassio-addons
 11. Opslaan/Save and you should see telegrams coming in (http://yourhomeassistant:7777).
 12. [Optional] Install the Home Assistant integration (https://www.home-assistant.io/integrations/dsmr_reader) or use https://www.home-assistant.io/integrations/sql/ to get the data in HA.
 
-Note: Using a PostgresDB with DSMR Reader on a Raspberry PI with an SDCARD can decrease it's lifespan. Google on "wear sdcard raspberry pi" for more information. You could use a seperate PostgresDB server on a different machine.
+Note: Using a PostgresDB with DSMR Reader on a Raspberry PI with an SDCARD can decrease it's lifespan. Google on "wear sdcard raspberry pi" for more information. 
+Use of an external USB SSD/harddisk is recommended (https://www.raspberrypi.org/documentation/hardware/raspberrypi/bootmodes/msd.md), or you could use a seperate PostgresDB server on a different machine.
 
