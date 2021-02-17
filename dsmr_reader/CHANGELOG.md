@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.0.4
+
+- Extended configuration options
+- Added arm32v6
+
 ## 0.0.3
 
 - Bugfix Webui link

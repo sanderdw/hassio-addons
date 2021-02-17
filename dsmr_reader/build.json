@@ -2,6 +2,7 @@
   "build_from": {
     "aarch64": "xirixiz/dsmr-reader-docker:latest-v4.11.0-arm64v8",
     "amd64": "xirixiz/dsmr-reader-docker:latest-v4.11.0-amd64",
+    "armhf": "xirixiz/dsmr-reader-docker:latest-v4.11.0-arm32v6",
     "armv7": "xirixiz/dsmr-reader-docker:latest-v4.11.0-arm32v7"
   }
 }

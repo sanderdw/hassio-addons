@@ -1,6 +1,6 @@
 {
   "name": "DSMR Reader",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "slug": "dsmr_reader",
   "description": "The full version of DSMR (https://dsmr-reader.readthedocs.io)",
   "arch": ["aarch64", "amd64", "armv7"],
@@ -17,6 +17,8 @@
     "80/tcp": "Web interface (Ingress not working yet)"
   },
   "options": {
+    "DSMRREADER_ADMIN_USER": "admin",
+    "DSMRREADER_ADMIN_PASSWORD": "admin",
     "DJANGO_DATABASE_NAME": "dsmrreader",
     "DJANGO_DATABASE_USER": "postgres",
     "DJANGO_DATABASE_PASSWORD": "homeassistant",
@@ -25,17 +27,23 @@
     "DATALOGGER_MODE": "standalone",
     "DATALOGGER_SERIAL_PORT": "/dev/ttyUSB1",
     "DATALOGGER_INPUT_METHOD": "serial",
-    "DATALOGGER_SERIAL_BAUDRATE": "115200"
+    "DATALOGGER_SERIAL_BAUDRATE": "115200",
+    "DATALOGGER_NETWORK_HOST": "x.x.x.x",
+    "DATALOGGER_NETWORK_PORT": "x"
   },
   "schema": {
+    "DSMRREADER_ADMIN_USER": "str",
+    "DSMRREADER_ADMIN_PASSWORD": "password",
     "DJANGO_DATABASE_NAME": "str",
     "DJANGO_DATABASE_USER": "str",
-    "DJANGO_DATABASE_PASSWORD": "str",
+    "DJANGO_DATABASE_PASSWORD": "password",
     "DJANGO_DATABASE_HOST": "str",
     "DJANGO_DATABASE_PORT": "str",
     "DATALOGGER_MODE": "str",
     "DATALOGGER_SERIAL_PORT": "str",
     "DATALOGGER_INPUT_METHOD": "str",
-    "DATALOGGER_SERIAL_BAUDRATE": "str"
+    "DATALOGGER_SERIAL_BAUDRATE": "str",
+    "DATALOGGER_NETWORK_HOST": "str",
+    "DATALOGGER_NETWORK_PORT": "str"
   }
 }

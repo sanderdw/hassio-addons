@@ -5,11 +5,14 @@ ENV LANG C.UTF-8
 
 # INGRESS (Not working yet)
 RUN echo "X_FRAME_OPTIONS = 'ALLOWALL'" >> /dsmr/dsmrreader/settings.py
+#RUN echo "STATIC_URL = '/hassio/ingress/local_dsmr_reader/static/'" >> /dsmr/dsmrreader/settings.py
+#RUN echo "FORCE_SCRIPT_NAME = '/hassio/ingress/local_dsmr_reader'" >> /dsmr/dsmrreader/settings.py
+#RUN echo "USE_X_FORWARDED_HOST = True" >> /dsmr/dsmrreader/settings.py
 
 # HOMEASSISTANT Add-On OVERRIDES
 COPY run.sh /app/run.sh
 RUN chmod a+x /app/run.sh
-#RUN echo "STATIC_URL = 'http://homeassistant:8123/static/'" >> /dsmr/dsmrreader/settings.py
+
 
 # Labels
 LABEL \
