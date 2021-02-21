@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.0
+
+- Update to DSMR-reader v4.12.0
+
 ## 0.0.4
 
 - Extended configuration options
