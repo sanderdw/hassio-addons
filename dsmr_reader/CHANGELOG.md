@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.1
+
+- Added script to help with commandline actions
+
 ## 0.1.0
 
 - Update to DSMR-reader v4.12.0
