@@ -23,10 +23,10 @@ See config instructions here: https://github.com/sanderdw/hassio-addons
 6. Start DSMR Reader addon.
 7. Go to http://yourhomeassistant:7777/admin (wait untill add-on is initialized) - Note: Ingress not working yet.
 8. Login with admin/admin.
-9. Go to Datalogger -> Dataloggerconfiguratie -> Seriële poort and specify the correct USB port.
-10. Go to Back-up -> Geavanceerd/Advanced -> and use "/backup/dsmrreader" as the backup folder (notice the first forward slash). This wil make sure backups are created in the HA "backup" folder just like the HA snapshotting functionality.
-11. Opslaan/Save and you should see telegrams coming in (http://yourhomeassistant:7777).
-12. [Optional] Install the Home Assistant integration (https://www.home-assistant.io/integrations/dsmr_reader) or use https://www.home-assistant.io/integrations/sql/ to get the data in HA.
+9. Go to **Datalogger -> Dataloggerconfiguratie** and specify the correct serial USB port or configure a remote network socket input method (using ser2net).
+10. Go to **Back-up -> Geavanceerd/Advanced** and use "/backup/dsmrreader" as the backup folder (notice the first forward slash). This wil make sure backups are created in the HA "backup" folder just like the HA snapshotting functionality.
+11. Choose **Opslaan/Save** and you should see telegrams coming in (http://yourhomeassistant:7777).
+12. _Optional:_ Install the Home Assistant integration (https://www.home-assistant.io/integrations/dsmr_reader) or use https://www.home-assistant.io/integrations/sql/ to get the data in HA.
 
 Note: Using a PostgresDB with DSMR Reader on a Raspberry PI with an SDCARD can decrease it's lifespan. Google on "wear sdcard raspberry pi" for more information. 
 Use of an external USB SSD/harddisk is recommended (https://www.raspberrypi.org/documentation/hardware/raspberrypi/bootmodes/msd.md), or you could use a seperate PostgresDB server on a different machine.
