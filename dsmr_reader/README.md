@@ -4,7 +4,7 @@
 Used for reading the smart meter DSMR P1 port (https://dsmr-reader.readthedocs.io) using the great work by xirixiz (https://github.com/xirixiz/dsmr-reader-docker).
 
 
-![dsmr-shield] ![addon-shield]![Supports aarch64 Architecture][aarch64-shield] ![Supports amd64 Architecture][amd64-shield] ![Deprecated armhf Architecture][armhf-shield] ![Deprecated armv7 Architecture][armv7-shield]
+![dsmr-shield] ![addon-shield] ![Supports aarch64 Architecture][aarch64-shield] ![Supports amd64 Architecture][amd64-shield] ![Deprecated armhf Architecture][armhf-shield] ![Deprecated armv7 Architecture][armv7-shield]
 
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg
