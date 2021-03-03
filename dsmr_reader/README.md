@@ -1,13 +1,13 @@
-# Home Assistant Add-on: DSMR Reader (Beta)
+# Home Assistant Add-on: DSMR Reader
 
 Used for reading the smart meter DSMR P1 port (https://dsmr-reader.readthedocs.io) using the great work by xirixiz (https://github.com/xirixiz/dsmr-reader-docker).
 
-![Supports aarch64 Architecture][aarch64-shield] ![Supports amd64 Architecture][amd64-shield] ![Supports armhf Architecture][armhf-shield] ![Supports armv7 Architecture][armv7-shield]
+![Supports aarch64 Architecture][aarch64-shield] ![Supports amd64 Architecture][amd64-shield] ![Deprecated armhf Architecture][armhf-shield] ![Deprecated armv7 Architecture][armv7-shield]
 
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg
-[armhf-shield]: https://img.shields.io/badge/armhf-yes-green.svg
-[armv7-shield]: https://img.shields.io/badge/armv7-yes-green.svg
+[armhf-shield]: https://img.shields.io/badge/armhf-deprecated-orange.svg
+[armv7-shield]: https://img.shields.io/badge/armv7-deprecated-orange.svg
 
 #### Configure the repository
 

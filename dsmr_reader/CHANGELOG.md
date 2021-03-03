@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.2
+
+- Fixed PostgreSQL 12.6 version (arm32 is deprecated and not updated)
+
 ## 0.1.1
 
 - Added script to help with commandline actions
