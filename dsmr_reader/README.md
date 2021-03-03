@@ -1,19 +1,25 @@
+
 # Home Assistant Add-on: DSMR Reader
 
 Used for reading the smart meter DSMR P1 port (https://dsmr-reader.readthedocs.io) using the great work by xirixiz (https://github.com/xirixiz/dsmr-reader-docker).
 
-![Supports aarch64 Architecture][aarch64-shield] ![Supports amd64 Architecture][amd64-shield] ![Deprecated armhf Architecture][armhf-shield] ![Deprecated armv7 Architecture][armv7-shield]
+
+![dsmr-shield] ![addon-shield]![Supports aarch64 Architecture][aarch64-shield] ![Supports amd64 Architecture][amd64-shield] ![Deprecated armhf Architecture][armhf-shield] ![Deprecated armv7 Architecture][armv7-shield]
 
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg
 [armhf-shield]: https://img.shields.io/badge/armhf-deprecated-orange.svg
 [armv7-shield]: https://img.shields.io/badge/armv7-deprecated-orange.svg
 
-#### Configure the repository
+
+[dsmr-shield]: https://img.shields.io/badge/DSMR%20Reader%20Version-%204.12-purple.svg
+[addon-shield]: https://img.shields.io/badge/Addon%20Version-%200.1.2-purple.svg
+## Configure the repository
 
 See config instructions here: https://github.com/sanderdw/hassio-addons
 
-### Configure the add-on
+
+## Configure the add-on
 
 1. Install PostgresDB (TimescaleDB) by Expaso: https://community.home-assistant.io/t/home-assistant-add-on-postgresql-timescaledb/198176.
 2. Add the "dsmrreader" db as an exta database entry in the Configuration tab.
