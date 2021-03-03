@@ -6,14 +6,14 @@ Used for reading the smart meter DSMR P1 port (https://dsmr-reader.readthedocs.i
 
 ![dsmr-shield] ![addon-shield] ![Supports aarch64 Architecture][aarch64-shield] ![Supports amd64 Architecture][amd64-shield] ![Deprecated armhf Architecture][armhf-shield] ![Deprecated armv7 Architecture][armv7-shield]
 
-[aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg
-[amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg
-[armhf-shield]: https://img.shields.io/badge/armhf-deprecated-orange.svg
-[armv7-shield]: https://img.shields.io/badge/armv7-deprecated-orange.svg
+[aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg?style=flat-square
+[amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg?style=flat-square
+[armhf-shield]: https://img.shields.io/badge/armhf-deprecated-orange.svg?style=flat-square
+[armv7-shield]: https://img.shields.io/badge/armv7-deprecated-orange.svg?style=flat-square
 
 
-[dsmr-shield]: https://img.shields.io/badge/DSMR%20Reader%20Version-%204.12-purple.svg
-[addon-shield]: https://img.shields.io/badge/Addon%20Version-%200.1.2-purple.svg
+[dsmr-shield]: https://img.shields.io/badge/DSMR%20Reader%20Version-%204.12-purple.svg?style=flat-square
+[addon-shield]: https://img.shields.io/badge/Addon%20Version-%200.1.2-purple.svg?style=flat-square
 ## Configure the repository
 
 See config instructions here: https://github.com/sanderdw/hassio-addons
