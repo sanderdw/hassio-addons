@@ -7,7 +7,7 @@ Meet the easy, open source way for everyone to ask questions and learn from data
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg?style=flat-square
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg?style=flat-square
 
-[metabase-shield]: https://img.shields.io/badge/Metabase%20Version-%200.38.0.1-purple.svg?style=flat-square
+[metabase-shield]: https://img.shields.io/badge/Metabase%20Version-%200.38.1-purple.svg?style=flat-square
 [addon-shield]: https://img.shields.io/badge/Addon%20Version-%200.0.1-purple.svg?style=flat-square
 
 ## Configure the repository
