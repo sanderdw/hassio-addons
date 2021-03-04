@@ -2,13 +2,15 @@
 
 The datalogger only option of DSMR (https://dsmr-reader.readthedocs.io). This will install a datalogger that will forward telegrams to another fully installed instance of DSMR-reader, using its API.
 
-![Supports aarch64 Architecture][aarch64-shield] ![Supports amd64 Architecture][amd64-shield] ![Supports armhf Architecture][armhf-shield] ![Supports armv7 Architecture][armv7-shield] ![Supports i386 Architecture][i386-shield]
+![Supports aarch64 Architecture][aarch64-shield] ![Supports amd64 Architecture][amd64-shield] ![Supports armhf Architecture][armhf-shield] ![Supports armv7 Architecture][armv7-shield] ![Supports i386 Architecture][i386-shield] [![Community Forum][forum-shield]][forum]
 
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg?style=flat-square
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg?style=flat-square
 [armhf-shield]: https://img.shields.io/badge/armhf-yes-green.svg?style=flat-square
 [armv7-shield]: https://img.shields.io/badge/armv7-yes-green.svg?style=flat-square
 [i386-shield]: https://img.shields.io/badge/i386-yes-green.svg?style=flat-square
+[forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=flat-square
+[forum]: https://community.home-assistant.io/t/dsmr-datalogger-add-on-for-home-assistant/181123
 
 ## Configure the repository
 

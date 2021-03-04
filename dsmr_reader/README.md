@@ -4,7 +4,9 @@
 Used for reading the smart meter DSMR P1 port (https://dsmr-reader.readthedocs.io) using the great work by xirixiz (https://github.com/xirixiz/dsmr-reader-docker).
 
 
-![dsmr-shield] ![addon-shield] ![Supports aarch64 Architecture][aarch64-shield] ![Supports amd64 Architecture][amd64-shield] ![Deprecated armhf Architecture][armhf-shield] ![Deprecated armv7 Architecture][armv7-shield]
+![dsmr-shield] ![addon-shield] ![Supports aarch64 Architecture][aarch64-shield] ![Supports amd64 Architecture][amd64-shield] ![Deprecated armhf Architecture][armhf-shield] ![Deprecated armv7 Architecture][armv7-shield] [![Community Forum][forum-shield]][forum]
+
+![DSMR Reader](/images/dsmr_reader.png)
 
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg?style=flat-square
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg?style=flat-square
@@ -14,6 +16,8 @@ Used for reading the smart meter DSMR P1 port (https://dsmr-reader.readthedocs.i
 
 [dsmr-shield]: https://img.shields.io/badge/DSMR%20Reader%20Version-%204.12-purple.svg?style=flat-square
 [addon-shield]: https://img.shields.io/badge/Addon%20Version-%200.1.2-purple.svg?style=flat-square
+[forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=flat-square
+[forum]: https://community.home-assistant.io/t/dsmr-reader-add-on-for-home-assistant/279087
 ## Configure the repository
 
 See config instructions here: https://github.com/sanderdw/hassio-addons
