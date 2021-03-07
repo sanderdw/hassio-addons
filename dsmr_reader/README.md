@@ -14,7 +14,7 @@ Used for reading the smart meter DSMR P1 port (https://dsmr-reader.readthedocs.i
 [armhf-shield]: https://img.shields.io/badge/armhf-deprecated-orange.svg?style=flat-square
 
 [dsmr-shield]: https://img.shields.io/badge/DSMR%20Reader%20Version-%204.12-purple.svg?style=flat-square
-[addon-shield]: https://img.shields.io/badge/Addon%20Version-%200.1.2-purple.svg?style=flat-square
+[addon-shield]: https://img.shields.io/badge/Addon%20Version-%200.1.3-purple.svg?style=flat-square
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=flat-square
 [forum]: https://community.home-assistant.io/t/dsmr-reader-add-on-for-home-assistant/279087
 ## Configure the repository
