@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.3
+
+- Update base images (PostgreSQL 12.6 client working on arm32v7, arm32v6 is deprecated)
+
 ## 0.1.2
 
 - Fixed PostgreSQL 12.6 client version (arm32 is deprecated and not updated)
