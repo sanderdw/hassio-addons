@@ -9,7 +9,6 @@ jobs:
   - task: Docker@2
     displayName: Build an image
     inputs:
-      repository: '$(imageName)'
       command: 'build'
       Dockerfile: 'metabase/Dockerfile'
       arguments: '--build-arg BUILD_FROM=homeassistant/amd64-base-debian'
@@ -21,7 +20,6 @@ jobs:
   - task: Docker@2
     displayName: Build an image
     inputs:
-      repository: '$(imageName)'
       command: 'build'
       Dockerfile: 'metabase/Dockerfile'
       arguments: '--build-arg BUILD_FROM=homeassistant/aarch64-base-debian'
