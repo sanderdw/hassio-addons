@@ -1,14 +1,27 @@
 trigger:
  - none
 
-pool:
-  vmImage: 'ubuntu-20.04' # set to windows-latest or another Windows vmImage for Windows builds
-
-steps:
- - task: Docker@2
-   displayName: Build an image
-   inputs:
-     repository: '$(imageName)'
-     command: 'build'
-     Dockerfile: 'metabase/Dockerfile'
-     arguments: '--build-arg BUILD_FROM=homeassistant/amd64-base-debian'
+jobs:
+- job: Amd64
+  pool:
+    vmImage: 'ubuntu-20.04'
+  steps:
+  - task: Docker@2
+    displayName: Build an image
+    inputs:
+      repository: '$(imageName)'
+      command: 'build'
+      Dockerfile: 'metabase/Dockerfile'
+      arguments: '--build-arg BUILD_FROM=homeassistant/amd64-base-debian'
+      
+- job: Arm
+  pool:
+    vmImage: 'ubuntu-20.04'
+  steps:
+  - task: Docker@2
+    displayName: Build an image
+    inputs:
+      repository: '$(imageName)'
+      command: 'build'
+      Dockerfile: 'metabase/Dockerfile'
+      arguments: '--build-arg BUILD_FROM=homeassistant/aarch64-base-debian'
