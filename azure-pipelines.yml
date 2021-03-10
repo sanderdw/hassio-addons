@@ -5,6 +5,8 @@ jobs:
 - job: Amd64
   pool:
     vmImage: 'ubuntu-20.04'
+  variables:
+    ARCH: amd64
   steps:
   - task: Docker@2
     displayName: Build an image
@@ -16,6 +18,8 @@ jobs:
 - job: Arm
   pool:
     vmImage: 'ubuntu-20.04'
+  variables:
+    ARCH: arm64v8
   steps:
   - task: Docker@2
     displayName: Build an image
