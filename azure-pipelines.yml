@@ -1,11 +1,8 @@
 trigger:
- - main
+ - none
 
 pool:
   vmImage: 'ubuntu-20.04' # set to windows-latest or another Windows vmImage for Windows builds
-
-variables:
-  imageName: 'pipelines-javascript-docker'
 
 steps:
  - task: Docker@2
@@ -14,4 +11,4 @@ steps:
      repository: '$(imageName)'
      command: 'build'
      Dockerfile: 'metabase/Dockerfile'
-     arguments: '--build-arg BUILD_FROM=homeassistant/amd64-base-debian'
+     arguments: '--build-arg BUILD_FROM=homeassistant/amd64-base-debian
