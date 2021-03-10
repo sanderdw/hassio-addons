@@ -14,4 +14,4 @@ steps:
      repository: '$(imageName)'
      command: 'build'
      Dockerfile: 'metabase/Dockerfile'
-     arguments: 'homeassistant/amd64-base-debian'
+     arguments: '--build-arg homeassistant/amd64-base-debian'
