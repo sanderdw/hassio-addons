@@ -5,11 +5,12 @@ jobs:
 - job: Amd64
   pool:
     vmImage: 'ubuntu-20.04'
+  variables:
+    ARCH: amd64
   steps:
   - task: Docker@2
     displayName: Build an image
     inputs:
-      repository: '$(imageName)'
       command: 'build'
       Dockerfile: 'metabase/Dockerfile'
       arguments: '--build-arg BUILD_FROM=homeassistant/amd64-base-debian'
@@ -17,11 +18,12 @@ jobs:
 - job: Arm
   pool:
     vmImage: 'ubuntu-20.04'
+  variables:
+    ARCH: arm64v8
   steps:
   - task: Docker@2
     displayName: Build an image
     inputs:
-      repository: '$(imageName)'
       command: 'build'
       Dockerfile: 'metabase/Dockerfile'
       arguments: '--build-arg BUILD_FROM=homeassistant/aarch64-base-debian'
