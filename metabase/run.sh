@@ -1,7 +1,7 @@
 #!/usr/bin/env bashio
 
-bashio::log.info "Welcome to the Home Assistant Add-on: Metabase by Sander de Wildt"
-bashio::log.info "Explore your Home Assistant data at ease"
+bashio::log.info "Welcome to the Home Assistant Add-on: Metabase by Sander de Wildt."
+bashio::log.info "Explore your Home Assistant data at ease."
 
 export MB_DB_DBNAME=$(bashio::config 'MB_DB_DBNAME')
 export MB_DB_USER=$(bashio::config 'MB_DB_USER')

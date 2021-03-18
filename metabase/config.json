@@ -1,6 +1,6 @@
 {
   "name": "Metabase",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "slug": "metabase",
   "description": "Meet the easy, open source way for everyone to ask questions and learn from data.",
   "arch": ["aarch64", "amd64"],

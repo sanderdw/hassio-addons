@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.0
+
+- Update to Metabase 0.38.2 (patch update)
+
 ## 0.0.2
 
 - Update to Metabase 0.38.1 (patch release)
