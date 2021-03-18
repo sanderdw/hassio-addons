@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.1
+
+- Addon image labels fix
+
 ## 0.1.0
 
 - Update to Metabase 0.38.2 (patch update)
