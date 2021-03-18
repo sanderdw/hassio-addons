@@ -8,13 +8,14 @@ Used for reading the smart meter DSMR P1 port (https://dsmr-reader.readthedocs.i
 
 ![DSMR Reader](/images/dsmr_reader.png)
 
+[dsmr-shield]: https://img.shields.io/badge/DSMR%20Reader%20Version-%204.13.0-purple.svg?style=flat-square
+[addon-shield]: https://img.shields.io/badge/Addon%20Version-%200.2.1-purple.svg?style=flat-square
+
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg?style=flat-square
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg?style=flat-square
-[armv7-shield]: https://img.shields.io/badge/armv7-version%204.12.0-orange.svg?style=flat-square
+[armv7-shield]: https://img.shields.io/badge/armv7-yes-green.svg?style=flat-square
 [armhf-shield]: https://img.shields.io/badge/armhf-version%204.12.0-orange.svg?style=flat-square
 
-[dsmr-shield]: https://img.shields.io/badge/DSMR%20Reader%20Version-%204.13.0-purple.svg?style=flat-square
-[addon-shield]: https://img.shields.io/badge/Addon%20Version-%200.2.0-purple.svg?style=flat-square
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=flat-square
 [forum]: https://community.home-assistant.io/t/dsmr-reader-add-on-for-home-assistant/279087
 ## Configure the repository

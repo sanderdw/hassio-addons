@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.1
+
+- DSMR-reader v4.13.0 available for arm32v7
+- Base image updates for amd64 & arm64v8
+
 ## 0.2.0
 
 - Update to DSMR-reader v4.13.0 (amd64 & arm64v8 only)
