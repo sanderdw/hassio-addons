@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.0
+
+- Update to DSMR-reader v4.14.0
+
 ## 0.2.1
 
 - DSMR-reader v4.13.0 available for arm32v7

@@ -1,8 +1,8 @@
 {
   "build_from": {
-    "aarch64": "xirixiz/dsmr-reader-docker:latest-2021.03.05-arm64v8",
-    "amd64": "xirixiz/dsmr-reader-docker:latest-2021.03.05-amd64",
-    "armv7": "xirixiz/dsmr-reader-docker:latest-2021.03.05-arm32v7",
+    "aarch64": "xirixiz/dsmr-reader-docker:latest-2021.03.06-arm64v8",
+    "amd64": "xirixiz/dsmr-reader-docker:latest-2021.03.06-amd64",
+    "armv7": "xirixiz/dsmr-reader-docker:latest-2021.03.06-arm32v7",
     "armhf": "xirixiz/dsmr-reader-docker:latest-v4.12.0-arm32v6"
   }
 }
