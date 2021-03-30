@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.1
+
+- Support for DATALOGGER_SLEEP 
+
 ## 0.3.0
 
 - Update to DSMR-reader v4.14.0
