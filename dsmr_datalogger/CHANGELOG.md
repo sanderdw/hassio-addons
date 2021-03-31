@@ -1,4 +1,9 @@
 # Changelog
+
+## 1.0.3
+
+- Support for DATALOGGER_SLEEP
+
 ## 1.0.2
 
 - Changed auto_uart to uart config.json (https://github.com/home-assistant/supervisor/issues/2533). Make sure to run a recent version of Home Assistant before you upgrade
