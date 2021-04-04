@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.2
+
+- Update to Metabase 0.38.3
+
 ## 0.1.1
 
 - Addon image labels fix
