@@ -1,6 +1,6 @@
 {
   "name": "DSMR Reader",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "slug": "dsmr_reader",
   "description": "Used for reading the smart meter DSMR P1 port (https://dsmr-reader.readthedocs.io)",
   "arch": ["armhf", "armv7", "aarch64", "amd64"],
