@@ -6,7 +6,7 @@ Used for reading the smart meter DSMR P1 port (https://dsmr-reader.readthedocs.i
 
 ![dsmr-shield] ![addon-shield] ![aarch64-shield] ![amd64-shield] ![armv7-shield] ![armhf-shield] [![Community Forum][forum-shield]][forum]
 
-![DSMR Reader](/images/dsmr_reader.png)
+![DSMR Reader](https://github.com/sanderdw/hassio-addons/raw/master/images/dsmr_reader.png)
 
 [dsmr-shield]: https://img.shields.io/badge/DSMR%20Reader%20Version-%204.15.2-purple.svg?style=flat-square
 [addon-shield]: https://img.shields.io/badge/Addon%20Version-%200.4.2-purple.svg?style=flat-square
