@@ -4,7 +4,7 @@ Meet the easy, open source way for everyone to ask questions and learn from data
 
 ![metabase-shield] ![addon-shield] ![aarch64-shield] ![amd64-shield] [![Community Forum][forum-shield]][forum]
 
-![Metabase](/images/metabase.png)
+![Metabase](https://raw.githubusercontent.com/sanderdw/hassio-addons/master/images/metabase.png)
 
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg?style=flat-square
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg?style=flat-square
