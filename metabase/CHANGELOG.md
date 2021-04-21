@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.0
+
+- Update to Metabase 0.39.0.1
+- NOTE: Check "Before you upgrade" on https://github.com/metabase/metabase/releases/tag/v0.39.0.1
+
 ## 0.1.2
 
 - Update to Metabase 0.38.3
