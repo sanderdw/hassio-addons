@@ -1,8 +1,8 @@
 # Changelog
 
-## 0.7.1
+## 0.7.1 (Beta)
 
-- Fix image
+- Try to fix underlying image, don't update yet! 
 
 ## 0.7.0
 
