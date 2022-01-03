@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.1
+
+- Fix image
+
 ## 0.7.0
 
 - Update to DSMR-reader v4.19

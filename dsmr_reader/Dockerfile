@@ -3,19 +3,12 @@ FROM $BUILD_FROM
 
 ENV LANG C.UTF-8
 
-# INGRESS (Not working yet)
-RUN echo "X_FRAME_OPTIONS = 'ALLOWALL'" >> /dsmr/dsmrreader/settings.py
-#RUN echo "STATIC_URL = '/hassio/ingress/local_dsmr_reader/static/'" >> /dsmr/dsmrreader/settings.py
-#RUN echo "FORCE_SCRIPT_NAME = '/hassio/ingress/local_dsmr_reader'" >> /dsmr/dsmrreader/settings.py
-#RUN echo "USE_X_FORWARDED_HOST = True" >> /dsmr/dsmrreader/settings.py
-
 # HOMEASSISTANT Add-On helper for bash
 COPY bash.sh /app/bash.sh
 RUN chmod a+x /app/bash.sh
 # HOMEASSISTANT Add-On OVERRIDES
-COPY run.sh /app/run.sh
-RUN chmod a+x /app/run.sh
-
+COPY 20-set-app-defaults /etc/cont-init.d/20-set-app-defaults
+RUN chmod a+x /etc/cont-init.d/20-set-app-defaults
 
 # Labels
 LABEL \
