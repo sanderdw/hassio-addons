@@ -3,18 +3,12 @@ FROM $BUILD_FROM
 
 ENV LANG C.UTF-8
 
-RUN apk add --no-cache jq
-
 # HOMEASSISTANT Add-On helper for bash
 COPY bash.sh /app/bash.sh
 RUN chmod a+x /app/bash.sh
 # HOMEASSISTANT Add-On OVERRIDES
-COPY rootfs /
-RUN chmod a+x /etc/cont-init.d/20-set-app-defaults
-RUN chmod a+x /etc/services.d/dsmr_backend/run
-RUN chmod a+x /etc/services.d/dsmr_datalogger/run
-RUN chmod a+x /etc/services.d/dsmr_webinterface/run
-RUN chmod a+x /etc/services.d/nginx/run
+COPY run.sh /app/run.sh
+RUN chmod a+x /app/run.sh
 
 # Labels
 LABEL \

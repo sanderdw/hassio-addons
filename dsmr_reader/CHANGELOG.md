@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.2
+
+- Revert to older image to fix usb errors
+
 ## 0.7.1 (Beta)
 
 - Try to fix underlying image, don't update yet! 
