@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.7.3
+
+- Fixes to underlying image applied (Thanks Xirixiz)
+- Added debug mode
+
 ## 0.7.2
 
 - Revert to older image to fix usb errors

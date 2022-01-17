@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/with-contenv bash
 
 #---------------------------------------------------------------------------------------------------------------------------
 # HOMEASSISTANT Add-On OVERRIDES
@@ -37,3 +37,9 @@ export DATALOGGER_NETWORK_PORT="${DATALOGGER_NETWORK_PORT}"
 export DATALOGGER_SLEEP="${DATALOGGER_SLEEP}"
 export DSMRREADER_LOGLEVEL="${DSMRREADER_LOGLEVEL}"
 export ENABLE_IFRAME="true"
+
+if [[ "${DATALOGGER_MODE}" = standalone || "${DATALOGGER_MODE}" = receiver ]]; then
+    echo "Starting DSMR Reader - webinterface..."
+    cd /app || exit
+    exec s6-setuidgid app /usr/local/bin/gunicorn dsmrreader.wsgi --timeout 60 --max-requests 500 --bind unix:/var/tmp/gunicorn--dsmr_webinterface.socket
+fi
