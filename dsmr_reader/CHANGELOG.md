@@ -2,7 +2,7 @@
 
 ## 0.7.4
 
-- Revert to older image to fix usb errors
+- Reverting again to solve CPU and backup permission errors
 
 ## 0.7.3
 
