@@ -13,7 +13,7 @@ function _error() { printf "\\r\\033[2K[ \\033[0;31mFAIL\\033[0m ] %s\\n" "$@"; 
 function _debug() { printf "\\r[ \\033[00;37mDBUG\\033[0m ] %s\\n" "$@"; }
 
 function _pre_reqs() {
-  _info "Home Assistant Add-on release: 0.7.3"
+  _info "Home Assistant Add-on release: 0.7.5"
   _info "DSMR Reader release: ${DSMR_VERSION}"
   _info "DSMR Reader Docker release: ${DOCKER_TARGET_RELEASE}"
 

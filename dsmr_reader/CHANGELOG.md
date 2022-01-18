@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.7.5
+
+- Don't update yet!
+
+## 0.7.4
+
+- Revert to older image (again) to fix high cpu and performance
+
 ## 0.7.3
 
 - Fixes to underlying image applied (Thanks Xirixiz)
