@@ -16,6 +16,8 @@ RUN chmod a+x /etc/services.d/dsmr_datalogger/run
 RUN chmod a+x /etc/services.d/dsmr_webinterface/run
 RUN chmod a+x /etc/services.d/nginx/run
 
+ENV DUID=0
+ENV DGID=0
 
 # Labels
 LABEL \
