@@ -28,16 +28,16 @@ If you're using Home Assistant you may find the correct value for this on the
 `Supervisor -> System -> Host system -> Hardware` page.
 
 1. When updated, please reset configuration to it's default first ("RESET TO DEFAULTS" on the Configuration tab after installing/updating).
-2. Replace `/dev/ttyUSBX` in the `DATALOGGER_SERIAL_PORT` option in the add-on configuration and specify
+2. Replace `/dev/ttyUSBX` in the `DSMRREADER_DATALOGGER_SERIAL_PORT` option in the add-on configuration and specify
    the device name.
-3. Specifiy the correct `http(s)://<YOUR_DSMR_HOST>:<PORT>` url in the `DATALOGGER_API_HOSTS` option in the add-on configuration.
-4. Replace `<YOUR_API_KEY>` in the `DATALOGGER_API_KEYS` option to your API key (see https://dsmr-reader.readthedocs.io/en/v4/api.html for help).
+3. Specifiy the correct `http(s)://<YOUR_DSMR_HOST>:<PORT>` url in the `DSMRREADER_DATALOGGER_API_HOSTS` option in the add-on configuration.
+4. Replace `<YOUR_API_KEY>` in the `DSMRREADER_DATALOGGER_API_KEYS` option to your API key (see https://dsmr-reader.readthedocs.io/en/v4/api.html for help).
 5. Click on "SAVE" to save the add-on configuration.
 6. Start the add-on.
 
 ### Note for DSMR v2/3 try to use this configuration:
 ```
-DATALOGGER_SERIAL_BAUDRATE: '9600'
-DATALOGGER_SERIAL_BYTESIZE: '7'
-DATALOGGER_SERIAL_PARITY: 'E'
+DSMRREADER_DATALOGGER_SERIAL_BAUDRATE: '9600'
+DSMRREADER_DATALOGGER_SERIAL_BYTESIZE: '7'
+DSMRREADER_DATALOGGER_SERIAL_PARITY: 'E'
 ```
