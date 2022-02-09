@@ -5,9 +5,6 @@ ENV LANG C.UTF-8
 
 RUN apk add --no-cache jq
 
-# HOMEASSISTANT Add-On helper for bash
-COPY bash.sh /app/bash.sh
-RUN chmod a+x /app/bash.sh
 # HOMEASSISTANT Add-On OVERRIDES
 COPY rootfs /
 RUN chmod a+x /etc/cont-init.d/*
