@@ -2,7 +2,7 @@
 
 ## 1.0.3
 
-- Support for DATALOGGER_SLEEP
+- Support for DSMRREADER_DATALOGGER_SLEEP
 
 ## 1.0.2
 
@@ -11,7 +11,7 @@
 
 ## 1.0.1
 
-- Ready for DSMR meter versions 2/3 (Added DATALOGGER_SERIAL_BYTESIZE and DATALOGGER_SERIAL_PARITY configuration parameters)
+- Ready for DSMR meter versions 2/3 (Added DSMRREADER_DATALOGGER_SERIAL_BYTESIZE and DSMRREADER_DATALOGGER_SERIAL_PARITY configuration parameters)
 
 ## 1.0.0
 

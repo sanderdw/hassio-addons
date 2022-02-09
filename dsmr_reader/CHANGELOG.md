@@ -19,7 +19,7 @@
 
 ## 0.7.1 (Beta)
 
-- Try to fix underlying image, don't update yet! 
+- Try to fix underlying image, don't update yet!
 
 ## 0.7.0
 
@@ -51,7 +51,7 @@
 
 ## 0.3.1
 
-- Support for DATALOGGER_SLEEP
+- Support for DSMRREADER_DATALOGGER_SLEEP
 
 ## 0.3.0
 
@@ -66,7 +66,7 @@
 
 - Update to DSMR-reader v4.13.0 (amd64 & arm64v8 only)
 - Simplified configuration with dropdowns
-- NOTE: Check DATALOGGER_MODE & DATALOGGER_INPUT_METHOD configurations after updating
+- NOTE: Check DSMRREADER_DATALOGGER_MODE & DSMRREADER_DATALOGGER_INPUT_METHOD configurations after updating
 
 ## 0.1.3
 
