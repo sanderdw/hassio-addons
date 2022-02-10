@@ -313,25 +313,18 @@ function _hass {
 
 _hass
 _pre_reqs
-_hass
 _iframe
-_hass
 
 if [[ "${DSMRREADER_REMOTE_DATALOGGER_MODE}" = standalone || "${DSMRREADER_REMOTE_DATALOGGER_MODE}" = sender ]]; then
   _check_device
 fi
 
 if [[ "${DSMRREADER_REMOTE_DATALOGGER_MODE}" = standalone || "${DSMRREADER_REMOTE_DATALOGGER_MODE}" = receiver ]]; then
-  _hass
   _check_db_availability
-  _hass
   _run_post_config
-  _hass
   _nginx_change_listen_port
-  _hass
   _nginx_ssl_configuration
-  _hass
   _generate_auth_configuration
 fi
-_hass
+
 _dsmr_datalogger_mode
