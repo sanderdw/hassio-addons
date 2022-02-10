@@ -10,10 +10,11 @@ function _info() { printf "\\r[ \\033[00;34mINFO\\033[0m ] %s\\n" "$@"; }
 #---------------------------------------------------------------------------------------------------------------------------
 
 function _hass {
+  _info "Home Assistant Add-on release: 0.7.5"
   CONFIG_PATH=/data/options.json
   if [ -z "${DJANGO_DATABASE_HOST}" ] || [ "${DJANGO_DATABASE_HOST}" == 'dsmrdb' ]; then
     _info "${DJANGO_DATABASE_HOST}"
-    _info "ENV's being updated 30"
+    _info "ENV's being updated (30-set-hassio-vars)"
     export DSMRREADER_ADMIN_USER=$(jq --raw-output '.DSMRREADER_ADMIN_USER' $CONFIG_PATH)
     export DSMRREADER_ADMIN_PASSWORD=$(jq --raw-output '.DSMRREADER_ADMIN_PASSWORD' $CONFIG_PATH)
     export DJANGO_DATABASE_NAME=$(jq --raw-output '.DJANGO_DATABASE_NAME' $CONFIG_PATH)
@@ -21,32 +22,32 @@ function _hass {
     export DJANGO_DATABASE_PASSWORD=$(jq --raw-output '.DJANGO_DATABASE_PASSWORD' $CONFIG_PATH)
     export DJANGO_DATABASE_HOST=$(jq --raw-output '.DJANGO_DATABASE_HOST' $CONFIG_PATH)
     export DJANGO_DATABASE_PORT=$(jq --raw-output '.DJANGO_DATABASE_PORT' $CONFIG_PATH)
-    export DATALOGGER_MODE=$(jq --raw-output '.DATALOGGER_MODE' $CONFIG_PATH)
-    export DATALOGGER_SERIAL_PORT=$(jq --raw-output '.DATALOGGER_SERIAL_PORT' $CONFIG_PATH)
-    export DATALOGGER_INPUT_METHOD=$(jq --raw-output '.DATALOGGER_INPUT_METHOD' $CONFIG_PATH)
-    export DATALOGGER_SERIAL_BAUDRATE=$(jq --raw-output '.DATALOGGER_SERIAL_BAUDRATE' $CONFIG_PATH)
-    export DATALOGGER_NETWORK_HOST=$(jq --raw-output '.DATALOGGER_NETWORK_HOST' $CONFIG_PATH)
-    export DATALOGGER_NETWORK_PORT=$(jq --raw-output '.DATALOGGER_NETWORK_PORT' $CONFIG_PATH)
-    export DATALOGGER_SLEEP=$(jq --raw-output '.DATALOGGER_SLEEP' $CONFIG_PATH)
+    export DSMRREADER_REMOTE_DATALOGGER_MODE=$(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_MODE' $CONFIG_PATH)
+    export DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT=$(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT' $CONFIG_PATH)
+    export DSMRREADER_REMOTE_DATALOGGER_INPUT_METHOD=$(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_INPUT_METHOD' $CONFIG_PATH)
+    export DSMRREADER_REMOTE_DATALOGGER_SERIAL_BAUDRATE=$(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_SERIAL_BAUDRATE' $CONFIG_PATH)
+    export DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST=$(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST' $CONFIG_PATH)
+    export DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT=$(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT' $CONFIG_PATH)
+    export DSMRREADER_REMOTE_DATALOGGER_SLEEP=$(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_SLEEP' $CONFIG_PATH)
     export DSMRREADER_LOGLEVEL=$(jq --raw-output '.DSMRREADER_LOGLEVEL' $CONFIG_PATH)
     export ENABLE_IFRAME='true'
     #mkdir /var/run/s6/container_environment/
-    echo $(jq --raw-output '.DSMRREADER_ADMIN_USER' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_ADMIN_USER
-    echo $(jq --raw-output '.DSMRREADER_ADMIN_PASSWORD' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_ADMIN_PASSWORD
-    echo $(jq --raw-output '.DJANGO_DATABASE_NAME' $CONFIG_PATH) > /var/run/s6/container_environment/DJANGO_DATABASE_NAME
-    echo $(jq --raw-output '.DJANGO_DATABASE_USER' $CONFIG_PATH) > /var/run/s6/container_environment/DJANGO_DATABASE_USER
-    echo $(jq --raw-output '.DJANGO_DATABASE_PASSWORD' $CONFIG_PATH) > /var/run/s6/container_environment/DJANGO_DATABASE_PASSWORD
-    echo $(jq --raw-output '.DJANGO_DATABASE_HOST' $CONFIG_PATH) > /var/run/s6/container_environment/DJANGO_DATABASE_HOST
-    echo $(jq --raw-output '.DJANGO_DATABASE_PORT' $CONFIG_PATH) > /var/run/s6/container_environment/DJANGO_DATABASE_PORT
-    echo $(jq --raw-output '.DATALOGGER_MODE' $CONFIG_PATH) > /var/run/s6/container_environment/DATALOGGER_MODE
-    echo $(jq --raw-output '.DATALOGGER_SERIAL_PORT' $CONFIG_PATH) > /var/run/s6/container_environment/DATALOGGER_SERIAL_PORT
-    echo $(jq --raw-output '.DATALOGGER_INPUT_METHOD' $CONFIG_PATH) > /var/run/s6/container_environment/DATALOGGER_INPUT_METHOD
-    echo $(jq --raw-output '.DATALOGGER_SERIAL_BAUDRATE' $CONFIG_PATH) > /var/run/s6/container_environment/DATALOGGER_SERIAL_BAUDRATE
-    echo $(jq --raw-output '.DATALOGGER_NETWORK_HOST' $CONFIG_PATH) > /var/run/s6/container_environment/DATALOGGER_NETWORK_HOST
-    echo $(jq --raw-output '.DATALOGGER_NETWORK_PORT' $CONFIG_PATH) > /var/run/s6/container_environment/DATALOGGER_NETWORK_PORT
-    echo $(jq --raw-output '.DATALOGGER_SLEEP' $CONFIG_PATH) > /var/run/s6/container_environment/DATALOGGER_SLEEP
-    echo $(jq --raw-output '.DSMRREADER_LOGLEVEL' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_LOGLEVEL
-    echo "true" > /var/run/s6/container_environment/ENABLE_IFRAME
+    printf $(jq --raw-output '.DSMRREADER_ADMIN_USER' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_ADMIN_USER
+    printf $(jq --raw-output '.DSMRREADER_ADMIN_PASSWORD' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_ADMIN_PASSWORD
+    printf $(jq --raw-output '.DJANGO_DATABASE_NAME' $CONFIG_PATH) > /var/run/s6/container_environment/DJANGO_DATABASE_NAME
+    printf $(jq --raw-output '.DJANGO_DATABASE_USER' $CONFIG_PATH) > /var/run/s6/container_environment/DJANGO_DATABASE_USER
+    printf $(jq --raw-output '.DJANGO_DATABASE_PASSWORD' $CONFIG_PATH) > /var/run/s6/container_environment/DJANGO_DATABASE_PASSWORD
+    printf $(jq --raw-output '.DJANGO_DATABASE_HOST' $CONFIG_PATH) > /var/run/s6/container_environment/DJANGO_DATABASE_HOST
+    printf $(jq --raw-output '.DJANGO_DATABASE_PORT' $CONFIG_PATH) > /var/run/s6/container_environment/DJANGO_DATABASE_PORT
+    printf $(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_MODE' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_MODE
+    printf $(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT
+    printf $(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_INPUT_METHOD' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_INPUT_METHOD
+    printf $(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_SERIAL_BAUDRATE' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_SERIAL_BAUDRATE
+    printf $(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST
+    printf $(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT
+    printf $(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_SLEEP' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_SLEEP
+    printf $(jq --raw-output '.DSMRREADER_LOGLEVEL' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_LOGLEVEL
+    printf "true" > /var/run/s6/container_environment/ENABLE_IFRAME
   fi
 }
 
