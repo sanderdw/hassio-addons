@@ -1,15 +1,14 @@
 
 # Home Assistant Add-on: DSMR Reader
 
-Used for reading the smart meter DSMR P1 port (https://dsmr-reader.readthedocs.io) using the great work by xirixiz (https://github.com/xirixiz/dsmr-reader-docker).
-
+Provide a tool to easily extract, store and visualize data transferred by the DSMR protocol of your smart meter (https://dsmr-reader.readthedocs.io) using the great work by xirixiz (https://github.com/xirixiz/dsmr-reader-docker).
 
 ![dsmr-shield] ![addon-shield] ![aarch64-shield] ![amd64-shield] ![armv7-shield] ![armhf-shield] [![Community Forum][forum-shield]][forum]
 
 ![DSMR Reader](https://github.com/sanderdw/hassio-addons/raw/master/images/dsmr_reader.png)
 
-[dsmr-shield]: https://img.shields.io/badge/DSMR%20Reader%20Version-%204.19-purple.svg?style=flat-square
-[addon-shield]: https://img.shields.io/badge/Addon%20Version-%200.7.5-purple.svg?style=flat-square
+[dsmr-shield]: https://img.shields.io/badge/DSMR%20Reader%20Version-%205.0-purple.svg?style=flat-square
+[addon-shield]: https://img.shields.io/badge/Addon%20Version-%201.0.0-purple.svg?style=flat-square
 
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg?style=flat-square
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg?style=flat-square

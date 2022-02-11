@@ -13,8 +13,7 @@ function _hass {
   _info "Home Assistant Add-on release: 0.7.5"
   CONFIG_PATH=/data/options.json
   if [ -z "${DJANGO_DATABASE_HOST}" ] || [ "${DJANGO_DATABASE_HOST}" == 'dsmrdb' ]; then
-    _info "${DJANGO_DATABASE_HOST}"
-    _info "ENV's being updated (30-set-hassio-vars)"
+    _info "HA Addon - ENV's being updated"
     export DSMRREADER_ADMIN_USER=$(jq --raw-output '.DSMRREADER_ADMIN_USER' $CONFIG_PATH)
     export DSMRREADER_ADMIN_PASSWORD=$(jq --raw-output '.DSMRREADER_ADMIN_PASSWORD' $CONFIG_PATH)
     export DJANGO_DATABASE_NAME=$(jq --raw-output '.DJANGO_DATABASE_NAME' $CONFIG_PATH)
