@@ -11,6 +11,8 @@ RUN chmod a+x /app/bash.sh
 # HOMEASSISTANT Add-On OVERRIDES
 COPY rootfs /
 RUN chmod a+x /etc/cont-init.d/*
+# Fix https://github.com/xirixiz/dsmr-reader-docker/issues/262#issuecomment-1035313756
+COPY dsmrreader/backup.py /app/dsmr_backup/services/backup.py
 
 ENV DUID=0
 ENV DGID=0
