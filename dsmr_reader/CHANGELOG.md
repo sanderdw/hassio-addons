@@ -1,8 +1,12 @@
 # Changelog
 
-## 1.0.0
+## 1.0.0 (Beta)
 
-- Don't update yet!
+- Backup First! Make a db backup first if you want to be able to revert.
+- Updating from previous version? After the update go to the addon "Configuration" tab and next to "Options" choose "Reset to defaults" (Not the one below "Network") and apply your settings again.
+- Update to DSMR-reader v5.0
+- Refactor code
+- Big Thanks to Dennis Siemensma and Bram van Dartel for this new release
 
 ## 0.7.4
 

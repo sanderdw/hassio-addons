@@ -10,10 +10,10 @@ function _info() { printf "\\r[ \\033[00;34mINFO\\033[0m ] %s\\n" "$@"; }
 #---------------------------------------------------------------------------------------------------------------------------
 
 function _hass {
-  _info "Home Assistant Add-on release: 0.7.5"
+  _info "Home Assistant Add-on release: 1.0.0"
   CONFIG_PATH=/data/options.json
   if [ -z "${DJANGO_DATABASE_HOST}" ] || [ "${DJANGO_DATABASE_HOST}" == 'dsmrdb' ]; then
-    _info "HA Addon - ENV's being updated"
+    _info "Configuring Home Assistant Addon options"
     export DSMRREADER_ADMIN_USER=$(jq --raw-output '.DSMRREADER_ADMIN_USER' $CONFIG_PATH)
     export DSMRREADER_ADMIN_PASSWORD=$(jq --raw-output '.DSMRREADER_ADMIN_PASSWORD' $CONFIG_PATH)
     export DJANGO_DATABASE_NAME=$(jq --raw-output '.DJANGO_DATABASE_NAME' $CONFIG_PATH)
@@ -30,7 +30,6 @@ function _hass {
     export DSMRREADER_REMOTE_DATALOGGER_SLEEP=$(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_SLEEP' $CONFIG_PATH)
     export DSMRREADER_LOGLEVEL=$(jq --raw-output '.DSMRREADER_LOGLEVEL' $CONFIG_PATH)
     export ENABLE_IFRAME='true'
-    #mkdir /var/run/s6/container_environment/
     printf $(jq --raw-output '.DSMRREADER_ADMIN_USER' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_ADMIN_USER
     printf $(jq --raw-output '.DSMRREADER_ADMIN_PASSWORD' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_ADMIN_PASSWORD
     printf $(jq --raw-output '.DJANGO_DATABASE_NAME' $CONFIG_PATH) > /var/run/s6/container_environment/DJANGO_DATABASE_NAME

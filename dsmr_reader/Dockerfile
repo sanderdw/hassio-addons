@@ -5,12 +5,9 @@ ENV LANG C.UTF-8
 
 RUN apk add --no-cache jq
 
-# HOMEASSISTANT Add-On helper for manual bash commands only
-COPY bash.sh /app/bash.sh
-RUN chmod a+x /app/bash.sh
 # HOMEASSISTANT Add-On OVERRIDES
 COPY rootfs /
-RUN chmod a+x /etc/cont-init.d/*
+RUN chmod a+x /etc/cont-init.d/01-set-hassio-vars
 # Fix https://github.com/xirixiz/dsmr-reader-docker/issues/262#issuecomment-1035313756
 COPY dsmrreader/backup.py /app/dsmr_backup/services/backup.py
 
