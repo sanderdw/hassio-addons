@@ -1,7 +1,11 @@
 # Home Assistant Add-on: DSMR Reader
 [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fsanderdw%2Fhassio-addons)
 
-Provide a tool to easily extract, store and visualize data transferred by the DSMR protocol of your smart meter (https://dsmr-reader.readthedocs.io) using the great work by xirixiz (https://github.com/xirixiz/dsmr-reader-docker).
+`DSMR Reader Add-on v1.0.0 released, please check the changelog before upgrading.`
+
+Provide a tool to easily extract, store and visualize data transferred by the DSMR protocol of your smart meter.
+
+Credits to Dennis Siemensma for creating the DSMR Reader software (https://dsmr-reader.readthedocs.io) and Bram van Dartel for creating the underlying container image (https://github.com/xirixiz/dsmr-reader-docker).
 
 ![dsmr-shield] ![addon-shield] ![aarch64-shield] ![amd64-shield] ![armv7-shield] ![armhf-shield] [![Community Forum][forum-shield]][forum]
 
