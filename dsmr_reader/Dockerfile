@@ -3,12 +3,16 @@ FROM $BUILD_FROM
 
 ENV LANG C.UTF-8
 
-# HOMEASSISTANT Add-On helper for bash
-COPY bash.sh /app/bash.sh
-RUN chmod a+x /app/bash.sh
+RUN apk add --no-cache jq
+
 # HOMEASSISTANT Add-On OVERRIDES
-COPY run.sh /app/run.sh
-RUN chmod a+x /app/run.sh
+COPY rootfs /
+RUN chmod a+x /etc/cont-init.d/01-set-hassio-vars
+# Fix https://github.com/xirixiz/dsmr-reader-docker/issues/262#issuecomment-1035313756
+COPY dsmrreader/backup.py /app/dsmr_backup/services/backup.py
+
+ENV DUID=0
+ENV DGID=0
 
 # Labels
 LABEL \
