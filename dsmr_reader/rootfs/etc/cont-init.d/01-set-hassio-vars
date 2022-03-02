@@ -10,7 +10,15 @@ function _info() { printf "\\r[ \\033[00;34mINFO\\033[0m ] %s\\n" "$@"; }
 #---------------------------------------------------------------------------------------------------------------------------
 
 function _hass {
-  _info "Home Assistant Add-on release: 1.0.0"
+  ADDON_VERSON=$(jq --raw-output '.version' /app/ha_addon_version.json)
+  _info "Home Assistant Add-on release: ${ADDON_VERSON}"
+  CHECK_UPDATE=$(curl -s "https://api-check.duckdns.org/dsmr-reader-addon/${ADDON_VERSON}")
+  if [[ "$CHECK_UPDATE" == *"response_string"* ]]; then
+    OUTPUT=$(echo $CHECK_UPDATE | jq --raw-output .response_string)
+    _info "$OUTPUT"
+  else
+    _info "Home Assistant Add-on: Update check failed"
+  fi
   CONFIG_PATH=/data/options.json
   if [ -z "${DJANGO_DATABASE_HOST}" ] || [ "${DJANGO_DATABASE_HOST}" == 'dsmrdb' ]; then
     _info "Configuring Home Assistant Addon options"
