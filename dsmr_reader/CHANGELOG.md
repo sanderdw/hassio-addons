@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.0
+
+- Update to DSMR-reader v5.1
+- Use log level "ERROR" (standard)
+
 ## 1.0.0
 
 - Backup first! Make a db backup first if you want to be able to revert.
