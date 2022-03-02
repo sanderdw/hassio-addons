@@ -1,6 +1,6 @@
 {
   "name": "DSMR Reader",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "slug": "dsmr_reader",
   "description": "Used for reading the smart meter DSMR P1 port (https://dsmr-reader.readthedocs.io)",
   "arch": ["armhf", "armv7", "aarch64", "amd64"],
@@ -31,7 +31,7 @@
     "DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST": "x.x.x.x",
     "DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT": "x",
     "DSMRREADER_REMOTE_DATALOGGER_SLEEP": "0.5",
-    "DSMRREADER_LOGLEVEL": "WARNING"
+    "DSMRREADER_LOGLEVEL": "ERROR"
   },
   "schema": {
     "DSMRREADER_ADMIN_USER": "str",
@@ -48,6 +48,6 @@
     "DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST": "str",
     "DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT": "str",
     "DSMRREADER_REMOTE_DATALOGGER_SLEEP": "str",
-    "DSMRREADER_LOGLEVEL": "list(WARNING|INFO|DEBUG)"
+    "DSMRREADER_LOGLEVEL": "list(ERROR|WARNING|DEBUG)"
   }
 }

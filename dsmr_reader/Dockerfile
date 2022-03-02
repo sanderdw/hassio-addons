@@ -8,8 +8,7 @@ RUN apk add --no-cache jq
 # HOMEASSISTANT Add-On OVERRIDES
 COPY rootfs /
 RUN chmod a+x /etc/cont-init.d/01-set-hassio-vars
-# Fix https://github.com/xirixiz/dsmr-reader-docker/issues/262#issuecomment-1035313756
-COPY dsmrreader/backup.py /app/dsmr_backup/services/backup.py
+COPY config.json /app/ha_addon_version.json
 
 ENV DUID=0
 ENV DGID=0
