@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.1
+
+- As always, backup first!
+- Support for PostgreSQL 14 (such as the TimescaleDB 2.0.0 Addon)
+
 ## 1.1.0
 
 - Update to DSMR-reader v5.1
