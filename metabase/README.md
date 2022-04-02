@@ -1,9 +1,10 @@
 # Home Assistant Add-on: Metabase
 [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fsanderdw%2Fhassio-addons)
+[![Community Forum][forum-shield]][forum]
 
 Meet the easy, open source way for everyone to ask questions and learn from data. See for more information https://www.metabase.com.
 
-![metabase-shield] ![addon-shield] ![aarch64-shield] ![amd64-shield] [![Community Forum][forum-shield]][forum]
+![metabase-shield] ![addon-shield] ![aarch64-shield] ![amd64-shield]
 
 ![Metabase](https://raw.githubusercontent.com/sanderdw/hassio-addons/master/images/metabase.png)
 
@@ -12,7 +13,7 @@ Meet the easy, open source way for everyone to ask questions and learn from data
 
 [metabase-shield]: https://img.shields.io/badge/Metabase%20Version-%200.40.0-purple.svg?style=flat-square
 [addon-shield]: https://img.shields.io/badge/Addon%20Version-%200.3.0-purple.svg?style=flat-square
-[forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=flat-square
+[forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=for-the-badge
 [forum]: https://community.home-assistant.io/t/metabase-add-on-for-home-assistant/286413
 ## Configure the repository
 

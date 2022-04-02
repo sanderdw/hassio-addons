@@ -1,7 +1,8 @@
 # Home Assistant Add-ons: DSMR Reader/Datalogger & Metabase
 [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fsanderdw%2Fhassio-addons)
+[![Community Forum][forum-shield]][forum]
 ## About DSMR Reader/Datalogger
-![Supports aarch64 Architecture][aarch64-shield] ![Supports amd64 Architecture][amd64-shield] ![Supports armhf Architecture][armhf-shield] ![Supports armv7 Architecture][armv7-shield] ![Supports i386 Architecture][i386-shield] [![Community Forum][forum-shield]][forum]
+![Supports aarch64 Architecture][aarch64-shield] ![Supports amd64 Architecture][amd64-shield] ![Supports armhf Architecture][armhf-shield] ![Supports armv7 Architecture][armv7-shield] ![Supports i386 Architecture][i386-shield]
 
 Provide a tool to easily extract, store and visualize data transferred by the DSMR protocol of your smart meter.
 Allow you to export your data to other systems or third parties. Currently supports MQTT for pushing data and an REST API for pulling data.
@@ -20,7 +21,7 @@ See the Metabase webpage (https://www.metabase.com) for more background informat
 [armhf-shield]: https://img.shields.io/badge/armhf-yes-green.svg?style=flat-square
 [armv7-shield]: https://img.shields.io/badge/armv7-yes-green.svg?style=flat-square
 [i386-shield]: https://img.shields.io/badge/i386-yes-green.svg?style=flat-square
-[forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=flat-square
+[forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=for-the-badge
 [forum]: https://community.home-assistant.io/search?q=%40sanderdw%20%23home-assistant-os
 ## Configure the repository
 
