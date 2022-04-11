@@ -19,8 +19,9 @@ CMD [ "/run.sh" ]
 LABEL \
     io.hass.name="Metabase" \
     io.hass.description="Home Assistant Add-on: Metabase" \
+    io.hass.arch="aarch64|amd64|armhf|armv7|i386" \
 #    io.hass.arch="aarch64|amd64" \
-    io.hass.arch="aarch64" \
+#    io.hass.arch="aarch64" \
     io.hass.type="addon" \
     io.hass.version=${version} \
     maintainer="Sander de Wildt <sanderdw@gmail.com>" \
