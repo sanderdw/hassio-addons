@@ -8,7 +8,7 @@ on:
 
 env:
   DOCKER_TARGET_REPO: sanderdw/hassio-addons
-  DOCKERFILE: Dockerfile
+  DOCKERFILE: metabase/Dockerfile
   DOCKER_TARGET_RELEASE: 2022.04.11
 
 jobs:
