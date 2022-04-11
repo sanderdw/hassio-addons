@@ -15,24 +15,24 @@ jobs:
 
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: debian-latest
     strategy:
       matrix:
         include:
           # AMD64
-          - BUILD_FROM: homeassistant/amd64-base-ubuntu:latest
+          - BUILD_FROM: homeassistant/amd64-base-debian:latest
             QEMU_ARCH: x86_64
             S6_ARCH: amd64
             DOCKER_TAG_SUFFIX: amd64
 
           # ARM32V7
-          - BUILD_FROM: homeassistant/armv7-base-ubuntu:latest
+          - BUILD_FROM: homeassistant/armv7-base-debian:latest
             QEMU_ARCH: arm
             S6_ARCH: armhf
             DOCKER_TAG_SUFFIX: arm32v7
 
           # ARM64V8
-          - BUILD_FROM: homeassistant/aarch64-base-ubuntu:latest
+          - BUILD_FROM: homeassistant/aarch64-base-debian:latest
             QEMU_ARCH: aarch64
             S6_ARCH: aarch64
             DOCKER_TAG_SUFFIX: arm64v8
