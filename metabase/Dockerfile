@@ -1,18 +1,23 @@
-# https://developers.home-assistant.io/docs/add-ons/configuration#add-on-dockerfile
-ARG BUILD_FROM
-FROM $BUILD_FROM
+ARG version=1.14.5
 
-# Execute during the build of the image
-ARG TEMPIO_VERSION BUILD_ARCH
-ENV LANG C.UTF-8
+FROM --platform=${BUILDPLATFORM} debian:stable as stage1
+ARG version
+ARG TARGETPLATFORM
+WORKDIR /the/workdir
+RUN \ 
+  case ${TARGETPLATFORM} in \
+    "linux/amd64")  DOWNLOAD_ARCH="x86_64-linux-gnu"  ;; \
+    "linux/arm/v7") DOWNLOAD_ARCH="arm-linux-gnueabihf"  ;; \
+  esac && \
+  apt update && \
+  apt install -y wget && \
+  wget https://github.com/dogecoin/dogecoin/releases/download/v${version}/dogecoin-${version}-${DOWNLOAD_ARCH}.tar.gz && \
+  tar -vxf dogecoin-${version}-${DOWNLOAD_ARCH}.tar.gz && \
+  chmod +x /the/workdir/dogecoin-${version}/bin/dogecoind
 
-RUN apt-get update \
-    && apt-get install -y openjdk-11-jdk openjdk-11-jre
-ADD https://downloads.metabase.com/v0.40.0/metabase.jar /home
-
-ENV MB_DB_TYPE=postgres
-COPY run.sh /
-RUN chmod a+x /run.sh
-
-EXPOSE 3000
-CMD [ "/run.sh" ]
+FROM debian:stable
+ARG version
+COPY --from=stage1 /the/workdir/dogecoin-${version}/bin/dogecoind /app/dogecoind
+VOLUME /data
+EXPOSE 22555
+ENTRYPOINT [ "/app/dogecoind", "-printtoconsole", "-datadir=/data", "-server", "-rpcport=22555" ]
