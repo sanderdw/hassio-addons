@@ -6,8 +6,10 @@ FROM $BUILD_FROM
 ARG TEMPIO_VERSION BUILD_ARCH
 ENV LANG C.UTF-8
 
-RUN apt-get update \
-    && apt-get install -y openjdk-11-jdk openjdk-11-jre
+RUN \
+  apk add --no-cache \
+    openjdk-11-jdk openjdk-11-jre
+
 ADD https://downloads.metabase.com/v0.40.0/metabase.jar /home
 
 ENV MB_DB_TYPE=postgres
