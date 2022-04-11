@@ -21,4 +21,4 @@ schema:
   MB_DB_PASS: "password?"
   MB_DB_HOST: "str?"
   MB_DB_PORT: "str?"
-image: sanderdw/ha-metabase-{arch}
+image: sanderdw/ha-metabase
