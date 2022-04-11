@@ -1,0 +1,23 @@
+# https://developers.home-assistant.io/docs/add-ons/configuration#add-on-config
+name: Metabase
+version: "0.4.0"
+slug: metabase
+description: Meet the easy, open source way for everyone to ask questions and learn from data.
+url: "https://github.com/sanderdw/hassio-addons/blob/master/metabase/README.md"
+arch:
+  - aarch64
+  - amd64
+init: false
+options:
+  MB_DB_DBNAME: "metabase"
+  MB_DB_USER: "postgres"
+  MB_DB_PASS: "homeassistant"
+  MB_DB_HOST: "77b2833f-timescaledb"
+  MB_DB_PORT: "5432"
+schema:
+  MB_DB_DBNAME: "str?"
+  MB_DB_USER: "str?"
+  MB_DB_PASS: "password?"
+  MB_DB_HOST: "str?"
+  MB_DB_PORT: "str?"
+image: "ghcr.io/sanderdw/{arch}-metabase"
