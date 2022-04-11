@@ -1,12 +1,29 @@
-#!/usr/bin/env bashio
+#!/usr/bin/env
 
-bashio::log.info "Welcome to the Home Assistant Add-on: Metabase by Sander de Wildt."
-bashio::log.info "Explore your Home Assistant data at ease."
+#---------------------------------------------------------------------------------------------------------------------------
+# FUNCTIONS
+#---------------------------------------------------------------------------------------------------------------------------
+function _info() { printf "\\r[ \\033[00;34mINFO\\033[0m ] %s\\n" "$@"; }
 
-export MB_DB_DBNAME=$(bashio::config 'MB_DB_DBNAME')
-export MB_DB_USER=$(bashio::config 'MB_DB_USER')
-export MB_DB_PASS=$(bashio::config 'MB_DB_PASS')
-export MB_DB_HOST=$(bashio::config 'MB_DB_HOST')
-export MB_DB_PORT=$(bashio::config 'MB_DB_PORT')
+#---------------------------------------------------------------------------------------------------------------------------
+# HOMEASSISTANT Add-On OVERRIDES
+#---------------------------------------------------------------------------------------------------------------------------
+
+function _hass {
+  _info "Welcome to the Home Assistant Add-on: Metabase by Sander de Wildt."
+  _info "Explore your Home Assistant data at ease."
+  CONFIG_PATH=/data/options.json
+  export MB_DB_DBNAME=$(jq --raw-output '.MB_DB_DBNAME' $CONFIG_PATH)
+  export MB_DB_USER=$(jq --raw-output '.MB_DB_USER' $CONFIG_PATH)
+  export MB_DB_PASS=$(jq --raw-output '.MB_DB_PASS' $CONFIG_PATH)
+  export MB_DB_HOST=$(jq --raw-output '.MB_DB_HOST' $CONFIG_PATH)
+  export MB_DB_PORT=$(jq --raw-output '.MB_DB_PORT' $CONFIG_PATH)
+}
+
+#---------------------------------------------------------------------------------------------------------------------------
+# MAIN
+#---------------------------------------------------------------------------------------------------------------------------
+
+_hass
 
 java -jar  ./home/metabase.jar
