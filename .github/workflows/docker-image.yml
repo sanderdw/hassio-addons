@@ -40,7 +40,8 @@ jobs:
         with:
           # list of Docker images to use as base name for tags
           images: |
-            sanderdw/metabase
+            sanderdw/ha-metabase-amd64
+            sanderdw/ha-metabase-aarch64
           # Docker tags based on the following events/attributes
           tags: |
             type=schedule
@@ -50,7 +51,6 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
             type=sha
-            type=raw,value=metabase-aarch64
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
