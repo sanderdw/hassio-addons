@@ -14,10 +14,6 @@ on:
       - 'master'
       - 'develop'
 
-# permissions are needed if pushing to ghcr.io
-permissions:
-  packages: write
-
 jobs:
   build:
     runs-on: ubuntu-latest

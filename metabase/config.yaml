@@ -20,4 +20,4 @@ schema:
   MB_DB_PASS: "password?"
   MB_DB_HOST: "str?"
   MB_DB_PORT: "str?"
-image: "ghcr.io/sanderdw/{arch}-metabase"
+image: "sanderdw/metabase"
