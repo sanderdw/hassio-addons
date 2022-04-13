@@ -10,7 +10,8 @@ COPY run.sh /
 RUN chmod a+x /run.sh
 
 FROM debian:stable
-COPY --from=build /usr/bin /usr/bin
+RUN apt-get update \
+    && apt-get install -y openjdk-11-jdk openjdk-11-jre jq
 COPY --from=build /home /home
 COPY --from=build /run.sh /run.sh
 ENV MB_DB_TYPE=postgres

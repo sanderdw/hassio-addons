@@ -1,4 +1,4 @@
-name: Build
+name: Metabase
 
 # Controls when the workflow will run
 on:
@@ -15,7 +15,7 @@ on:
       - 'develop'
 
 jobs:
-  build:
+  metabase:
     runs-on: ubuntu-latest
     steps:
       # Get the repository's code
