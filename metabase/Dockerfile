@@ -1,17 +1,16 @@
-ARG version=0.4.0
-FROM --platform=${BUILDPLATFORM} debian:stable
-ARG version
 
-ENV LANG C.UTF-8
-
+FROM --platform=$BUILDPLATFORM debian:stable AS build
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
+RUN echo "I am running on $BUILDPLATFORM, building for $TARGETPLATFORM" > /log
 RUN apt-get update \
     && apt-get install -y openjdk-11-jdk openjdk-11-jre jq
 ADD https://downloads.metabase.com/v0.42.4/metabase.jar /home
-
-ENV MB_DB_TYPE=postgres
 COPY run.sh /
 RUN chmod a+x /run.sh
-
+FROM debian:stable
+COPY --from=build /home /home
+ENV MB_DB_TYPE=postgres
 EXPOSE 3000
 CMD [ "/run.sh" ]
 
@@ -21,7 +20,7 @@ LABEL \
     io.hass.description="Home Assistant Add-on: Metabase" \
     io.hass.arch="aarch64|amd64|armv7|armhf" \
     io.hass.type="addon" \
-    io.hass.version=${version} \
+    io.hass.version="develop" \
     maintainer="Sander de Wildt <sanderdw@gmail.com>" \
     org.opencontainers.image.title="Metabase" \
     org.opencontainers.image.description="Home Assistant Add-on: Metabase" \
@@ -31,4 +30,4 @@ LABEL \
     org.opencontainers.image.url="https://github.com/sanderdw/hassio-addons" \
     org.opencontainers.image.source="https://github.com/sanderdw/hassio-addons" \
     org.opencontainers.image.documentation="https://raw.githubusercontent.com/sanderdw/hassio-addons/master/README.md" \
-    org.opencontainers.image.version=${version}
+    org.opencontainers.image.version="develop"
