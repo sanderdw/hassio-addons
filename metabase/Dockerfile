@@ -10,6 +10,7 @@ COPY run.sh /
 RUN chmod a+x /run.sh
 
 FROM debian:stable
+COPY --from=build /usr/bin /usr/bin
 COPY --from=build /home /home
 COPY --from=build /run.sh /run.sh
 ENV MB_DB_TYPE=postgres
