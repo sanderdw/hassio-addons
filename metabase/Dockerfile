@@ -8,8 +8,10 @@ RUN apt-get update \
 ADD https://downloads.metabase.com/v0.42.4/metabase.jar /home
 COPY run.sh /
 RUN chmod a+x /run.sh
+
 FROM debian:stable
 COPY --from=build /home /home
+COPY --from=build /run.sh /run.sh
 ENV MB_DB_TYPE=postgres
 EXPOSE 3000
 CMD [ "/run.sh" ]
