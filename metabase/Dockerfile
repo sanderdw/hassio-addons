@@ -1,4 +1,3 @@
-
 FROM --platform=$BUILDPLATFORM openjdk:19-buster AS build
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
