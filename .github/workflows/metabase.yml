@@ -55,7 +55,7 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
-            type=raw,value=$HA_RELEASE
+            type=raw,value="$HA_RELEASE"
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
@@ -65,4 +65,4 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            HA_RELEASE=$HA_RELEASE
+            HA_RELEASE="$HA_RELEASE"
