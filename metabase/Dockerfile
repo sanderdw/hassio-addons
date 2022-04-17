@@ -1,5 +1,5 @@
 
-FROM --platform=$BUILDPLATFORM openjdk:19-oracle AS build
+FROM --platform=$BUILDPLATFORM openjdk:19-buster AS build
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
 RUN echo "I am running on $BUILDPLATFORM, building for $TARGETPLATFORM" > /log
@@ -7,7 +7,7 @@ ADD https://downloads.metabase.com/v0.42.4/metabase.jar /home
 COPY run.sh /
 RUN chmod a+x /run.sh
 
-FROM openjdk:19-oracle
+FROM openjdk:19-buster
 RUN apt-get update \
     && apt-get install -y jq
 COPY --from=build /home /home
