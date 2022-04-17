@@ -24,7 +24,7 @@ LABEL \
     io.hass.description="Home Assistant Add-on: Metabase" \
     io.hass.arch="aarch64|amd64" \
     io.hass.type="addon" \
-    io.hass.version=${HA_RELEASE} \
+    io.hass.version=$HA_RELEASE \
     maintainer="Sander de Wildt <sanderdw@gmail.com>" \
     org.opencontainers.image.title="Metabase" \
     org.opencontainers.image.description="Home Assistant Add-on: Metabase" \
@@ -34,4 +34,4 @@ LABEL \
     org.opencontainers.image.url="https://github.com/sanderdw/hassio-addons" \
     org.opencontainers.image.source="https://github.com/sanderdw/hassio-addons" \
     org.opencontainers.image.documentation="https://raw.githubusercontent.com/sanderdw/hassio-addons/master/README.md" \
-    org.opencontainers.image.version=${HA_RELEASE}
+    org.opencontainers.image.version=$HA_RELEASE
