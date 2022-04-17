@@ -9,6 +9,8 @@ on:
       - 'develop'
     tags:
       - 'v*.*.*'
+    paths:
+      - 'metabase/Dockerfile'
   pull_request:
     branches:
       - 'master'
