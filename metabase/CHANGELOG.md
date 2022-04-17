@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.0
+
+- Update to Metabase 0.42.4
+- Faster install time
+
 ## 0.3.0
 
 - Update to Metabase 0.40.0
