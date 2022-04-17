@@ -12,7 +12,6 @@ on:
     paths:
       - 'metabase/Dockerfile'
       - 'metabase/run.sh'
-      - '.github/workflows/metabase.yml'
 #  pull_request:
 #    branches:
 #      - 'master'
