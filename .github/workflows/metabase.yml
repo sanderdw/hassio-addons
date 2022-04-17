@@ -34,8 +34,8 @@ jobs:
         uses: CumulusDS/get-yaml-paths-action@v0.1.0
         with:
           file: metabase/config.yaml
-          ha_release: version
-      - run: "echo ha_release is ${{ steps.data.outputs.ha_release }}"
+          ha-release: version
+      - run: "echo ha_release is ${{ steps.data.outputs.ha-release }}"
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       # https://github.com/docker/setup-buildx-action
