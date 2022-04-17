@@ -26,6 +26,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Get the repository's code
+      - name: Get the version
+        id: data
+        uses: CumulusDS/get-yaml-paths-action@v0.1.0
+        with:
+          file: metabase/config.yaml
+          ha_release: version
+      - run: "echo ha_release is ${{ steps.data.outputs.ha_release }}"
       - name: Checkout
         uses: actions/checkout@v2
       # https://github.com/docker/setup-qemu-action
