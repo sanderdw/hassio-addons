@@ -11,6 +11,7 @@ on:
       - 'v*.*.*'
     paths:
       - 'metabase/Dockerfile'
+      - 'metabase/run.sh'
   pull_request:
     branches:
       - 'master'
