@@ -10,6 +10,7 @@ COPY run.sh /
 RUN chmod a+x /run.sh
 
 FROM openjdk:19-buster
+ARG HA_RELEASE
 RUN echo "final - Working on the following addon release: $HA_RELEASE"
 RUN apt-get update \
     && apt-get install -y jq
