@@ -11,7 +11,7 @@ RUN chmod a+x /run.sh
 
 FROM openjdk:19-buster
 RUN apt-get update \
-    && apt-get install -y jq
+    && apt-get install -y jq yq
 COPY --from=build /home /home
 COPY --from=build /run.sh /run.sh
 ENV MB_DB_TYPE=postgres

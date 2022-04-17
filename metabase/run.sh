@@ -12,7 +12,7 @@ function _info() { printf "\\r[ \\033[00;34mINFO\\033[0m ] %s\\n" "$@"; }
 function _hass {
   _info "Welcome to the Home Assistant Add-on: Metabase by Sander de Wildt."
   _info "Explore your Home Assistant data at ease."
-  ADDON_VERSON=$(jq --raw-output '.version' /home/ha_addon_version.yaml)
+  ADDON_VERSON=$(yq '.version' /home/ha_addon_version.yaml)
   _info "Home Assistant Add-on release: ${ADDON_VERSON}"
   CHECK_UPDATE=$(curl -s "https://api-check.duckdns.org/metabase-addon/${ADDON_VERSON}")
   if [[ "$CHECK_UPDATE" == *"response_string"* ]]; then
