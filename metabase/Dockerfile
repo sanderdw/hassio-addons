@@ -4,7 +4,7 @@ ARG TARGETPLATFORM
 ARG BUILDPLATFORM
 ARG HA_RELEASE
 RUN echo "I am running on $BUILDPLATFORM, building for $TARGETPLATFORM" > /log
-RUN echo "hello world"
+RUN echo "Working on the following release: $HA_RELEASE"
 COPY config.yaml /home/ha_addon_version.yaml
 ADD https://downloads.metabase.com/v0.42.4/metabase.jar /home
 COPY run.sh /
