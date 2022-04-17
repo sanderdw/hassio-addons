@@ -4,13 +4,12 @@
 
 Meet the easy, open source way for everyone to ask questions and learn from data. See for more information https://www.metabase.com.
 
-![metabase-shield] ![addon-shield] ![aarch64-shield] ![amd64-shield] ![armv7-shield]
+![metabase-shield] ![addon-shield] ![aarch64-shield] ![amd64-shield]
 
 ![Metabase](https://raw.githubusercontent.com/sanderdw/hassio-addons/master/images/metabase.png)
 
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg?style=flat-square
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg?style=flat-square
-[armv7-shield]: https://img.shields.io/badge/armv7-yes-green.svg?style=flat-square
 
 [metabase-shield]: https://img.shields.io/badge/Metabase%20Version-%200.42.4-purple.svg?style=flat-square
 [addon-shield]: https://img.shields.io/badge/Addon%20Version-%200.4.0-purple.svg?style=flat-square
