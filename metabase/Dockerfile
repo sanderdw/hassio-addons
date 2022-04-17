@@ -1,19 +1,12 @@
-
-FROM --platform=$BUILDPLATFORM debian:stable AS build
+FROM --platform=$BUILDPLATFORM debian:stable
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
 RUN echo "I am running on $BUILDPLATFORM, building for $TARGETPLATFORM" > /log
-#RUN apt-get update \
-#    && apt-get install -y openjdk-11-jdk openjdk-11-jre jq
+RUN apt-get update \
+    && apt-get install -y openjdk-11-jdk openjdk-11-jre jq
 ADD https://downloads.metabase.com/v0.42.4/metabase.jar /home
 COPY run.sh /
 RUN chmod a+x /run.sh
-
-FROM debian:stable
-RUN apt-get update \
-    && apt-get install -y openjdk-11-jdk openjdk-11-jre jq
-COPY --from=build /home /home
-COPY --from=build /run.sh /run.sh
 ENV MB_DB_TYPE=postgres
 EXPOSE 3000
 CMD [ "/run.sh" ]
@@ -22,7 +15,7 @@ CMD [ "/run.sh" ]
 LABEL \
     io.hass.name="Metabase" \
     io.hass.description="Home Assistant Add-on: Metabase" \
-    io.hass.arch="aarch64|amd64|armv7|armhf" \
+    io.hass.arch="aarch64|amd64|armv7" \
     io.hass.type="addon" \
     io.hass.version="develop" \
     maintainer="Sander de Wildt <sanderdw@gmail.com>" \
