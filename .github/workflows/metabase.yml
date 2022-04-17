@@ -12,10 +12,10 @@ on:
     paths:
       - 'metabase/Dockerfile'
       - 'metabase/run.sh'
-  pull_request:
-    branches:
-      - 'master'
-      - 'develop'
+#  pull_request:
+#    branches:
+#      - 'master'
+#      - 'develop'
 
 jobs:
   metabase:
