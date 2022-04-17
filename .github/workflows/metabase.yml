@@ -17,6 +17,9 @@ on:
 #      - 'master'
 #      - 'develop'
 
+env:
+  HA_RELEASE: 0.4.0
+
 jobs:
   metabase:
     runs-on: ubuntu-latest
@@ -52,6 +55,7 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
+            type=raw,value=${HA_RELEASE}
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
@@ -60,3 +64,5 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            HA_RELEASE=${HA_RELEASE}
