@@ -1,5 +1,5 @@
 
-FROM --platform=$BUILDPLATFORM debian:stable AS build
+FROM --platform=$BUILDPLATFORM openjdk:19-oracle AS build
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
 RUN echo "I am running on $BUILDPLATFORM, building for $TARGETPLATFORM" > /log
@@ -7,9 +7,9 @@ ADD https://downloads.metabase.com/v0.42.4/metabase.jar /home
 COPY run.sh /
 RUN chmod a+x /run.sh
 
-FROM debian:stable
+FROM openjdk:19-oracle
 RUN apt-get update \
-    && apt-get install -y openjdk-11-jdk openjdk-11-jre jq
+    && apt-get install -y jq
 COPY --from=build /home /home
 COPY --from=build /run.sh /run.sh
 ENV MB_DB_TYPE=postgres
