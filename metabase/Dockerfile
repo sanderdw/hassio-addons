@@ -3,8 +3,8 @@ FROM --platform=$BUILDPLATFORM debian:stable AS build
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
 RUN echo "I am running on $BUILDPLATFORM, building for $TARGETPLATFORM" > /log
-RUN apt-get update \
-    && apt-get install -y openjdk-11-jdk openjdk-11-jre jq
+#RUN apt-get update \
+#    && apt-get install -y openjdk-11-jdk openjdk-11-jre jq
 ADD https://downloads.metabase.com/v0.42.4/metabase.jar /home
 COPY run.sh /
 RUN chmod a+x /run.sh
