@@ -29,21 +29,21 @@ jobs:
             QEMU_ARCH: x86_64
 
           # ARM32V6
-          - DOCKER_TAG_SUFFIX: arm32v6
+          - DOCKER_TAG_SUFFIX: armhf
             S6_ARCH: armhf
             BASE_IMAGE: xirixiz/dsmr-reader-docker:arm32v6-5.1.0-2022.04.01
             PLATFORMS: linux/arm/v6
             QEMU_ARCH: arm
 
           # ARM32V7
-          - DOCKER_TAG_SUFFIX: arm32v7
+          - DOCKER_TAG_SUFFIX: armv7
             S6_ARCH: armhf
             BASE_IMAGE: xirixiz/dsmr-reader-docker:arm32v7-5.1.0-2022.04.01
             PLATFORMS: linux/arm/v7
             QEMU_ARCH: arm
 
           # ARM64V8
-          - DOCKER_TAG_SUFFIX: arm64v8
+          - DOCKER_TAG_SUFFIX: aarch64
             S6_ARCH: aarch64
             BASE_IMAGE: xirixiz/dsmr-reader-docker:arm64v8-5.1.0-2022.04.01
             PLATFORMS: linux/arm64
