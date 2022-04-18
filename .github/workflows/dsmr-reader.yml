@@ -13,7 +13,6 @@ on:
       - 'dsmr_reader/Dockerfile'
       - 'dsmr_reader/rootfs/etc/cont-init.d/01-set-hassio-vars'
       - '.github/workflows/dsmr-reader.yml'
-      - 'dsmr_reader/config.json'
 
 jobs:
   dsmr-reader:

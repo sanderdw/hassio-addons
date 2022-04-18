@@ -1,8 +1,8 @@
 # Changelog
 
-## develop
+## 1.1.2
 
-- Github Actions
+- Faster install time
 
 ## 1.1.1
 
