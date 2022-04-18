@@ -25,7 +25,7 @@ jobs:
       - name: Get the version from config.json
         id: data
         run: |
-          JSON=$(cat ./dsmr_reader/build.json)
+          JSON=$(cat ./dsmr_reader/config.json)
           echo "::set-output name=data::${JSON//'%'/'%25'}"
       - name: DSMR addon release
         run: "echo DSMR addon release: ${{ steps.data.outputs.HA_RELEASE }}"
