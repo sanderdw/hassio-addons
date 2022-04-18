@@ -1,0 +1,69 @@
+name: DSMR Reader
+
+# Controls when the workflow will run
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'master'
+      - 'develop'
+    tags:
+      - 'v*.*.*'
+    paths:
+      - 'dsmr_reader/Dockerfile'
+      - 'dsmr_reader/rootfs/etc/cont-init.d/01-set-hassio-vars'
+      - '.github/workflows/dsmr-reader.yml'
+
+jobs:
+  dsmr-reader:
+    runs-on: ubuntu-latest
+    steps:
+      # Get the repository's code
+      - name: Checkout
+        uses: actions/checkout@v2
+      # https://github.com/docker/setup-qemu-action
+      - name: Get the version from config.json
+        id: data
+        run: |
+          JSON=$(cat dsmr_reader/build.json)
+          echo "::set-output name=data::${JSON//'%'/'%25'}"
+      - name: DSMR addon release
+        run: "echo DSMR addon release: ${{ steps.data.outputs.HA_RELEASE }}"
+#      - name: Set up QEMU
+#        uses: docker/setup-qemu-action@v1
+#      # https://github.com/docker/setup-buildx-action
+#      - name: Set up Docker Buildx
+#        id: buildx
+#        uses: docker/setup-buildx-action@v1
+#      - name: Login to Docker Hub
+#        if: github.event_name != 'pull_request'
+#        uses: docker/login-action@v1
+#        with:
+#          username: ${{ secrets.DOCKERHUB_USERNAME }}
+#          password: ${{ secrets.DOCKERHUB_TOKEN }}
+#      - name: Docker meta
+#        id: meta # you'll use this in the next step
+#        uses: docker/metadata-action@v3
+#        with:
+#          # list of Docker images to use as base name for tags
+#          images: |
+#            sanderdw/ha-dsmr-reader
+#          # Docker tags based on the following events/attributes
+#          tags: |
+#            type=schedule
+#            type=ref,event=branch
+#            type=ref,event=pr
+#            type=semver,pattern={{version}}
+#            type=semver,pattern={{major}}.{{minor}}
+#            type=semver,pattern={{major}}
+#            type=raw,value=${{ steps.data.outputs.HA_RELEASE }}
+#      - name: Build and push
+#        uses: docker/build-push-action@v2
+#        with:
+#          context: ./dsmr_reader
+#          platforms: linux/amd64,linux/arm64
+#          push: ${{ github.event_name != 'pull_request' }}
+#          tags: ${{ steps.meta.outputs.tags }}
+#          labels: ${{ steps.meta.outputs.labels }}
+#          build-args: |
+#            HA_RELEASE=${{ steps.data.outputs.HA_RELEASE }}
