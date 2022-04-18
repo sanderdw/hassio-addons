@@ -25,13 +25,10 @@ jobs:
       - name: Get the version from config.json
         id: data
         run: |
-          content=`cat ./dsmr_reader/config.json`
-          content="${content//'%'/'%25'}"
-          content="${content//$'\n'/'%0A'}"
-          content="${content//$'\r'/'%0D'}"
-          echo "::set-output name=packageJson::$content"
+          JSON=$(cat ./dsmr_reader/config.json)
+          echo "::set-output name=data::${JSON//'%'/'%25'}"
       - name: DSMR addon release
-        run: echo "${{fromJson(steps.set_var.outputs.packageJson).version}}"
+        run: "echo DSMR addon release: ${{fromJson(steps.data.outputs.data).version}}"
 #      - name: Set up QEMU
 #        uses: docker/setup-qemu-action@v1
 #      # https://github.com/docker/setup-buildx-action
