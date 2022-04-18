@@ -36,7 +36,7 @@ jobs:
 
           # ARM32V7
           - DOCKER_TAG_SUFFIX: armv7
-            S6_ARCH: armhf
+            S6_ARCH: armv7
             BASE_IMAGE: xirixiz/dsmr-reader-docker:arm32v7-5.1.0-2022.04.01
             PLATFORMS: linux/arm/v7
             QEMU_ARCH: arm
