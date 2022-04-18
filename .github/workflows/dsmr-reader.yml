@@ -79,7 +79,7 @@ jobs:
         with:
           # list of Docker images to use as base name for tags
           images: |
-            sanderdw/ha-dsmr-reader
+            sanderdw/ha-dsmr-reader-${{ matrix.DOCKER_TAG_SUFFIX }}
           # Docker tags based on the following events/attributes
           tags: |
             type=schedule
@@ -88,7 +88,7 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
-            type=raw,value=${{ matrix.DOCKER_TAG_SUFFIX }}-${{ steps.data.outputs.HA_RELEASE }}
+            type=raw,value=${{ steps.data.outputs.HA_RELEASE }}
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
