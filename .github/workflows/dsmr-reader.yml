@@ -21,32 +21,33 @@ jobs:
       matrix:
         include:
           # AMD64
-          - BASE_IMAGE: xirixiz/dsmr-reader-docker:amd64-5.1.0-2022.04.01
+          - DOCKER_TAG_SUFFIX: amd64
+            S6_ARCH: amd64
+            BASE_IMAGE: xirixiz/dsmr-reader-docker:amd64-5.1.0-2022.04.01
             PLATFORMS: linux/amd64
             QEMU_ARCH: x86_64
-            S6_ARCH: amd64
-            DOCKER_TAG_SUFFIX: amd64
 
           # ARM32V6
-          - BASE_IMAGE: xirixiz/dsmr-reader-docker:arm32v6-5.1.0-2022.04.01
+          - DOCKER_TAG_SUFFIX: arm32v6
+            S6_ARCH: armhf
+            BASE_IMAGE: xirixiz/dsmr-reader-docker:arm32v6-5.1.0-2022.04.01
             PLATFORMS: linux/arm/v6
             QEMU_ARCH: arm
-            S6_ARCH: armhf
-            DOCKER_TAG_SUFFIX: arm32v6
 
           # ARM32V7
-          - BASE_IMAGE: xirixiz/dsmr-reader-docker:arm32v7-5.1.0-2022.04.01
+          - DOCKER_TAG_SUFFIX: arm32v7
+            S6_ARCH: armhf
+            BASE_IMAGE: xirixiz/dsmr-reader-docker:arm32v7-5.1.0-2022.04.01
             PLATFORMS: linux/arm/v7
             QEMU_ARCH: arm
-            S6_ARCH: armhf
-            DOCKER_TAG_SUFFIX: arm32v7
 
           # ARM64V8
-          - BASE_IMAGE: xirixiz/dsmr-reader-docker:arm64v8-5.1.0-2022.04.01
+          - DOCKER_TAG_SUFFIX: arm64v8
+            S6_ARCH: aarch64
+            BASE_IMAGE: xirixiz/dsmr-reader-docker:arm64v8-5.1.0-2022.04.01
             PLATFORMS: linux/arm64
             QEMU_ARCH: aarch64
-            S6_ARCH: aarch64
-            DOCKER_TAG_SUFFIX: arm64v8
+
     steps:
       # Get the repository's code
       - name: Checkout
@@ -86,7 +87,7 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
-            type=raw,value=${{ matrix.S6_ARCH }}-${{ steps.data.outputs.HA_RELEASE }}
+            type=raw,value=${{ matrix.DOCKER_TAG_SUFFIX }}-${{ steps.data.outputs.HA_RELEASE }}
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
