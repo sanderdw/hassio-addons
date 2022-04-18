@@ -25,10 +25,11 @@ jobs:
       - name: Get the version from config.json
         id: data
         run: |
-          JSON=$(cat ./dsmr_reader/config.json)
-          echo "::set-output name=matrix::${JSON}"
+          echo 'PACKAGE_JSON<<EOF' >> $GITHUB_ENV
+          cat ./dsmr_reader/config.json >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
       - name: DSMR addon release
-        run: "echo DSMR addon release: ${{fromJson(steps.data.outputs.matrix)}}"
+        run: echo '${{ fromJson(env.PACKAGE_JSON).version }}'
 #      - name: Set up QEMU
 #        uses: docker/setup-qemu-action@v1
 #      # https://github.com/docker/setup-buildx-action
