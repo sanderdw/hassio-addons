@@ -26,9 +26,9 @@ jobs:
         id: data
         run: |
           JSON=$(cat ./dsmr_reader/config.json)
-          echo "::set-output name=data::${JSON//'%'/'%25'}"
+          echo "::set-output name=matrix::${JSON//'%'/'%25'}"
       - name: DSMR addon release
-        run: "echo DSMR addon release: ${{fromJson(steps.data.outputs.data)}}"
+        run: "echo DSMR addon release: ${{fromJson(steps.data.outputs.matrix)}}"
 #      - name: Set up QEMU
 #        uses: docker/setup-qemu-action@v1
 #      # https://github.com/docker/setup-buildx-action
