@@ -31,4 +31,4 @@ LABEL \
     org.opencontainers.image.url="https://github.com/sanderdw/hassio-addons" \
     org.opencontainers.image.source="https://github.com/sanderdw/hassio-addons" \
     org.opencontainers.image.documentation="https://raw.githubusercontent.com/sanderdw/hassio-addons/master/README.md" \
-    org.opencontainers.image.version=$HA_RELEASE
+    org.opencontainers.image.version=""
