@@ -8,12 +8,12 @@ Provide a tool to easily extract, store and visualize data transferred by the DS
 
 Credits to Dennis Siemensma for creating the DSMR Reader software (https://dsmr-reader.readthedocs.io) and Bram van Dartel for creating the underlying container image (https://github.com/xirixiz/dsmr-reader-docker).
 
-![dsmr-shield] ![addon-shield] ![aarch64-shield] ![amd64-shield] ![armv7-shield] ![armhf-shield] 
+[![GitHub Build Status](https://github.com/sanderdw/hassio-addons/workflows/DSMR%20Reader/badge.svg?logo=github)](https://github.com/sanderdw/hassio-addons/actions) ![dsmr-shield] ![addon-shield] ![aarch64-shield] ![amd64-shield] ![armv7-shield] ![armhf-shield] 
 
 ![DSMR Reader](https://github.com/sanderdw/hassio-addons/raw/master/images/dsmr_reader.png)
 
 [dsmr-shield]: https://img.shields.io/badge/DSMR%20Reader%20Version-%205.1-purple.svg?style=flat-square
-[addon-shield]: https://img.shields.io/badge/Addon%20Version-%201.1.1-purple.svg?style=flat-square
+[addon-shield]: https://img.shields.io/badge/Addon%20Version-%201.1.2-purple.svg?style=flat-square
 
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg?style=flat-square
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg?style=flat-square
