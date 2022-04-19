@@ -4,7 +4,7 @@
 
 Meet the easy, open source way for everyone to ask questions and learn from data. See for more information https://www.metabase.com.
 
-![metabase-shield] ![addon-shield] ![aarch64-shield] ![amd64-shield]
+[![GitHub Build Status](https://github.com/sanderdw/hassio-addons/workflows/Metabase/badge.svg?logo=github)](https://github.com/sanderdw/hassio-addons/actions) ![metabase-shield] ![addon-shield] ![aarch64-shield] ![amd64-shield]
 
 ![Metabase](https://raw.githubusercontent.com/sanderdw/hassio-addons/master/images/metabase.png)
 
