@@ -2,7 +2,8 @@
 
 ## 1.1.2
 
-- Faster install time
+- As always, backup first! Uninstall and reinstall if "image does not exist" pops up.
+- Faster install time (moved to Github Actions)
 
 ## 1.1.1
 
@@ -37,7 +38,7 @@
 
 ## 0.7.1 (Beta)
 
-- Try to fix underlying image, don't update yet! 
+- Try to fix underlying image, don't update yet!
 
 ## 0.7.0
 
