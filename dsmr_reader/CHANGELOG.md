@@ -2,7 +2,8 @@
 
 ## 1.1.2
 
-- As always, backup first! Uninstall and reinstall if "image does not exist" pops up.
+- As always, backup first!
+- Uninstall and reinstall/reconfigure if "image does not exist" error pops up.
 - Faster install time (moved to Github Actions)
 
 ## 1.1.1
