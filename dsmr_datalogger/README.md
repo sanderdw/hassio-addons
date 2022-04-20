@@ -19,7 +19,7 @@ The datalogger only option of DSMR (https://dsmr-reader.readthedocs.io). This wi
 See config instructions here: https://github.com/sanderdw/hassio-addons
 
 ## Prepare API
-Make sure to prepare the API at the DSMR-reader instance you’ll forward the telegrams to. For more information configuring it, see the API settings (https://dsmr-reader.readthedocs.io/en/v4/api.html).
+Make sure to prepare the API at the DSMR-reader instance you’ll forward the telegrams to. For more information configuring it, see the API settings (https://dsmr-reader.readthedocs.io/en/v5/reference/api.html).
 
 ## Configure the add-on
 
