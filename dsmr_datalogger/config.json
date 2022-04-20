@@ -10,7 +10,7 @@
   "boot": "auto",
   "uart": true,
   "options": {
-    "DATALOGGER_DEBUG_LOGGING": true,
+    "DATALOGGER_DEBUG_LOGGING": false,
     "DATALOGGER_TIMEOUT": 20,
     "DATALOGGER_SLEEP": 0.5,
     "DATALOGGER_INPUT_METHOD": "serial",
@@ -32,11 +32,11 @@
     "DATALOGGER_API_HOSTS": "str",
     "DATALOGGER_API_KEYS": "str",
     "DATALOGGER_MIN_SLEEP_FOR_RECONNECT": "float",
-    "DATALOGGER_SERIAL_PORT": "int",
+    "DATALOGGER_SERIAL_PORT": "str",
     "DATALOGGER_SERIAL_BAUDRATE": "int",
     "DATALOGGER_SERIAL_BYTESIZE": "int",
     "DATALOGGER_SERIAL_PARITY": "str",
-    "DATALOGGER_NETWORK_HOST": "str",
-    "DATALOGGER_NETWORK_PORT": "int"
+    "DATALOGGER_NETWORK_HOST": "str?",
+    "DATALOGGER_NETWORK_PORT": "int?"
   }
 }
