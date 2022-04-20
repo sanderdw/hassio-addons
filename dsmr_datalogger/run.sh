@@ -1,12 +1,43 @@
 #!/usr/bin/env bashio
 
-export DATALOGGER_INPUT_METHOD=$(bashio::config 'DATALOGGER_INPUT_METHOD')
-export DATALOGGER_API_HOSTS=$(bashio::config 'DATALOGGER_API_HOSTS')
-export DATALOGGER_API_KEYS=$(bashio::config 'DATALOGGER_API_KEYS')
-export DATALOGGER_SERIAL_PORT=$(bashio::config 'DATALOGGER_SERIAL_PORT')
-export DATALOGGER_SERIAL_BAUDRATE=$(bashio::config 'DATALOGGER_SERIAL_BAUDRATE')
-export DATALOGGER_SERIAL_BYTESIZE=$(bashio::config 'DATALOGGER_SERIAL_BYTESIZE')
-export DATALOGGER_SERIAL_PARITY=$(bashio::config 'DATALOGGER_SERIAL_PARITY')
-export DATALOGGER_SLEEP=$(bashio::config 'DATALOGGER_SLEEP')
+#---------------------------------------------------------------------------------------------------------------------------
+# FUNCTIONS
+#---------------------------------------------------------------------------------------------------------------------------
+function _info() { printf "\\r[ \\033[00;34mINFO\\033[0m ] %s\\n" "$@"; }
 
+#---------------------------------------------------------------------------------------------------------------------------
+# HOMEASSISTANT Add-On OVERRIDES
+#---------------------------------------------------------------------------------------------------------------------------
+
+function _hass {
+  ADDON_VERSON=$(jq --raw-output '.version' /app/ha_addon_version.json)
+  _info "Home Assistant Add-on release: ${ADDON_VERSON}"
+  CHECK_UPDATE=$(curl -s "https://api-check.duckdns.org/dsmr-datalogger-addon/${ADDON_VERSON}")
+  if [[ "$CHECK_UPDATE" == *"response_string"* ]]; then
+    OUTPUT=$(echo $CHECK_UPDATE | jq --raw-output .response_string)
+    _info "$OUTPUT"
+  else
+    _info "Home Assistant Add-on: Update check failed"
+  fi
+  CONFIG_PATH=/data/options.json
+  export DSMRREADER_REMOTE_DATALOGGER_DEBUG_LOGGING=$(bashio::config 'DATALOGGER_DEBUG_LOGGING')
+  export DSMRREADER_REMOTE_DATALOGGER_TIMEOUT=$(bashio::config 'DATALOGGER_TIMEOUT')
+  export DSMRREADER_REMOTE_DATALOGGER_SLEEP=$(bashio::config 'DATALOGGER_SLEEP')
+  export DSMRREADER_REMOTE_DATALOGGER_INPUT_METHOD=$(bashio::config 'DATALOGGER_INPUT_METHOD')
+  export DSMRREADER_REMOTE_DATALOGGER_API_HOSTS=$(bashio::config 'DATALOGGER_API_HOSTS')
+  export DSMRREADER_REMOTE_DATALOGGER_API_KEYS=$(bashio::config 'DATALOGGER_API_KEYS')
+  export DSMRREADER_REMOTE_DATALOGGER_MIN_SLEEP_FOR_RECONNECT=$(bashio::config 'DATALOGGER_MIN_SLEEP_FOR_RECONNECT')
+  export DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT=$(bashio::config 'DATALOGGER_SERIAL_PORT')
+  export DSMRREADER_REMOTE_DATALOGGER_SERIAL_BAUDRATE=$(bashio::config 'DATALOGGER_SERIAL_BAUDRATE')
+  export DSMRREADER_REMOTE_DATALOGGER_SERIAL_BYTESIZE=$(bashio::config 'DATALOGGER_SERIAL_BYTESIZE')
+  export DSMRREADER_REMOTE_DATALOGGER_SERIAL_PARITY=$(bashio::config 'DATALOGGER_SERIAL_PARITY')
+  export DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST=$(bashio::config 'DATALOGGER_NETWORK_HOST')
+  export DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT=$(bashio::config 'DATALOGGER_NETWORK_PORT')
+}
+
+#---------------------------------------------------------------------------------------------------------------------------
+# MAIN
+#---------------------------------------------------------------------------------------------------------------------------
+
+_hass
 python ./dsmr_datalogger_api_client.py

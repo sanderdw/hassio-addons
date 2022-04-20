@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.0
+
+- As always, backup first!
+- Refactor for DSMR Reader v5
+- Uninstall and reinstall/reconfigure if "image does not exist" error pops up.
+- Faster install time (moved to Github Actions)
+
 ## 1.0.3
 
 - Support for DATALOGGER_SLEEP
