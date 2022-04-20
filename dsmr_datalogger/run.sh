@@ -41,3 +41,4 @@ function _hass {
 
 _hass
 python ./dsmr_datalogger_api_client.py
+_info "Datalogger started"
