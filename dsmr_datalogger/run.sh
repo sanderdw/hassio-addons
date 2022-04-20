@@ -33,6 +33,7 @@ function _hass {
   export DSMRREADER_REMOTE_DATALOGGER_SERIAL_PARITY=$(bashio::config 'DATALOGGER_SERIAL_PARITY')
   export DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST=$(bashio::config 'DATALOGGER_NETWORK_HOST')
   export DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT=$(bashio::config 'DATALOGGER_NETWORK_PORT')
+  _info "Datalogger started"
 }
 
 #---------------------------------------------------------------------------------------------------------------------------
@@ -41,4 +42,3 @@ function _hass {
 
 _hass
 python ./dsmr_datalogger_api_client.py
-_info "Datalogger started"
