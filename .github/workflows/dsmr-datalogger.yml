@@ -24,35 +24,35 @@ jobs:
           # AMD64
           - DOCKER_TAG_SUFFIX: amd64
             S6_ARCH: amd64
-            BASE_IMAGE: homeassistant/amd64-base-python:3.8
+            BASE_IMAGE: homeassistant/amd64-base-python:3.9
             PLATFORMS: linux/amd64
             QEMU_ARCH: x86_64
 
           # ARM32V6
           - DOCKER_TAG_SUFFIX: armhf
             S6_ARCH: armhf
-            BASE_IMAGE: homeassistant/armhf-base-python:3.8
+            BASE_IMAGE: homeassistant/armhf-base-python:3.9
             PLATFORMS: linux/arm/v6
             QEMU_ARCH: arm
 
           # ARM32V7
           - DOCKER_TAG_SUFFIX: armv7
             S6_ARCH: armv7
-            BASE_IMAGE: homeassistant/armv7-base-python:3.8
+            BASE_IMAGE: homeassistant/armv7-base-python:3.9
             PLATFORMS: linux/arm/v7
             QEMU_ARCH: arm
 
           # ARM64V8
           - DOCKER_TAG_SUFFIX: aarch64
             S6_ARCH: aarch64
-            BASE_IMAGE: homeassistant/aarch64-base-python:3.8
+            BASE_IMAGE: homeassistant/aarch64-base-python:3.9
             PLATFORMS: linux/arm64
             QEMU_ARCH: aarch64
 
           # i386
           - DOCKER_TAG_SUFFIX: i386
             S6_ARCH: i386
-            BASE_IMAGE: homeassistant/i386-base-python:3.8
+            BASE_IMAGE: homeassistant/i386-base-python:3.9
             PLATFORMS: linux/i386
             QEMU_ARCH: i386
 
