@@ -14,6 +14,7 @@ on:
       - 'dsmr_datalogger/dsmr_datalogger_api_client.py'
       - '.github/workflows/dsmr-datalogger.yml'
       - 'dsmr_datalogger/run.sh'
+      - 'dsmr_datalogger/config.json'
 
 jobs:
   dsmr-datalogger:
