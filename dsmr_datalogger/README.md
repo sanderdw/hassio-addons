@@ -4,7 +4,9 @@
 
 The datalogger only option of DSMR (https://dsmr-reader.readthedocs.io). This will install a datalogger that will forward telegrams to another fully installed instance of DSMR-reader, using its API.
 
-![Supports aarch64 Architecture][aarch64-shield] ![Supports amd64 Architecture][amd64-shield] ![Supports armhf Architecture][armhf-shield] ![Supports armv7 Architecture][armv7-shield] ![Supports i386 Architecture][i386-shield]
+[![GitHub Build Status](https://github.com/sanderdw/hassio-addons/workflows/DSMR%20Datalogger/badge.svg?logo=github)](https://github.com/sanderdw/hassio-addons/actions) ![addon-shield] ![Supports aarch64 Architecture][aarch64-shield] ![Supports amd64 Architecture][amd64-shield] ![Supports armhf Architecture][armhf-shield] ![Supports armv7 Architecture][armv7-shield] ![Supports i386 Architecture][i386-shield]
+
+[addon-shield]: https://img.shields.io/badge/Addon%20Version-%201.1.0-purple.svg?style=flat-square
 
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg?style=flat-square
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg?style=flat-square
@@ -19,7 +21,7 @@ The datalogger only option of DSMR (https://dsmr-reader.readthedocs.io). This wi
 See config instructions here: https://github.com/sanderdw/hassio-addons
 
 ## Prepare API
-Make sure to prepare the API at the DSMR-reader instance you’ll forward the telegrams to. For more information configuring it, see the API settings (https://dsmr-reader.readthedocs.io/en/v4/api.html).
+Make sure to prepare the API at the DSMR-reader instance you’ll forward the telegrams to. For more information configuring it, see the API settings (https://dsmr-reader.readthedocs.io/en/v5/reference/api.html).
 
 ## Configure the add-on
 

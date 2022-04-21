@@ -1,11 +1,12 @@
 {
   "name": "DSMR Datalogger",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "slug": "dsmr_datalogger",
   "description": "The datalogger only option of DSMR (https://dsmr-reader.readthedocs.io)",
   "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
+  "image": "sanderdw/ha-dsmr-datalogger-{arch}",
   "url": "https://github.com/sanderdw/hassio-addons",
-  "startup": "system",
+  "startup": "application",
   "boot": "auto",
   "uart": true,
   "options": {
@@ -13,19 +14,27 @@
     "DATALOGGER_API_HOSTS": "http(s)://<YOUR_DSMR_HOST>:<PORT>",
     "DATALOGGER_API_KEYS": "<YOUR_API_KEY>",
     "DATALOGGER_SERIAL_PORT": "/dev/ttyUSB0",
-    "DATALOGGER_SERIAL_BAUDRATE": "115200",
-    "DATALOGGER_SERIAL_BYTESIZE": "8",
+    "DATALOGGER_SERIAL_BAUDRATE": 115200,
+    "DATALOGGER_SERIAL_BYTESIZE": 8,
     "DATALOGGER_SERIAL_PARITY": "N",
-    "DATALOGGER_SLEEP": "0.5"
+    "DATALOGGER_SLEEP": 0.5,
+    "DATALOGGER_DEBUG_LOGGING": false,
+    "DATALOGGER_MIN_SLEEP_FOR_RECONNECT": 1.0,
+    "DATALOGGER_TIMEOUT": 20
   },
   "schema": {
     "DATALOGGER_INPUT_METHOD": "str",
     "DATALOGGER_API_HOSTS": "str",
     "DATALOGGER_API_KEYS": "str",
     "DATALOGGER_SERIAL_PORT": "str",
-    "DATALOGGER_SERIAL_BAUDRATE": "str",
-    "DATALOGGER_SERIAL_BYTESIZE": "str",
+    "DATALOGGER_SERIAL_BAUDRATE": "int",
+    "DATALOGGER_SERIAL_BYTESIZE": "int",
     "DATALOGGER_SERIAL_PARITY": "str",
-    "DATALOGGER_SLEEP": "str"
+    "DATALOGGER_SLEEP": "float",
+    "DATALOGGER_NETWORK_HOST": "str?",
+    "DATALOGGER_NETWORK_PORT": "int?",
+    "DATALOGGER_DEBUG_LOGGING": "bool",
+    "DATALOGGER_MIN_SLEEP_FOR_RECONNECT": "float",
+    "DATALOGGER_TIMEOUT": "float"
   }
 }
