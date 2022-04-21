@@ -4,6 +4,7 @@
 
 - As always, backup first!
 - Refactor for DSMR Reader v5
+- Extra options (may be required to reset the addon configuration to see them all)
 - Uninstall and reinstall/reconfigure if "image does not exist" error pops up.
 - Faster install time (moved to Github Actions)
 
