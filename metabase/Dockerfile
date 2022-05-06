@@ -5,7 +5,7 @@ ARG HA_RELEASE
 RUN echo "I am running on $BUILDPLATFORM, building for $TARGETPLATFORM" > /log
 RUN echo "build - Working on the following addon release: $HA_RELEASE"
 COPY config.yaml /home/ha_addon_version.yaml
-ADD https://downloads.metabase.com/v0.42.4/metabase.jar /home
+ADD https://downloads.metabase.com/v0.43.0/metabase.jar /home
 COPY run.sh /
 RUN chmod a+x /run.sh
 

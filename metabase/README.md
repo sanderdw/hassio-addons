@@ -11,8 +11,8 @@ Meet the easy, open source way for everyone to ask questions and learn from data
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg?style=flat-square
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg?style=flat-square
 
-[metabase-shield]: https://img.shields.io/badge/Metabase%20Version-%200.42.4-purple.svg?style=flat-square
-[addon-shield]: https://img.shields.io/badge/Addon%20Version-%200.4.0-purple.svg?style=flat-square
+[metabase-shield]: https://img.shields.io/badge/Metabase%20Version-%200.43.0-purple.svg?style=flat-square
+[addon-shield]: https://img.shields.io/badge/Addon%20Version-%200.5.0-purple.svg?style=flat-square
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=for-the-badge
 [forum]: https://community.home-assistant.io/t/metabase-add-on-for-home-assistant/286413
 ## Configure the repository
