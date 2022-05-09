@@ -10,6 +10,7 @@
   "boot": "auto",
   "uart": true,
   "ingress": true,
+  "panel_icon": "mdi:leaf-circle-outline",
   "hassio_api": true,
   "map": ["backup:rw"],
   "ports": {
