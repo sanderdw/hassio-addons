@@ -22,22 +22,6 @@ function _hass {
   CONFIG_PATH=/data/options.json
   if [ -z "${DJANGO_DATABASE_HOST}" ] || [ "${DJANGO_DATABASE_HOST}" == 'dsmrdb' ]; then
     bashio::log.blue "Configuring Home Assistant Addon options"
-    export DSMRREADER_ADMIN_USER=$(jq --raw-output '.DSMRREADER_ADMIN_USER' $CONFIG_PATH)
-    export DSMRREADER_ADMIN_PASSWORD=$(jq --raw-output '.DSMRREADER_ADMIN_PASSWORD' $CONFIG_PATH)
-    export DJANGO_DATABASE_NAME=$(jq --raw-output '.DJANGO_DATABASE_NAME' $CONFIG_PATH)
-    export DJANGO_DATABASE_USER=$(jq --raw-output '.DJANGO_DATABASE_USER' $CONFIG_PATH)
-    export DJANGO_DATABASE_PASSWORD=$(jq --raw-output '.DJANGO_DATABASE_PASSWORD' $CONFIG_PATH)
-    export DJANGO_DATABASE_HOST=$(jq --raw-output '.DJANGO_DATABASE_HOST' $CONFIG_PATH)
-    export DJANGO_DATABASE_PORT=$(jq --raw-output '.DJANGO_DATABASE_PORT' $CONFIG_PATH)
-    export DSMRREADER_REMOTE_DATALOGGER_MODE=$(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_MODE' $CONFIG_PATH)
-    export DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT=$(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT' $CONFIG_PATH)
-    export DSMRREADER_REMOTE_DATALOGGER_INPUT_METHOD=$(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_INPUT_METHOD' $CONFIG_PATH)
-    export DSMRREADER_REMOTE_DATALOGGER_SERIAL_BAUDRATE=$(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_SERIAL_BAUDRATE' $CONFIG_PATH)
-    export DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST=$(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST' $CONFIG_PATH)
-    export DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT=$(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT' $CONFIG_PATH)
-    export DSMRREADER_REMOTE_DATALOGGER_SLEEP=$(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_SLEEP' $CONFIG_PATH)
-    export DSMRREADER_LOGLEVEL=$(jq --raw-output '.DSMRREADER_LOGLEVEL' $CONFIG_PATH)
-    export ENABLE_IFRAME='true'
     printf $(jq --raw-output '.DSMRREADER_ADMIN_USER' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_ADMIN_USER
     printf $(jq --raw-output '.DSMRREADER_ADMIN_PASSWORD' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_ADMIN_PASSWORD
     printf $(jq --raw-output '.DJANGO_DATABASE_NAME' $CONFIG_PATH) > /var/run/s6/container_environment/DJANGO_DATABASE_NAME
@@ -54,6 +38,9 @@ function _hass {
     printf $(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_SLEEP' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_SLEEP
     printf $(jq --raw-output '.DSMRREADER_LOGLEVEL' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_LOGLEVEL
     printf "true" > /var/run/s6/container_environment/ENABLE_IFRAME
+  fi
+  if [ $(bashio::addon.ENABLE_INGRESS) == 'true' ]; then
+    bashio::log.blue "Home Assistant Add-on release: $(bashio::addon.ENABLE_INGRESS)"
   fi
 }
 
@@ -75,11 +62,8 @@ bashio::log.blue "${django_static}"
 sed -i "s/%%port%%/${ingress_port}/g" /etc/nginx/http.d/ingress.conf
 sed -i "s/%%interface%%/${ingress_interface}/g" /etc/nginx/http.d/ingress.conf
 sed -i "s#%%entry%%#${ingress_entry}#g" /etc/nginx/http.d/ingress.conf
-export DJANGO_STATIC_URL=${django_static}
 printf ${django_static} > /var/run/s6/container_environment/DJANGO_STATIC_URL
-export DJANGO_FORCE_SCRIPT_NAME=${django_url}
 printf ${django_url} > /var/run/s6/container_environment/DJANGO_FORCE_SCRIPT_NAME
-export DJANGO_USE_X_FORWARDED_HOST='True'
 printf 'True' > /var/run/s6/container_environment/DJANGO_USE_X_FORWARDED_HOST
 
 # Patch resolver to match DNS
