@@ -70,14 +70,15 @@ bashio::log.blue " $(bashio::addon.ip_address)"
 ingress_entry=$(bashio::addon.ingress_entry)
 bashio::log.blue " $(bashio::addon.ingress_entry)"
 django_static="$(bashio::addon.ingress_entry)/static/"
+django_url="$(bashio::addon.ingress_entry)/"
 bashio::log.blue "${django_static}"
 sed -i "s/%%port%%/${ingress_port}/g" /etc/nginx/http.d/ingress.conf
 sed -i "s/%%interface%%/${ingress_interface}/g" /etc/nginx/http.d/ingress.conf
 sed -i "s#%%entry%%#${ingress_entry}#g" /etc/nginx/http.d/ingress.conf
 export DJANGO_STATIC_URL=${django_static}
 printf ${django_static} > /var/run/s6/container_environment/DJANGO_STATIC_URL
-export DJANGO_FORCE_SCRIPT_NAME='/dsmrreader2'
-printf '/dsmrreader2' > /var/run/s6/container_environment/DJANGO_FORCE_SCRIPT_NAME
+export DJANGO_FORCE_SCRIPT_NAME=${django_url}
+printf ${django_url} > /var/run/s6/container_environment/DJANGO_FORCE_SCRIPT_NAME
 export DJANGO_USE_X_FORWARDED_HOST='True'
 printf 'True' > /var/run/s6/container_environment/DJANGO_USE_X_FORWARDED_HOST
 
