@@ -58,7 +58,8 @@ function _hass {
     dns_host=$(bashio::dns.host)
     sed -i "s/%%dns_host%%/${dns_host}/g" /etc/nginx/http.d/resolver.conf
   else
-    bashio::log.blue "Ingress disabled, you can go to http://$(bashio::network.ipv4_address):$(bashio::addon.port '80/tcp')/"
+    ip=${$(bashio::network.ipv4_address)%???}
+    bashio::log.blue "Ingress disabled, you can go to http://${ip}:$(bashio::addon.port '80/tcp')/"
     rm /etc/nginx/http.d/resolver.conf
   fi
 }
