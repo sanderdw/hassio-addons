@@ -2,6 +2,7 @@
 
 ## 1.2.0
 
+- As always, backup first!
 - Ingress support (need to be specifically enabled in configuration for now)
 - Technical: bashio support and code cleanup
 
