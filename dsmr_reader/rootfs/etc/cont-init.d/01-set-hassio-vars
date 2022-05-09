@@ -33,7 +33,7 @@ function _hass {
     printf $(bashio::config 'DSMRREADER_LOGLEVEL') > /var/run/s6/container_environment/DSMRREADER_LOGLEVEL
     printf "true" > /var/run/s6/container_environment/ENABLE_IFRAME
   fi
-  if [ "$(bashio::config 'Enable Ingress')" == 'true' ]
+  if [ "$(bashio::config 'ENABLE_INGRESS')" == 'true' ]
   then
     bashio::log.blue "Home Assistant DSMR Reader Add-on - Ingress enabled, patching addon"
     # Patch ingress server to contain the correct portnumbers and paths
@@ -54,9 +54,8 @@ function _hass {
   else
     raw_ip_network=$(bashio::network.ipv4_address)
     ip_address=${raw_ip_network%???}
-    bashio::log.green "Home Assistant DSMR Reader Add-on - Ingress disabled, please go to:"
+    bashio::log.green "Home Assistant DSMR Reader Add-on - Ingress disabled, please open the interface at:"
     bashio::log.green "Home Assistant DSMR Reader Add-on - http://${ip_address}:$(bashio::addon.port '80/tcp')/"
-    bashio::log.green "Home Assistant DSMR Reader Add-on - manually"
     rm /etc/nginx/http.d/resolver.conf
   fi
 }
