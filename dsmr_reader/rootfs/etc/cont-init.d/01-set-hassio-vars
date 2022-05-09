@@ -32,6 +32,23 @@ function _hass {
     printf $(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_SLEEP') > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_SLEEP
     printf $(bashio::config 'DSMRREADER_LOGLEVEL') > /var/run/s6/container_environment/DSMRREADER_LOGLEVEL
     printf "true" > /var/run/s6/container_environment/ENABLE_IFRAME
+    # Setting env exports for using in cli when needed
+    export DSMRREADER_ADMIN_USER=$(bashio::config 'DSMRREADER_ADMIN_USER')
+    export DSMRREADER_ADMIN_PASSWORD=$(bashio::config 'DSMRREADER_ADMIN_PASSWORD')
+    export DJANGO_DATABASE_NAME=$(bashio::config 'DJANGO_DATABASE_NAME')
+    export DJANGO_DATABASE_USER=$(bashio::config 'DJANGO_DATABASE_USER')
+    export DJANGO_DATABASE_PASSWORD=$(bashio::config 'DJANGO_DATABASE_PASSWORD')
+    export DJANGO_DATABASE_HOST=$(bashio::config 'DJANGO_DATABASE_HOST')
+    export DJANGO_DATABASE_PORT=$(bashio::config 'DJANGO_DATABASE_PORT')
+    export DSMRREADER_REMOTE_DATALOGGER_MODE=$(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_MODE')
+    export DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT=$(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT')
+    export DSMRREADER_REMOTE_DATALOGGER_INPUT_METHOD=$(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_INPUT_METHOD')
+    export DSMRREADER_REMOTE_DATALOGGER_SERIAL_BAUDRATE=$(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_SERIAL_BAUDRATE')
+    export DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST=$(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST')
+    export DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT=$(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT')
+    export DSMRREADER_REMOTE_DATALOGGER_SLEEP=$(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_SLEEP')
+    export DSMRREADER_LOGLEVEL=$(bashio::config 'DSMRREADER_LOGLEVEL')
+    export ENABLE_IFRAME='true'
   fi
   if [ "$(bashio::config 'ENABLE_INGRESS')" == 'true' ]
   then
@@ -48,7 +65,7 @@ function _hass {
     printf ${django_static} > /var/run/s6/container_environment/DJANGO_STATIC_URL
     printf ${django_url} > /var/run/s6/container_environment/DJANGO_FORCE_SCRIPT_NAME
     printf 'True' > /var/run/s6/container_environment/DJANGO_USE_X_FORWARDED_HOST
-    # Patch resolver to match DNS
+    # Patch resolver to match DNS, not sure if needed
     dns_host=$(bashio::dns.host)
     sed -i "s/%%dns_host%%/${dns_host}/g" /etc/nginx/http.d/resolver.conf
   else
