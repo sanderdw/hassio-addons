@@ -1,6 +1,6 @@
 {
   "name": "DSMR Reader",
-  "version": "1.1.2",
+  "version": "develop",
   "slug": "dsmr_reader",
   "description": "Used for reading the smart meter DSMR P1 port (https://dsmr-reader.readthedocs.io)",
   "arch": ["armhf", "armv7", "aarch64", "amd64"],
@@ -9,7 +9,7 @@
   "startup": "application",
   "boot": "auto",
   "uart": true,
-  "webui": "http://[HOST]:[PORT:7777]",
+  "ingress": true,
   "map": ["backup:rw"],
   "ports": {
     "80/tcp": 7777
