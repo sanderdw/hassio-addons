@@ -19,7 +19,7 @@
     "80/tcp": "The webserver port (When not using Ingress)"
   },
   "options": {
-    "Enable Ingress": true,
+    "Enable Ingress": false,
     "DSMRREADER_ADMIN_USER": "admin",
     "DSMRREADER_ADMIN_PASSWORD": "admin",
     "DJANGO_DATABASE_NAME": "dsmrreader",
@@ -52,6 +52,6 @@
     "DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST": "str?",
     "DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT": "str?",
     "DSMRREADER_REMOTE_DATALOGGER_SLEEP": "str?",
-    "DSMRREADER_LOGLEVEL": "list(ERROR|WARNING|DEBUG)?"
+    "DSMRREADER_LOGLEVEL": "list(ERROR|WARNING|DEBUG)"
   }
 }
