@@ -58,7 +58,7 @@ function _hass {
     dns_host=$(bashio::dns.host)
     sed -i "s/%%dns_host%%/${dns_host}/g" /etc/nginx/http.d/resolver.conf
   else
-    bashio::log.blue "Ingress disabled, you can go to http://yourhomeassistant:7777/"
+    bashio::log.blue "Ingress disabled, you can go to http://$(bashio::host.hostname):$(bashio::addon.port)/"
   fi
 }
 
@@ -67,19 +67,3 @@ function _hass {
 #---------------------------------------------------------------------------------------------------------------------------
 
 _hass
-# Patch ingress server to contain the correct portnumbers and paths
-ingress_port=$(bashio::addon.ingress_port)
-ingress_interface=$(bashio::addon.ip_address)
-ingress_entry=$(bashio::addon.ingress_entry)
-django_static="$(bashio::addon.ingress_entry)/static/"
-django_url="$(bashio::addon.ingress_entry)/"
-sed -i "s/%%port%%/${ingress_port}/g" /etc/nginx/http.d/ingress.conf
-sed -i "s/%%interface%%/${ingress_interface}/g" /etc/nginx/http.d/ingress.conf
-sed -i "s#%%entry%%#${ingress_entry}#g" /etc/nginx/http.d/ingress.conf
-printf ${django_static} > /var/run/s6/container_environment/DJANGO_STATIC_URL
-printf ${django_url} > /var/run/s6/container_environment/DJANGO_FORCE_SCRIPT_NAME
-printf 'True' > /var/run/s6/container_environment/DJANGO_USE_X_FORWARDED_HOST
-
-# Patch resolver to match DNS
-dns_host=$(bashio::dns.host)
-sed -i "s/%%dns_host%%/${dns_host}/g" /etc/nginx/http.d/resolver.conf
