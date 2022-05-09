@@ -71,7 +71,7 @@ function _hass {
   else
     raw_ip_network=$(bashio::network.ipv4_address)
     ip_address=${raw_ip_network%???}
-    bashio::log.green "Home Assistant DSMR Reader Add-on - Ingress disabled, please open the interface at:"
+    bashio::log.green "Home Assistant DSMR Reader Add-on - Ingress disabled, when started, you can open the interface at:"
     bashio::log.green "Home Assistant DSMR Reader Add-on - http://${ip_address}:$(bashio::addon.port '80/tcp')/"
     rm /etc/nginx/http.d/resolver.conf
   fi
