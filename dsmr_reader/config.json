@@ -16,7 +16,7 @@
     "80/tcp": 7777
   },
   "ports_description": {
-    "80/tcp": "The webserver port (When not using Ingress)"
+    "80/tcp": "The webserver port (When Ingress is disabled)"
   },
   "options": {
     "ENABLE_INGRESS": false,

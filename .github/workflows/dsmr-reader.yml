@@ -11,9 +11,7 @@ on:
       - 'v*.*.*'
     paths:
       - 'dsmr_reader/Dockerfile'
-      - 'dsmr_reader/rootfs/etc/cont-init.d/01-set-hassio-vars'
-      - 'dsmr_reader/ha/ingress.conf'
-      - '.github/workflows/dsmr-reader.yml'
+      - 'dsmr_reader/rootfs/*'
 
 jobs:
   dsmr-reader:
