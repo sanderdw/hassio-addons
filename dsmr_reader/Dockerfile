@@ -23,7 +23,6 @@ RUN \
 
 # HOMEASSISTANT Add-On OVERRIDES
 COPY rootfs /
-COPY ha/ingress.conf /etc/nginx/http.d/
 RUN chmod a+x /etc/cont-init.d/01-set-hassio-vars
 COPY config.json /app/ha_addon_version.json
 
