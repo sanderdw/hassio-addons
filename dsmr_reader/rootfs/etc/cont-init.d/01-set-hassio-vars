@@ -68,12 +68,16 @@ bashio::log.blue " $(bashio::addon.ingress_port)"
 ingress_interface=$(bashio::addon.ip_address)
 bashio::log.blue " $(bashio::addon.ip_address)"
 ingress_entry=$(bashio::addon.ingress_entry)
-bashio::log.blue " $(bashio::ingress_entry)"
+bashio::log.blue " $(bashio::addon.ingress_entry)"
 sed -i "s/%%port%%/${ingress_port}/g" /etc/nginx/http.d/ingress.conf
 sed -i "s/%%interface%%/${ingress_interface}/g" /etc/nginx/http.d/ingress.conf
 sed -i "s#%%entry%%#${ingress_entry}#g" /etc/nginx/http.d/ingress.conf
 
 # Patch resolver to match DNS
+bashio::log.blue " test1"
 dns_host=$(bashio::dns.host)
+bashio::log.blue " test2"
 bashio::log.blue " $(bashio::dns.host)"
+bashio::log.blue " test3"
 sed -i "s/%%dns_host%%/${dns_host}/g" /etc/nginx/http.d/resolver.conf
+bashio::log.blue " test4"
