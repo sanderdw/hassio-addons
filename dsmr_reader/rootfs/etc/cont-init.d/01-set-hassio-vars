@@ -76,10 +76,10 @@ sed -i "s/%%interface%%/${ingress_interface}/g" /etc/nginx/http.d/ingress.conf
 sed -i "s#%%entry%%#${ingress_entry}#g" /etc/nginx/http.d/ingress.conf
 export DJANGO_STATIC_URL=${django_static}
 printf ${django_static} > /var/run/s6/container_environment/DJANGO_STATIC_URL
-export FORCE_SCRIPT_NAME="/dsmrreader2"
-printf "/dsmrreader2" > /var/run/s6/container_environment/FORCE_SCRIPT_NAME
-export USE_X_FORWARDED_HOST="True"
-printf "True" > /var/run/s6/container_environment/USE_X_FORWARDED_HOST
+export DJANGO_FORCE_SCRIPT_NAME='/dsmrreader2'
+printf '/dsmrreader2' > /var/run/s6/container_environment/DJANGO_FORCE_SCRIPT_NAME
+export DJANGO_USE_X_FORWARDED_HOST='True'
+printf 'True' > /var/run/s6/container_environment/DJANGO_USE_X_FORWARDED_HOST
 
 # Patch resolver to match DNS
 dns_host=$(bashio::dns.host)
