@@ -72,12 +72,10 @@ bashio::log.blue " $(bashio::addon.ingress_entry)"
 sed -i "s/%%port%%/${ingress_port}/g" /etc/nginx/http.d/ingress.conf
 sed -i "s/%%interface%%/${ingress_interface}/g" /etc/nginx/http.d/ingress.conf
 sed -i "s#%%entry%%#${ingress_entry}#g" /etc/nginx/http.d/ingress.conf
+export DJANGO_STATIC_URL=${ingress_entry}
+printf ${ingress_entry} > /var/run/s6/container_environment/DJANGO_STATIC_URL
 
 # Patch resolver to match DNS
-bashio::log.blue " test1"
 dns_host=$(bashio::dns.host)
-bashio::log.blue " test2"
 bashio::log.blue " $(bashio::dns.host)"
-bashio::log.blue " test3"
 sed -i "s/%%dns_host%%/${dns_host}/g" /etc/nginx/http.d/resolver.conf
-bashio::log.blue " test4"

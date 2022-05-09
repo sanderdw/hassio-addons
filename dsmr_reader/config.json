@@ -10,6 +10,7 @@
   "boot": "auto",
   "uart": true,
   "ingress": true,
+  "hassio_api": true,
   "map": ["backup:rw"],
   "ports": {
     "80/tcp": 7777
