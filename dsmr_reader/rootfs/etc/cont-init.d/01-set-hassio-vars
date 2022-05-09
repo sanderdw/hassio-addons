@@ -39,8 +39,8 @@ function _hass {
     printf $(jq --raw-output '.DSMRREADER_LOGLEVEL' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_LOGLEVEL
     printf "true" > /var/run/s6/container_environment/ENABLE_IFRAME
   fi
-  if [ $(bashio::addon.ENABLE_INGRESS) == 'true' ]; then
-    bashio::log.blue "Home Assistant Add-on release: $(bashio::addon.ENABLE_INGRESS)"
+  if [ "$(bashio::config 'ENABLE_INGRESS')" == 'true' ]; then
+    bashio::log.blue "Home Assistant Add-on release: $(bashio::config 'ENABLE_INGRESS')"
   fi
 }
 
