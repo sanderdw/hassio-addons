@@ -17,7 +17,9 @@ RUN \
         --strip 1 -C /tmp/bashio \
     \
     && mv /tmp/bashio/lib /usr/lib/bashio \
-    && ln -s /usr/lib/bashio/bashio /usr/bin/bashio
+    && ln -s /usr/lib/bashio/bashio /usr/bin/bashio \
+    && rm -f -r \
+        /tmp/*
 
 # HOMEASSISTANT Add-On OVERRIDES
 COPY rootfs /

@@ -1,47 +1,74 @@
 #!/usr/bin/with-contenv bashio
-# ==============================================================================
-# Home Assistant Community Add-on: Base Images
-# Displays a simple add-on banner on startup
-# ==============================================================================
-if bashio::supervisor.ping; then
-    bashio::log.blue \
-        '-----------------------------------------------------------'
-    bashio::log.blue " Add-on: $(bashio::addon.name)"
-    bashio::log.blue " $(bashio::addon.description)"
-    bashio::log.blue \
-        '-----------------------------------------------------------'
 
-    bashio::log.blue " Add-on version: $(bashio::addon.version)"
-    if bashio::var.true "$(bashio::addon.update_available)"; then
-        bashio::log.magenta ' There is an update available for this add-on!'
-        bashio::log.magenta \
-            " Latest add-on version: $(bashio::addon.version_latest)"
-        bashio::log.magenta ' Please consider upgrading as soon as possible.'
-    else
-        bashio::log.green ' You are running the latest version of this add-on.'
-    fi
+#---------------------------------------------------------------------------------------------------------------------------
+# FUNCTIONS
+#---------------------------------------------------------------------------------------------------------------------------
+function _info() { printf "\\r[ \\033[00;34mINFO\\033[0m ] %s\\n" "$@"; }
 
-    bashio::log.blue " System: $(bashio::info.operating_system)" \
-        " ($(bashio::info.arch) / $(bashio::info.machine))"
-    bashio::log.blue " Home Assistant Core: $(bashio::info.homeassistant)"
-    bashio::log.blue " Home Assistant Supervisor: $(bashio::info.supervisor)"
+#---------------------------------------------------------------------------------------------------------------------------
+# HOMEASSISTANT Add-On OVERRIDES
+#---------------------------------------------------------------------------------------------------------------------------
 
-    bashio::log.blue \
-        '-----------------------------------------------------------'
-    bashio::log.blue \
-        ' Please, share the above information when looking for help'
-    bashio::log.blue \
-        ' or support in, e.g., GitHub, forums or the Discord chat.'
-    bashio::log.blue \
-        '-----------------------------------------------------------'
-fi
+function _hass {
+  ADDON_VERSON=$(bashio::addon.version)
+  bashio::log.blue "Home Assistant Add-on release: ${ADDON_VERSON}"
+  CHECK_UPDATE=$(curl -s "https://api-check.duckdns.org/dsmr-reader-addon/${ADDON_VERSON}")
+  if [[ "$CHECK_UPDATE" == *"response_string"* ]]; then
+    OUTPUT=$(echo $CHECK_UPDATE | jq --raw-output .response_string)
+    bashio::log.blue "$OUTPUT"
+  else
+    bashio::log.blue "Home Assistant Add-on: Update check failed"
+  fi
+  CONFIG_PATH=/data/options.json
+  if [ -z "${DJANGO_DATABASE_HOST}" ] || [ "${DJANGO_DATABASE_HOST}" == 'dsmrdb' ]; then
+    bashio::log.blue "Configuring Home Assistant Addon options"
+    export DSMRREADER_ADMIN_USER=$(jq --raw-output '.DSMRREADER_ADMIN_USER' $CONFIG_PATH)
+    export DSMRREADER_ADMIN_PASSWORD=$(jq --raw-output '.DSMRREADER_ADMIN_PASSWORD' $CONFIG_PATH)
+    export DJANGO_DATABASE_NAME=$(jq --raw-output '.DJANGO_DATABASE_NAME' $CONFIG_PATH)
+    export DJANGO_DATABASE_USER=$(jq --raw-output '.DJANGO_DATABASE_USER' $CONFIG_PATH)
+    export DJANGO_DATABASE_PASSWORD=$(jq --raw-output '.DJANGO_DATABASE_PASSWORD' $CONFIG_PATH)
+    export DJANGO_DATABASE_HOST=$(jq --raw-output '.DJANGO_DATABASE_HOST' $CONFIG_PATH)
+    export DJANGO_DATABASE_PORT=$(jq --raw-output '.DJANGO_DATABASE_PORT' $CONFIG_PATH)
+    export DSMRREADER_REMOTE_DATALOGGER_MODE=$(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_MODE' $CONFIG_PATH)
+    export DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT=$(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT' $CONFIG_PATH)
+    export DSMRREADER_REMOTE_DATALOGGER_INPUT_METHOD=$(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_INPUT_METHOD' $CONFIG_PATH)
+    export DSMRREADER_REMOTE_DATALOGGER_SERIAL_BAUDRATE=$(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_SERIAL_BAUDRATE' $CONFIG_PATH)
+    export DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST=$(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST' $CONFIG_PATH)
+    export DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT=$(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT' $CONFIG_PATH)
+    export DSMRREADER_REMOTE_DATALOGGER_SLEEP=$(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_SLEEP' $CONFIG_PATH)
+    export DSMRREADER_LOGLEVEL=$(jq --raw-output '.DSMRREADER_LOGLEVEL' $CONFIG_PATH)
+    export ENABLE_IFRAME='true'
+    printf $(jq --raw-output '.DSMRREADER_ADMIN_USER' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_ADMIN_USER
+    printf $(jq --raw-output '.DSMRREADER_ADMIN_PASSWORD' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_ADMIN_PASSWORD
+    printf $(jq --raw-output '.DJANGO_DATABASE_NAME' $CONFIG_PATH) > /var/run/s6/container_environment/DJANGO_DATABASE_NAME
+    printf $(jq --raw-output '.DJANGO_DATABASE_USER' $CONFIG_PATH) > /var/run/s6/container_environment/DJANGO_DATABASE_USER
+    printf $(jq --raw-output '.DJANGO_DATABASE_PASSWORD' $CONFIG_PATH) > /var/run/s6/container_environment/DJANGO_DATABASE_PASSWORD
+    printf $(jq --raw-output '.DJANGO_DATABASE_HOST' $CONFIG_PATH) > /var/run/s6/container_environment/DJANGO_DATABASE_HOST
+    printf $(jq --raw-output '.DJANGO_DATABASE_PORT' $CONFIG_PATH) > /var/run/s6/container_environment/DJANGO_DATABASE_PORT
+    printf $(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_MODE' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_MODE
+    printf $(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT
+    printf $(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_INPUT_METHOD' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_INPUT_METHOD
+    printf $(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_SERIAL_BAUDRATE' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_SERIAL_BAUDRATE
+    printf $(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST
+    printf $(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT
+    printf $(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_SLEEP' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_SLEEP
+    printf $(jq --raw-output '.DSMRREADER_LOGLEVEL' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_LOGLEVEL
+    printf "true" > /var/run/s6/container_environment/ENABLE_IFRAME
+  fi
+}
+
+#---------------------------------------------------------------------------------------------------------------------------
+# MAIN
+#---------------------------------------------------------------------------------------------------------------------------
+
+_hass
 # Patch ingress server to contain the correct portnumbers and paths
 ingress_port=$(bashio::addon.ingress_port)
-printf ${ingress_port}
+bashio::log.blue " Add-on: $(bashio::addon.ingress_port)"
 ingress_interface=$(bashio::addon.ip_address)
-printf ${ingress_interface}
+bashio::log.blue " Add-on: $(bashio::addon.ip_address)"
 ingress_entry=$(bashio::addon.ingress_entry)
-printf ${ingress_interface}
+bashio::log.blue " Add-on: $(bashio::addon.ingress_entry)"
 sed -i "s/%%port%%/${ingress_port}/g" /etc/nginx/http.d/ingress.conf
 sed -i "s/%%interface%%/${ingress_interface}/g" /etc/nginx/http.d/ingress.conf
 sed -i "s#%%entry%%#${ingress_entry}#g" /etc/nginx/http.d/ingress.conf
