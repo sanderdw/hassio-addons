@@ -69,7 +69,7 @@ ingress_interface=$(bashio::addon.ip_address)
 bashio::log.blue " $(bashio::addon.ip_address)"
 ingress_entry=$(bashio::addon.ingress_entry)
 bashio::log.blue " $(bashio::addon.ingress_entry)"
-django_static="$(bashio::addon.ingress_entry)/"
+django_static="$(bashio::addon.ingress_entry)/static/"
 bashio::log.blue "${django_static}"
 sed -i "s/%%port%%/${ingress_port}/g" /etc/nginx/http.d/ingress.conf
 sed -i "s/%%interface%%/${ingress_interface}/g" /etc/nginx/http.d/ingress.conf
