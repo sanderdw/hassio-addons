@@ -63,21 +63,12 @@ function _hass {
 
 _hass
 # Patch ingress server to contain the correct portnumbers and paths
-declare admin_port
-declare certfile
-declare dns_host
-declare ingress_interface
-declare ingress_port
-declare ingress_entry
-declare keyfile
-
-# Patch ingress server to contain the correct portnumbers and paths
 ingress_port=$(bashio::addon.ingress_port)
 ingress_interface=$(bashio::addon.ip_address)
 ingress_entry=$(bashio::addon.ingress_entry)
-sed -i "s/%%port%%/${ingress_port}/g" /etc/nginx/servers/ingress.conf
-sed -i "s/%%interface%%/${ingress_interface}/g" /etc/nginx/servers/ingress.conf
-sed -i "s#%%entry%%#${ingress_entry}#g" /etc/nginx/servers/ingress.conf
+sed -i "s/%%port%%/${ingress_port}/g" /etc/nginx/http.d/ingress.conf
+sed -i "s/%%interface%%/${ingress_interface}/g" /etc/nginx/http.d/ingress.conf
+sed -i "s#%%entry%%#${ingress_entry}#g" /etc/nginx/http.d/ingress.conf
 
 # Patch resolver to match DNS
 dns_host=$(bashio::dns.host)
