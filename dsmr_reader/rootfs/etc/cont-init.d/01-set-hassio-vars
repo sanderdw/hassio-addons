@@ -69,11 +69,13 @@ ingress_interface=$(bashio::addon.ip_address)
 bashio::log.blue " $(bashio::addon.ip_address)"
 ingress_entry=$(bashio::addon.ingress_entry)
 bashio::log.blue " $(bashio::addon.ingress_entry)"
+django_static="$(bashio::addon.ingress_entry)/"
+bashio::log.blue "${django_static}"
 sed -i "s/%%port%%/${ingress_port}/g" /etc/nginx/http.d/ingress.conf
 sed -i "s/%%interface%%/${ingress_interface}/g" /etc/nginx/http.d/ingress.conf
 sed -i "s#%%entry%%#${ingress_entry}#g" /etc/nginx/http.d/ingress.conf
-export DJANGO_STATIC_URL=${ingress_entry}
-printf ${ingress_entry} > /var/run/s6/container_environment/DJANGO_STATIC_URL
+export DJANGO_STATIC_URL=${django_static}
+printf ${django_static} > /var/run/s6/container_environment/DJANGO_STATIC_URL
 
 # Patch resolver to match DNS
 dns_host=$(bashio::dns.host)
