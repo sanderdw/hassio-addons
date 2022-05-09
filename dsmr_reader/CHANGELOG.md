@@ -1,8 +1,9 @@
 # Changelog
 
-## Develop
+## 1.2.0
 
-- Develop
+- Ingress support (need to be specifically enabled in configuration for now)
+- Technical: bashio support and code cleanup
 
 ## 1.1.2
 

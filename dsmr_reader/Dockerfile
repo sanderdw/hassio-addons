@@ -24,7 +24,6 @@ RUN \
 # HOMEASSISTANT Add-On OVERRIDES
 COPY rootfs /
 RUN chmod a+x /etc/cont-init.d/01-set-hassio-vars
-COPY config.json /app/ha_addon_version.json
 
 ENV DUID=0
 ENV DGID=0

@@ -1,6 +1,6 @@
 {
   "name": "DSMR Reader",
-  "version": "develop",
+  "version": "1.2.0",
   "slug": "dsmr_reader",
   "description": "Used for reading the smart meter DSMR P1 port (https://dsmr-reader.readthedocs.io)",
   "arch": ["armhf", "armv7", "aarch64", "amd64"],
@@ -19,7 +19,7 @@
     "80/tcp": "The webserver port (When not using Ingress)"
   },
   "options": {
-    "ENABLE_INGRESS": true,
+    "Enable Ingress": true,
     "DSMRREADER_ADMIN_USER": "admin",
     "DSMRREADER_ADMIN_PASSWORD": "admin",
     "DJANGO_DATABASE_NAME": "dsmrreader",
@@ -37,7 +37,7 @@
     "DSMRREADER_LOGLEVEL": "ERROR"
   },
   "schema": {
-    "ENABLE_INGRESS": "bool",
+    "Enable Ingress": "bool",
     "DSMRREADER_ADMIN_USER": "str",
     "DSMRREADER_ADMIN_PASSWORD": "password",
     "DJANGO_DATABASE_NAME": "str",
@@ -49,9 +49,9 @@
     "DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT": "str",
     "DSMRREADER_REMOTE_DATALOGGER_INPUT_METHOD": "list(serial|ipv4)",
     "DSMRREADER_REMOTE_DATALOGGER_SERIAL_BAUDRATE": "str",
-    "DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST": "str",
-    "DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT": "str",
-    "DSMRREADER_REMOTE_DATALOGGER_SLEEP": "str",
-    "DSMRREADER_LOGLEVEL": "list(ERROR|WARNING|DEBUG)"
+    "DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST": "str?",
+    "DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT": "str?",
+    "DSMRREADER_REMOTE_DATALOGGER_SLEEP": "str?",
+    "DSMRREADER_LOGLEVEL": "list(ERROR|WARNING|DEBUG)?"
   }
 }
