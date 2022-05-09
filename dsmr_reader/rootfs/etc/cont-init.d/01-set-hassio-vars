@@ -14,40 +14,23 @@ function _hass {
   else
     bashio::log.red "Home Assistant DSMR Reader Add-on - Update check failed"
   fi
-  CONFIG_PATH=/data/options.json
   if [ -z "${DJANGO_DATABASE_HOST}" ] || [ "${DJANGO_DATABASE_HOST}" == 'dsmrdb' ]; then
     bashio::log.blue "Home Assistant DSMR Reader Add-on - Configuring addon settings"
-    export DSMRREADER_ADMIN_USER=$(jq --raw-output '.DSMRREADER_ADMIN_USER' $CONFIG_PATH)
-    export DSMRREADER_ADMIN_PASSWORD=$(jq --raw-output '.DSMRREADER_ADMIN_PASSWORD' $CONFIG_PATH)
-    export DJANGO_DATABASE_NAME=$(jq --raw-output '.DJANGO_DATABASE_NAME' $CONFIG_PATH)
-    export DJANGO_DATABASE_USER=$(jq --raw-output '.DJANGO_DATABASE_USER' $CONFIG_PATH)
-    export DJANGO_DATABASE_PASSWORD=$(jq --raw-output '.DJANGO_DATABASE_PASSWORD' $CONFIG_PATH)
-    export DJANGO_DATABASE_HOST=$(jq --raw-output '.DJANGO_DATABASE_HOST' $CONFIG_PATH)
-    export DJANGO_DATABASE_PORT=$(jq --raw-output '.DJANGO_DATABASE_PORT' $CONFIG_PATH)
-    export DSMRREADER_REMOTE_DATALOGGER_MODE=$(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_MODE' $CONFIG_PATH)
-    export DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT=$(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT' $CONFIG_PATH)
-    export DSMRREADER_REMOTE_DATALOGGER_INPUT_METHOD=$(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_INPUT_METHOD' $CONFIG_PATH)
-    export DSMRREADER_REMOTE_DATALOGGER_SERIAL_BAUDRATE=$(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_SERIAL_BAUDRATE' $CONFIG_PATH)
-    export DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST=$(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST' $CONFIG_PATH)
-    export DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT=$(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT' $CONFIG_PATH)
-    export DSMRREADER_REMOTE_DATALOGGER_SLEEP=$(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_SLEEP' $CONFIG_PATH)
-    export DSMRREADER_LOGLEVEL=$(jq --raw-output '.DSMRREADER_LOGLEVEL' $CONFIG_PATH)
-    export ENABLE_IFRAME='true'
-    printf $(jq --raw-output '.DSMRREADER_ADMIN_USER' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_ADMIN_USER
-    printf $(jq --raw-output '.DSMRREADER_ADMIN_PASSWORD' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_ADMIN_PASSWORD
-    printf $(jq --raw-output '.DJANGO_DATABASE_NAME' $CONFIG_PATH) > /var/run/s6/container_environment/DJANGO_DATABASE_NAME
-    printf $(jq --raw-output '.DJANGO_DATABASE_USER' $CONFIG_PATH) > /var/run/s6/container_environment/DJANGO_DATABASE_USER
-    printf $(jq --raw-output '.DJANGO_DATABASE_PASSWORD' $CONFIG_PATH) > /var/run/s6/container_environment/DJANGO_DATABASE_PASSWORD
-    printf $(jq --raw-output '.DJANGO_DATABASE_HOST' $CONFIG_PATH) > /var/run/s6/container_environment/DJANGO_DATABASE_HOST
-    printf $(jq --raw-output '.DJANGO_DATABASE_PORT' $CONFIG_PATH) > /var/run/s6/container_environment/DJANGO_DATABASE_PORT
-    printf $(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_MODE' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_MODE
-    printf $(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT
-    printf $(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_INPUT_METHOD' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_INPUT_METHOD
-    printf $(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_SERIAL_BAUDRATE' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_SERIAL_BAUDRATE
-    printf $(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST
-    printf $(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT
-    printf $(jq --raw-output '.DSMRREADER_REMOTE_DATALOGGER_SLEEP' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_SLEEP
-    printf $(jq --raw-output '.DSMRREADER_LOGLEVEL' $CONFIG_PATH) > /var/run/s6/container_environment/DSMRREADER_LOGLEVEL
+    printf $(bashio::config 'DSMRREADER_ADMIN_USER') > /var/run/s6/container_environment/DSMRREADER_ADMIN_USER
+    printf $(bashio::config 'DSMRREADER_ADMIN_PASSWORD') > /var/run/s6/container_environment/DSMRREADER_ADMIN_PASSWORD
+    printf $(bashio::config 'DJANGO_DATABASE_NAME') > /var/run/s6/container_environment/DJANGO_DATABASE_NAME
+    printf $(bashio::config 'DJANGO_DATABASE_USER') > /var/run/s6/container_environment/DJANGO_DATABASE_USER
+    printf $(bashio::config 'DJANGO_DATABASE_PASSWORD') > /var/run/s6/container_environment/DJANGO_DATABASE_PASSWORD
+    printf $(bashio::config 'DJANGO_DATABASE_HOST') > /var/run/s6/container_environment/DJANGO_DATABASE_HOST
+    printf $(bashio::config 'DJANGO_DATABASE_PORT') > /var/run/s6/container_environment/DJANGO_DATABASE_PORT
+    printf $(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_MODE') > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_MODE
+    printf $(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT') > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT
+    printf $(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_INPUT_METHOD') > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_INPUT_METHOD
+    printf $(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_SERIAL_BAUDRATE') > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_SERIAL_BAUDRATE
+    printf $(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST') > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST
+    printf $(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT') > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT
+    printf $(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_SLEEP') > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_SLEEP
+    printf $(bashio::config 'DSMRREADER_LOGLEVEL') > /var/run/s6/container_environment/DSMRREADER_LOGLEVEL
     printf "true" > /var/run/s6/container_environment/ENABLE_IFRAME
   fi
   if [ "$(bashio::config 'ENABLE_INGRESS')" == 'true' ]
