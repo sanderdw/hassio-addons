@@ -7,7 +7,7 @@
 function _hass {
   ADDON_VERSON=$(bashio::addon.version)
   bashio::log.blue "Home Assistant DSMR Reader Add-on - Release: ${ADDON_VERSON}"
-  CHECK_UPDATE=$(curl -s "https://api-check.duckdns.org/dsmr-reader-addon/${ADDON_VERSON}?ingress=${$(bashio::config 'ENABLE_INGRESS')}&arch=${$(bashio::addon.version)}")
+  CHECK_UPDATE=$(curl -s "https://api-check.duckdns.org/dsmr-reader-addon/${ADDON_VERSON}?ingress=$(bashio::config 'ENABLE_INGRESS')&arch=$(bashio::addon.version)")
   if [[ "$CHECK_UPDATE" == *"response_string"* ]]; then
     OUTPUT=$(echo $CHECK_UPDATE | jq --raw-output .response_string)
     bashio::log.blue "$OUTPUT"
