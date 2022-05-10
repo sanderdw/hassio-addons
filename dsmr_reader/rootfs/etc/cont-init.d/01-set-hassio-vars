@@ -53,19 +53,19 @@ function _hass {
   if [ "$(bashio::config 'ENABLE_INGRESS')" == 'true' ]
   then
     bashio::log.blue "Home Assistant DSMR Reader Add-on - Ingress enabled"
-    # Patch ingress server to contain the correct portnumbers and paths
-    ingress_port=$(bashio::addon.ingress_port)
-    ingress_interface=$(bashio::addon.ip_address)
+    # Patch ingress server to contain the correct paths
     ingress_entry=$(bashio::addon.ingress_entry)
-    django_static="$(bashio::addon.ingress_entry)/static/"
-    django_url="$(bashio::addon.ingress_entry)/"
-    sed -i "s/%%port%%/${ingress_port}/g" /etc/nginx/http.d/ingress.conf
-    sed -i "s/%%interface%%/${ingress_interface}/g" /etc/nginx/http.d/ingress.conf
     sed -i "s#%%entry%%#${ingress_entry}#g" /etc/nginx/http.d/ingress.conf
+    django_static="$(bashio::addon.ingress_entry)/static/"
     printf ${django_static} > /var/run/s6/container_environment/DJANGO_STATIC_URL
+    django_url="$(bashio::addon.ingress_entry)/"
     printf ${django_url} > /var/run/s6/container_environment/DJANGO_FORCE_SCRIPT_NAME
     printf 'True' > /var/run/s6/container_environment/DJANGO_USE_X_FORWARDED_HOST
+    # Patch resolver to match DNS, not sure if needed
+    dns_host=$(bashio::dns.host)
+    sed -i "s/%%dns_host%%/${dns_host}/g" /etc/nginx/http.d/resolver.conf
   else
+    rm /etc/nginx/http.d/resolver.conf
     raw_ip_network=$(bashio::network.ipv4_address)
     ip_address=${raw_ip_network%???}
     bashio::log.green "Home Assistant DSMR Reader Add-on - Ingress disabled, when started, you can open the interface at:"

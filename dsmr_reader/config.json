@@ -19,7 +19,7 @@
     "80/tcp": "The webserver port (When Ingress is disabled)"
   },
   "options": {
-    "ENABLE_INGRESS": true,
+    "ENABLE_INGRESS": false,
     "DSMRREADER_ADMIN_USER": "admin",
     "DSMRREADER_ADMIN_PASSWORD": "admin",
     "DJANGO_DATABASE_NAME": "dsmrreader",
