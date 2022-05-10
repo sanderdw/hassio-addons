@@ -65,15 +65,11 @@ function _hass {
     printf ${django_static} > /var/run/s6/container_environment/DJANGO_STATIC_URL
     printf ${django_url} > /var/run/s6/container_environment/DJANGO_FORCE_SCRIPT_NAME
     printf 'True' > /var/run/s6/container_environment/DJANGO_USE_X_FORWARDED_HOST
-    # Patch resolver to match DNS, not sure if needed
-    dns_host=$(bashio::dns.host)
-    sed -i "s/%%dns_host%%/${dns_host}/g" /etc/nginx/http.d/resolver.conf
   else
     raw_ip_network=$(bashio::network.ipv4_address)
     ip_address=${raw_ip_network%???}
     bashio::log.green "Home Assistant DSMR Reader Add-on - Ingress disabled, when started, you can open the interface at:"
     bashio::log.green "Home Assistant DSMR Reader Add-on - http://${ip_address}:$(bashio::addon.port '80/tcp')/"
-    rm /etc/nginx/http.d/resolver.conf
   fi
 }
 
