@@ -13,13 +13,13 @@
   "hassio_api": true,
   "map": ["backup:rw"],
   "ports": {
-    "80/tcp": 7777
+    "80/tcp": null
   },
   "ports_description": {
-    "80/tcp": "The webserver port (When Ingress is disabled)"
+    "80/tcp": "The UI port to be used when Ingress is disabled"
   },
   "options": {
-    "ENABLE_INGRESS": false,
+    "ENABLE_INGRESS": true,
     "DSMRREADER_ADMIN_USER": "admin",
     "DSMRREADER_ADMIN_PASSWORD": "admin",
     "DJANGO_DATABASE_NAME": "dsmrreader",
@@ -49,9 +49,9 @@
     "DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT": "str",
     "DSMRREADER_REMOTE_DATALOGGER_INPUT_METHOD": "list(serial|ipv4)",
     "DSMRREADER_REMOTE_DATALOGGER_SERIAL_BAUDRATE": "str",
-    "DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST": "str?",
-    "DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT": "str?",
-    "DSMRREADER_REMOTE_DATALOGGER_SLEEP": "str?",
+    "DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST": "str",
+    "DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT": "str",
+    "DSMRREADER_REMOTE_DATALOGGER_SLEEP": "str",
     "DSMRREADER_LOGLEVEL": "list(ERROR|WARNING|DEBUG)"
   }
 }
