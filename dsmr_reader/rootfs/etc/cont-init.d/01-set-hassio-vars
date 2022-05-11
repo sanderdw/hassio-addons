@@ -66,16 +66,27 @@ function _hass {
     sed -i "s/%%dns_host%%/${dns_host}/g" /etc/nginx/http.d/resolver.conf
   elif [ "$(bashio::config 'ENABLE_CUSTOM_REVERSE_PROXY')" == 'true' ]
   then
+    if [ "$(bashio::addon.port '80/tcp')" == "" ]
+      then
+      bashio::log.red "Home Assistant DSMR Reader Add-on - No port configured, configure a UI port in the Network options"
+      exit 1
+      fi
     bashio::log.blue "Home Assistant DSMR Reader Add-on - Custom reverse proxy enabled (Note: Ingress will not work)"
     django_static=$(bashio::config 'DJANGO_STATIC_URL')
     printf ${django_static} > /var/run/s6/container_environment/DJANGO_STATIC_URL
     django_url=$(bashio::config 'DJANGO_FORCE_SCRIPT_NAME')
     printf ${django_url} > /var/run/s6/container_environment/DJANGO_FORCE_SCRIPT_NAME
     printf 'True' > /var/run/s6/container_environment/DJANGO_USE_X_FORWARDED_HOST
+    rm /etc/nginx/http.d/resolver.conf
     # Patch resolver to match DNS, not sure if needed
     #dns_host=$(bashio::dns.host)
     #sed -i "s/%%dns_host%%/${dns_host}/g" /etc/nginx/http.d/resolver.conf
   else
+    if [ "$(bashio::addon.port '80/tcp')" == "" ]
+      then
+      bashio::log.red "Home Assistant DSMR Reader Add-on - No port configured, configure a UI port in the Network options"
+      exit 1
+      fi
     rm /etc/nginx/http.d/resolver.conf
     raw_ip_network=$(bashio::network.ipv4_address)
     ip_address=${raw_ip_network%???}

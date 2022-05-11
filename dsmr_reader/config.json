@@ -37,7 +37,7 @@
     "DSMRREADER_LOGLEVEL": "ERROR",
     "ENABLE_CUSTOM_REVERSE_PROXY": false,
     "DJANGO_FORCE_SCRIPT_NAME": "",
-    "DJANGO_STATIC_URL": ""
+    "DJANGO_STATIC_URL": "static/"
   },
   "schema": {
     "ENABLE_INGRESS": "bool",
