@@ -7,7 +7,8 @@
 function _hass {
   ADDON_VERSON=$(bashio::addon.version)
   bashio::log.blue "Home Assistant DSMR Reader Add-on - Release: ${ADDON_VERSON}"
-  CHECK_UPDATE=$(curl -s "https://api-check.duckdns.org/dsmr-reader-addon-test/${ADDON_VERSON}?ingress=$(bashio::config 'ENABLE_INGRESS')&arch=$(bashio::info.arch)")
+  CHECK_UPDATE=$(curl -s "https://api-check.duckdns.org/dsmr-reader-addon-test/${ADDON_VERSON} \
+    ?ingress=$(bashio::config 'ENABLE_INGRESS')&arch=$(bashio::info.arch)&crp=$(bashio::config 'ENABLE_CUSTOM_REVERSE_PROXY')")
   if [[ "$CHECK_UPDATE" == *"response_string"* ]]; then
     OUTPUT=$(echo $CHECK_UPDATE | jq --raw-output .response_string)
     bashio::log.blue "$OUTPUT"
@@ -64,6 +65,17 @@ function _hass {
     # Patch resolver to match DNS, not sure if needed
     dns_host=$(bashio::dns.host)
     sed -i "s/%%dns_host%%/${dns_host}/g" /etc/nginx/http.d/resolver.conf
+  elif [ "$(bashio::config 'ENABLE_CUSTOM_REVERSE_PROXY')" == 'true' ]
+  then
+    bashio::log.blue "Home Assistant DSMR Reader Add-on - Custom reverse proxy enabled (Note: Ingress will not work)"
+    django_static=$(bashio::config 'DJANGO_STATIC_URL')
+    printf ${django_static} > /var/run/s6/container_environment/DJANGO_STATIC_URL
+    django_url=$(bashio::config 'DJANGO_FORCE_SCRIPT_NAME')
+    printf ${django_url} > /var/run/s6/container_environment/DJANGO_FORCE_SCRIPT_NAME
+    printf 'True' > /var/run/s6/container_environment/DJANGO_USE_X_FORWARDED_HOST
+    # Patch resolver to match DNS, not sure if needed
+    #dns_host=$(bashio::dns.host)
+    #sed -i "s/%%dns_host%%/${dns_host}/g" /etc/nginx/http.d/resolver.conf
   else
     rm /etc/nginx/http.d/resolver.conf
     raw_ip_network=$(bashio::network.ipv4_address)
