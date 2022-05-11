@@ -19,7 +19,7 @@
     "80/tcp": "The UI port to be used when Ingress is disabled"
   },
   "options": {
-    "ENABLE_INGRESS": true,
+    "WEBSERVER": "Ingress",
     "DSMRREADER_ADMIN_USER": "admin",
     "DSMRREADER_ADMIN_PASSWORD": "admin",
     "DJANGO_DATABASE_NAME": "dsmrreader",
@@ -35,12 +35,11 @@
     "DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT": "x",
     "DSMRREADER_REMOTE_DATALOGGER_SLEEP": "0.5",
     "DSMRREADER_LOGLEVEL": "ERROR",
-    "ENABLE_CUSTOM_REVERSE_PROXY": false,
     "DJANGO_FORCE_SCRIPT_NAME": "",
     "DJANGO_STATIC_URL": "static/"
   },
   "schema": {
-    "ENABLE_INGRESS": "bool",
+    "WEBSERVER": "list(Ingress|Standard|Custom)",
     "DSMRREADER_ADMIN_USER": "str",
     "DSMRREADER_ADMIN_PASSWORD": "password",
     "DJANGO_DATABASE_NAME": "str",
@@ -56,7 +55,6 @@
     "DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT": "str",
     "DSMRREADER_REMOTE_DATALOGGER_SLEEP": "str",
     "DSMRREADER_LOGLEVEL": "list(ERROR|WARNING|DEBUG)",
-    "ENABLE_CUSTOM_REVERSE_PROXY": "bool?",
     "DJANGO_FORCE_SCRIPT_NAME": "str?",
     "DJANGO_STATIC_URL": "str?"
   }
