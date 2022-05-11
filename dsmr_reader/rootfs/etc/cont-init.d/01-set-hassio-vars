@@ -86,6 +86,7 @@ function _hass {
     #dns_host=$(bashio::dns.host)
     #sed -i "s/%%dns_host%%/${dns_host}/g" /etc/nginx/http.d/resolver.conf
   elif [ "$(bashio::config 'WEBSERVER')" == 'Standard' ]
+  then
     if [ "$(bashio::addon.port '80/tcp')" == "" ]
       then
       bashio::log.red "Home Assistant DSMR Reader Add-on - No port configured, configure a UI port in the Network options"
