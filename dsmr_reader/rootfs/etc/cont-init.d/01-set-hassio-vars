@@ -74,8 +74,11 @@ function _hass {
     bashio::log.blue "Home Assistant DSMR Reader Add-on - Custom reverse proxy enabled (Note: Ingress will not work)"
     django_static=$(bashio::config 'DJANGO_STATIC_URL')
     printf ${django_static} > /var/run/s6/container_environment/DJANGO_STATIC_URL
-    django_url=$(bashio::config 'DJANGO_FORCE_SCRIPT_NAME')
-    printf ${django_url} > /var/run/s6/container_environment/DJANGO_FORCE_SCRIPT_NAME
+    if [ "$(bashio::config 'DJANGO_FORCE_SCRIPT_NAME')" != "" ]
+      then
+      django_url=$(bashio::config 'DJANGO_FORCE_SCRIPT_NAME')
+      printf ${django_url} > /var/run/s6/container_environment/DJANGO_FORCE_SCRIPT_NAME
+      fi
     printf 'True' > /var/run/s6/container_environment/DJANGO_USE_X_FORWARDED_HOST
     rm /etc/nginx/http.d/resolver.conf
     # Patch resolver to match DNS, not sure if needed
