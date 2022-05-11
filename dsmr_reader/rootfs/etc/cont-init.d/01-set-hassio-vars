@@ -82,7 +82,7 @@ function _hass {
       fi
     printf 'True' > /var/run/s6/container_environment/DJANGO_USE_X_FORWARDED_HOST
     rm /etc/nginx/http.d/resolver.conf
-    bashio::log.green "Home Assistant DSMR Reader Add-on - Custom reverse proxy enabled (Note: Ingress will not work)"
+    bashio::log.green "Home Assistant DSMR Reader Add-on - Custom reverse proxy enabled (Note: Ingress will not work), DSMR Reader is accesable at:"
     bashio::log.green "Home Assistant DSMR Reader Add-on - http://${ip_address}:$(bashio::addon.port '80/tcp')/"
     # Patch resolver to match DNS, not sure if needed
     #dns_host=$(bashio::dns.host)
@@ -95,7 +95,7 @@ function _hass {
       exit 1
       fi
     rm /etc/nginx/http.d/resolver.conf
-    bashio::log.green "Home Assistant DSMR Reader Add-on - Ingress disabled, when started, you can open the interface at:"
+    bashio::log.green "Home Assistant DSMR Reader Add-on - Ingress disabled, when started, DSMR Reader is accesable at:"
     bashio::log.green "Home Assistant DSMR Reader Add-on - http://${ip_address}:$(bashio::addon.port '80/tcp')/"
   fi
 }
