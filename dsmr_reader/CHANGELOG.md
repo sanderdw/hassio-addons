@@ -2,7 +2,9 @@
 
 ## 1.2.1
 
-- Ingress support
+- As always, backup first!
+- Ingress support now standard enabled
+- Additional Reverse Proxy support, see https://github.com/sanderdw/hassio-addons/issues/24
 
 ## 1.2.0
 
