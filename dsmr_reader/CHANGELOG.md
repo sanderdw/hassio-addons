@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.1
+
+- As always, backup first!
+- Ingress support now standard enabled and port forward removed (reset configuration could be required)
+- Additional Reverse Proxy support, see https://github.com/sanderdw/hassio-addons/issues/24
+- Added Datalogger API configuration
+
 ## 1.2.0
 
 - As always, backup first!

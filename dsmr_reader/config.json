@@ -1,6 +1,6 @@
 {
   "name": "DSMR Reader",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "slug": "dsmr_reader",
   "description": "Used for reading the smart meter DSMR P1 port (https://dsmr-reader.readthedocs.io)",
   "arch": ["armhf", "armv7", "aarch64", "amd64"],
@@ -10,17 +10,16 @@
   "boot": "auto",
   "uart": true,
   "ingress": true,
-  "panel_icon": "mdi:leaf-circle-outline",
   "hassio_api": true,
   "map": ["backup:rw"],
   "ports": {
-    "80/tcp": 7777
+    "80/tcp": null
   },
   "ports_description": {
-    "80/tcp": "The webserver port (When Ingress is disabled)"
+    "80/tcp": "The UI port to be used when Ingress is disabled"
   },
   "options": {
-    "ENABLE_INGRESS": false,
+    "WEBSERVER": "Ingress",
     "DSMRREADER_ADMIN_USER": "admin",
     "DSMRREADER_ADMIN_PASSWORD": "admin",
     "DJANGO_DATABASE_NAME": "dsmrreader",
@@ -29,16 +28,20 @@
     "DJANGO_DATABASE_HOST": "77b2833f-timescaledb",
     "DJANGO_DATABASE_PORT": "5432",
     "DSMRREADER_REMOTE_DATALOGGER_MODE": "standalone",
+    "DSMRREADER_REMOTE_DATALOGGER_API_HOSTS": "http(s)://<YOUR_DSMR_HOST>:<PORT>",
+    "DSMRREADER_REMOTE_DATALOGGER_API_KEYS": "<YOUR_API_KEY>",
     "DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT": "/dev/ttyUSB1",
     "DSMRREADER_REMOTE_DATALOGGER_INPUT_METHOD": "serial",
     "DSMRREADER_REMOTE_DATALOGGER_SERIAL_BAUDRATE": "115200",
     "DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST": "x.x.x.x",
     "DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT": "x",
     "DSMRREADER_REMOTE_DATALOGGER_SLEEP": "0.5",
-    "DSMRREADER_LOGLEVEL": "ERROR"
+    "DSMRREADER_LOGLEVEL": "ERROR",
+    "DJANGO_FORCE_SCRIPT_NAME": "",
+    "DJANGO_STATIC_URL": "static/"
   },
   "schema": {
-    "ENABLE_INGRESS": "bool",
+    "WEBSERVER": "list(Ingress|Standard|Custom)",
     "DSMRREADER_ADMIN_USER": "str",
     "DSMRREADER_ADMIN_PASSWORD": "password",
     "DJANGO_DATABASE_NAME": "str",
@@ -47,12 +50,16 @@
     "DJANGO_DATABASE_HOST": "str",
     "DJANGO_DATABASE_PORT": "str",
     "DSMRREADER_REMOTE_DATALOGGER_MODE": "list(standalone|sender|receiver)",
+    "DSMRREADER_REMOTE_DATALOGGER_API_HOSTS": "str",
+    "DSMRREADER_REMOTE_DATALOGGER_API_KEYS": "str",
     "DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT": "str",
     "DSMRREADER_REMOTE_DATALOGGER_INPUT_METHOD": "list(serial|ipv4)",
     "DSMRREADER_REMOTE_DATALOGGER_SERIAL_BAUDRATE": "str",
     "DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST": "str",
     "DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT": "str",
     "DSMRREADER_REMOTE_DATALOGGER_SLEEP": "str",
-    "DSMRREADER_LOGLEVEL": "list(ERROR|WARNING|DEBUG)"
+    "DSMRREADER_LOGLEVEL": "list(ERROR|WARNING|DEBUG)",
+    "DJANGO_FORCE_SCRIPT_NAME": "str?",
+    "DJANGO_STATIC_URL": "str?"
   }
 }

@@ -11,7 +11,8 @@ on:
       - 'v*.*.*'
     paths:
       - 'dsmr_reader/Dockerfile'
-      - 'dsmr_reader/rootfs/*'
+      - 'dsmr_reader/rootfs/**'
+      - .github/workflows/dsmr-reader.yml
 
 jobs:
   dsmr-reader:

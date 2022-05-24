@@ -11,7 +11,7 @@ Credits to Dennis Siemensma for creating the DSMR Reader software (https://dsmr-
 ![DSMR Reader](https://github.com/sanderdw/hassio-addons/raw/master/images/dsmr_reader.png)
 
 [dsmr-shield]: https://img.shields.io/badge/DSMR%20Reader%20Version-%205.1-purple.svg?style=flat-square
-[addon-shield]: https://img.shields.io/badge/Addon%20Version-%201.2.0-purple.svg?style=flat-square
+[addon-shield]: https://img.shields.io/badge/Addon%20Version-%201.2.1-purple.svg?style=flat-square
 
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg?style=flat-square
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg?style=flat-square
@@ -46,4 +46,3 @@ Note: Need to perform commands on the commandline? After entering the container 
 
 Note: Using a PostgresDB with DSMR Reader on a Raspberry PI with an SDCARD can decrease it's lifespan. Google on "wear sdcard raspberry pi" for more information. 
 Use of an external USB SSD/harddisk is recommended (https://www.home-assistant.io/common-tasks/os/#using-external-data-disk), or you could use a seperate PostgresDB server on a different machine.
-
