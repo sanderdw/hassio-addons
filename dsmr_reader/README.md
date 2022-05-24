@@ -46,4 +46,3 @@ Note: Need to perform commands on the commandline? After entering the container 
 
 Note: Using a PostgresDB with DSMR Reader on a Raspberry PI with an SDCARD can decrease it's lifespan. Google on "wear sdcard raspberry pi" for more information. 
 Use of an external USB SSD/harddisk is recommended (https://www.home-assistant.io/common-tasks/os/#using-external-data-disk), or you could use a seperate PostgresDB server on a different machine.
-
