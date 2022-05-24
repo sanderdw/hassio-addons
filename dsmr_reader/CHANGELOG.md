@@ -9,7 +9,8 @@
 ## 1.2.0
 
 - As always, backup first!
-- Ingress support (need to be specifically enabled in configuration for now)
+- Don't use the 'OPEN WEB UI' button as it's used for Ingress only, so open the url (you can find it in the addon log) manually
+- Ingress support in BETA (need to be specifically enabled in configuration for now and needs a reinstall of the addon)
 - Technical: bashio support and code cleanup
 
 ## 1.1.2
