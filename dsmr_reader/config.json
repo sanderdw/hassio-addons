@@ -16,7 +16,7 @@
     "80/tcp": null
   },
   "ports_description": {
-    "80/tcp": "The UI port to be used when Ingress is disabled"
+    "80/tcp": "The API and/or UI port (UI only when Ingress is disabled)"
   },
   "options": {
     "WEBSERVER": "Ingress",
