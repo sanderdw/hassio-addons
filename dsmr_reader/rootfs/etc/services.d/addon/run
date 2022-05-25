@@ -1,0 +1,7 @@
+#!/usr/bin/with-contenv bashio
+
+while true; do
+  ADDON_VERSON=$(bashio::addon.version)
+  bashio::log.green "Home Assistant DSMR Reader Add-on - Release: ${ADDON_VERSON}"
+  sleep 2
+done
