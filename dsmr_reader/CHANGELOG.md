@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.3.0
+
+- As always, backup first!
+- Update to DSMR-reader v5.2
+
 ## 1.2.1
 
 - As always, backup first!
