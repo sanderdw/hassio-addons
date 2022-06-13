@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.1
+
+- Fix panel icon https://github.com/sanderdw/hassio-addons/issues/53
+
 ## 1.3.0
 
 - As always, backup first!
