@@ -6,9 +6,8 @@ on:
   push:
     branches:
       - 'master'
-      - 'develop'
     tags:
-      - 'v*.*.*'
+      - '*.*.*'
     paths:
       - 'metabase/Dockerfile'
       - 'metabase/run.sh'
