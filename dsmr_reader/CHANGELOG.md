@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.0
+
+- Update to DSMR-reader v5.3
+
 ## 1.3.1
 
 - Fix panel icon https://github.com/sanderdw/hassio-addons/issues/53
