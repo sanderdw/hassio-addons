@@ -10,6 +10,7 @@ on:
     tags:
       - '*.*.*'
     paths:
+      - '.github/workflows/metabase.yml'
       - 'metabase/Dockerfile'
       - 'metabase/run.sh'
 #  pull_request:
