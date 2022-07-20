@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.6.0
+
+- Update to DSMR-reader v5.5
+
 ## 1.5.0
 
 - Update to DSMR-reader v5.4
