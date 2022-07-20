@@ -10,8 +10,8 @@ Credits to Dennis Siemensma for creating the DSMR Reader software (https://dsmr-
 
 ![DSMR Reader](https://github.com/sanderdw/hassio-addons/raw/master/images/dsmr_reader.png)
 
-[dsmr-shield]: https://img.shields.io/badge/DSMR%20Reader%20Version-%205.4-purple.svg?style=flat-square
-[addon-shield]: https://img.shields.io/badge/Addon%20Version-%201.5.0-purple.svg?style=flat-square
+[dsmr-shield]: https://img.shields.io/badge/DSMR%20Reader%20Version-%205.5-purple.svg?style=flat-square
+[addon-shield]: https://img.shields.io/badge/Addon%20Version-%201.6.0-purple.svg?style=flat-square
 
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg?style=flat-square
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg?style=flat-square
