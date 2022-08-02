@@ -42,7 +42,7 @@ See config instructions here: https://github.com/sanderdw/hassio-addons
 
 Note: Having problems or questions? Please check the community forum first https://community.home-assistant.io/t/dsmr-reader-add-on-for-home-assistant/279087 before creating an issue in Github.
 
-Note: Need to perform commands on the commandline? After entering the container bash ("```docker exec -it addon_0826754b_dsmr_reader bash```") you need to execute this command "```. /etc/cont-init.d/01-set-hassio-vars```" to apply the settings correctly from the addon Configuration tab.
+Note: Need to perform commands on the commandline? After entering the container bash ("```docker exec -it addon_0826754b_dsmr_reader bash```") you need to execute this command "```. /cli-helper.sh```" to apply the settings correctly from the addon Configuration tab.
 
 Note: Using a PostgresDB with DSMR Reader on a Raspberry PI with an SDCARD can decrease it's lifespan. Google on "wear sdcard raspberry pi" for more information.
 Use of an external USB SSD/harddisk is recommended (https://www.home-assistant.io/common-tasks/os/#using-external-data-disk), or you could use a seperate PostgresDB server on a different machine.

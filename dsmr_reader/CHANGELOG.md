@@ -3,6 +3,7 @@
 ## 1.6.1
 
 - Update to DSMR-reader v5.5.1
+- New cli-helper to fix (https://community.home-assistant.io/t/dsmr-reader-add-on-for-home-assistant/279087/286)
 
 ## 1.6.0
 
