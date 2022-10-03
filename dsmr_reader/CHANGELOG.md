@@ -3,6 +3,7 @@
 ## 1.8.0
 
 - Update to DSMR-reader v5.8
+- Continue when update check fails
 
 ## 1.7.0
 
