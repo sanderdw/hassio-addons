@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.10.0
+## 1.10.1
 
 - Update to DSMR-reader v5.10.3
 

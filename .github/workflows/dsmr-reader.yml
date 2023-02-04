@@ -6,7 +6,7 @@ on:
   push:
     branches:
       - 'master'
-      - 'dsmrreader-1.10.0'
+      - 'dsmrreader-1.10.1'
     tags:
       - '*.*.*'
     paths:
