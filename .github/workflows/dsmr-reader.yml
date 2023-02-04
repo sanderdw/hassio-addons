@@ -74,7 +74,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Docker meta
         id: meta # you'll use this in the next step
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@v4
         with:
           # list of Docker images to use as base name for tags
           images: |
@@ -89,7 +89,7 @@ jobs:
             type=semver,pattern={{major}}
             type=raw,value=${{ steps.data.outputs.HA_RELEASE }}
       - name: Build and push
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v4
         with:
           context: ./dsmr_reader
           platforms: ${{ steps.data.outputs.PLATFORMS }}
