@@ -61,7 +61,7 @@ jobs:
       - name: DSMR addon release
         run: echo ${{ steps.data.outputs.HA_RELEASE }}
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
+        uses: docker/setup-qemu-action@v2
       # https://github.com/docker/setup-buildx-action
       - name: Set up Docker Buildx
         id: buildx
