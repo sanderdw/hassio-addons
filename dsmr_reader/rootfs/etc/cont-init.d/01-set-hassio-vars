@@ -23,8 +23,8 @@ function _hass {
     printf $(bashio::config 'DJANGO_DATABASE_PASSWORD') > /var/run/s6/container_environment/DJANGO_DATABASE_PASSWORD
     printf $(bashio::config 'DJANGO_DATABASE_HOST') > /var/run/s6/container_environment/DJANGO_DATABASE_HOST
     printf $(bashio::config 'DJANGO_DATABASE_PORT') > /var/run/s6/container_environment/DJANGO_DATABASE_PORT
-    printf $(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_MODE') > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_MODE
-    if [ "$(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_MODE')" == 'sender' ]
+    printf $(bashio::config 'DSMRREADER_OPERATION_MODE') > /var/run/s6/container_environment/DSMRREADER_OPERATION_MODE
+    if [ "$(bashio::config 'DSMRREADER_OPERATION_MODE')" == 'api_client' ]
     then
       printf $(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_API_HOSTS') > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_API_HOSTS
       printf $(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_API_KEYS') > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_API_KEYS
@@ -45,8 +45,8 @@ function _hass {
     export DJANGO_DATABASE_PASSWORD=$(bashio::config 'DJANGO_DATABASE_PASSWORD')
     export DJANGO_DATABASE_HOST=$(bashio::config 'DJANGO_DATABASE_HOST')
     export DJANGO_DATABASE_PORT=$(bashio::config 'DJANGO_DATABASE_PORT')
-    export DSMRREADER_REMOTE_DATALOGGER_MODE=$(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_MODE')
-    if [ "$(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_MODE')" == 'sender' ]
+    export DSMRREADER_OPERATION_MODE=$(bashio::config 'DSMRREADER_OPERATION_MODE')
+    if [ "$(bashio::config 'DSMRREADER_OPERATION_MODE')" == 'api_client' ]
     then
       export DSMRREADER_REMOTE_DATALOGGER_API_HOSTS=$(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_API_HOSTS')
       export DSMRREADER_REMOTE_DATALOGGER_API_KEYS=$(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_API_KEYS')
