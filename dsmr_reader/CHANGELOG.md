@@ -3,6 +3,13 @@
 ## 1.10.1
 
 - Update to DSMR-reader v5.10.3
+- NOTE: Check configuration as DSMRREADER_REMOTE_DATALOGGER_MODE" has become "DSMRREADER_OPERATION_MODE"
+
+  - 'sender' changed to 'api_client'
+  - 'receiver' changed to 'api_server'
+
+  Reset configuration if you don't see the updated settings.
+- Github Action workflow updated/fixes
 
 ## 1.9.0
 
