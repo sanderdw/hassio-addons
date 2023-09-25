@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.10.2
+
+- Update base image to support PostgreSQL 15
+
 ## 1.10.1
 
 - Update to DSMR-reader v5.10.3
