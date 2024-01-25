@@ -1,15 +1,15 @@
-FROM --platform=$BUILDPLATFORM openjdk:19-buster AS build
+FROM --platform=$BUILDPLATFORM openjdk:11-jre-slim AS build
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
 ARG HA_RELEASE
 RUN echo "I am running on $BUILDPLATFORM, building for $TARGETPLATFORM" > /log
 RUN echo "build - Working on the following addon release: $HA_RELEASE"
 COPY config.yaml /home/ha_addon_version.yaml
-ADD https://downloads.metabase.com/v0.43.0/metabase.jar /home
+ADD https://downloads.metabase.com/v0.48.3/metabase.jar /home
 COPY run.sh /
 RUN chmod a+x /run.sh
 
-FROM openjdk:19-buster
+FROM openjdk:11-jre-slim
 ARG HA_RELEASE
 RUN echo "final - Working on the following addon release: $HA_RELEASE"
 RUN apt-get update \
