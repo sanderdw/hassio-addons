@@ -8,22 +8,32 @@ ENV LANG C.UTF-8
 RUN apk add --no-cache jq
 
 # Add bashio
+#RUN \
+#    curl -J -L -o /tmp/bashio.tar.gz \
+#        "https://github.com/hassio-addons/bashio/archive/v0.14.3.tar.gz" \
+#    && mkdir /tmp/bashio \
+#    && tar zxvf \
+#        /tmp/bashio.tar.gz \
+#        --strip 1 -C /tmp/bashio \
+#    \
+#    && mv /tmp/bashio/lib /usr/lib/bashio \
+#    && ln -s /usr/lib/bashio/bashio /usr/bin/bashio \
+#    && rm -f -r \
+#        /tmp/*
+
 RUN \
-    curl -J -L -o /tmp/bashio.tar.gz \
-        "https://github.com/hassio-addons/bashio/archive/v0.14.3.tar.gz" \
-    && mkdir /tmp/bashio \
-    && tar zxvf \
-        /tmp/bashio.tar.gz \
-        --strip 1 -C /tmp/bashio \
-    \
-    && mv /tmp/bashio/lib /usr/lib/bashio \
+    mkdir -p /usr/src/bashio \
+    && curl -L -f -s "https://github.com/hassio-addons/bashio/archive/v0.16.2.tar.gz" \
+        | tar -xzf - --strip 1 -C /usr/src/bashio \
+    && mv /usr/src/bashio/lib /usr/lib/bashio \
     && ln -s /usr/lib/bashio/bashio /usr/bin/bashio \
-    && rm -f -r \
-        /tmp/*
+    \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /usr/src/*
 
 # HOMEASSISTANT Add-On OVERRIDES
 COPY rootfs /
-#RUN chmod a+x /etc/s6-overlay/s6-rc.d/set-hassio-vars/run
+RUN chmod a+x /etc/s6-overlay/s6-rc.d/set-hassio-vars/run
 
 ENV DUID=0
 ENV DGID=0
