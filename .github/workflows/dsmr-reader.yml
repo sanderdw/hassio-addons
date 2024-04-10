@@ -9,10 +9,6 @@ on:
       - 'reader-1.11.1'
     tags:
       - '*.*.*'
-    paths:
-      - 'dsmr_reader/Dockerfile'
-      - 'dsmr_reader/rootfs/**'
-      - .github/workflows/dsmr-reader.yml
 
 jobs:
   dsmr-reader:
