@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.11.1
+
+- Support for PostgreSQL 16.2
+
 ## 1.11.0
 
 - Update to DSMR-reader v5.11
