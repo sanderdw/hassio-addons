@@ -23,7 +23,10 @@ RUN \
 
 # HOMEASSISTANT Add-On OVERRIDES
 COPY rootfs /
-#RUN chmod a+x /etc/cont-init.d/01-set-hassio-vars
+
+
+
+RUN chmod a+x /etc/s6-overlay/s6-rc.d/01-set-hassio-vars
 
 ENV DUID=0
 ENV DGID=0
