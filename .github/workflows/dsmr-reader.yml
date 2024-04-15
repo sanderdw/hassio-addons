@@ -57,9 +57,11 @@ jobs:
         id: data
         run: |
           version=$(jq --raw-output '.version' ./dsmr_reader/config.json)
-          echo "::set-output name=HA_RELEASE::$version"
+          echo "HA_RELEASE=$version" >> "$GITHUB_OUTPUT"
       - name: DSMR addon release
-        run: echo ${{ steps.data.outputs.HA_RELEASE }}
+        env:
+          HA_RELEASE: ${{ steps.data.outputs.HA_RELEASE }}
+        run: echo "HA_RELEASE"
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       # https://github.com/docker/setup-buildx-action
