@@ -2,7 +2,7 @@
 
 ## 1.11.2
 
-- Revert until https://github.com/sanderdw/hassio-addons/issues/86 is resolved
+- Some users are noticing stability issues so revert until [issue](https://https://github.com/sanderdw/hassio-addons/issues/86) is resolved
 
 ## 1.11.1
 
