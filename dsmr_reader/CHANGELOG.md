@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.11.2
+
+- Some users are noticing stability issues so revert until [issue](https://https://github.com/sanderdw/hassio-addons/issues/86) is resolved
+
 ## 1.11.1
 
 - Support for PostgreSQL 16.2

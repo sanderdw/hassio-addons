@@ -1,6 +1,6 @@
 {
   "name": "DSMR Reader",
-  "version": "1.11.1",
+  "version": "1.11.2",
   "slug": "dsmr_reader",
   "description": "Used for reading the smart meter DSMR P1 port (https://dsmr-reader.readthedocs.io)",
   "arch": ["armhf", "armv7", "aarch64", "amd64"],
@@ -12,7 +12,6 @@
   "ingress": true,
   "panel_icon": "mdi:leaf-circle-outline",
   "hassio_api": true,
-  "init": false,
   "map": ["backup:rw"],
   "ports": {
     "80/tcp": null
