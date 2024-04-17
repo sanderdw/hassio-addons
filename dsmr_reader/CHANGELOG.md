@@ -1,12 +1,5 @@
 # Changelog
 
-## 1.11.1
-
-- Support for PostgreSQL 16.2
-- Technical: Bashio update to v0.16.2
-- Technical: Github Action workflow updated
-- Technical: S6 Overlay v3
-
 ## 1.11.0
 
 - Update to DSMR-reader v5.11
