@@ -6,7 +6,7 @@ on:
   push:
     branches:
       - 'master'
-      - 'reader-1.11.0'
+      - 'reader-1.11.2'
     tags:
       - '*.*.*'
     paths:
@@ -51,30 +51,32 @@ jobs:
     steps:
       # Get the repository's code
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       # https://github.com/docker/setup-qemu-action
       - name: Get the version from config.json
         id: data
         run: |
           version=$(jq --raw-output '.version' ./dsmr_reader/config.json)
-          echo "::set-output name=HA_RELEASE::$version"
+          echo "HA_RELEASE=$version" >> "$GITHUB_OUTPUT"
       - name: DSMR addon release
-        run: echo ${{ steps.data.outputs.HA_RELEASE }}
+        env:
+          HA_RELEASE: ${{ steps.data.outputs.HA_RELEASE }}
+        run: echo "$HA_RELEASE"
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
       # https://github.com/docker/setup-buildx-action
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
       - name: Login to Docker Hub
         if: github.event_name != 'pull_request'
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Docker meta
         id: meta # you'll use this in the next step
-        uses: docker/metadata-action@v4
+        uses: docker/metadata-action@v5
         with:
           # list of Docker images to use as base name for tags
           images: |
@@ -89,7 +91,7 @@ jobs:
             type=semver,pattern={{major}}
             type=raw,value=${{ steps.data.outputs.HA_RELEASE }}
       - name: Build and push
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
           context: ./dsmr_reader
           platforms: ${{ matrix.PLATFORMS }}
