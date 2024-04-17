@@ -6,7 +6,7 @@ on:
   push:
     branches:
       - 'master'
-      - 'reader-1.11.1'
+      - 'reader-1.11.3'
     tags:
       - '*.*.*'
     paths:
