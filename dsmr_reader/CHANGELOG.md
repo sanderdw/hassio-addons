@@ -1,14 +1,5 @@
 # Changelog
 
-## 1.11.3
-
-- Datalogger automatically restarts again
-- From 1.11.1
-  - Support for PostgreSQL 16.2
-  - Technical: Bashio update to v0.16.2
-  - Technical: Github Action workflow updated
-  - Technical: S6 Overlay v3
-
 ## 1.11.2
 
 - Some users are noticing stability issues so revert until [issue](https://https://github.com/sanderdw/hassio-addons/issues/86) is resolved
