@@ -12,7 +12,6 @@
   "ingress": true,
   "panel_icon": "mdi:leaf-circle-outline",
   "hassio_api": true,
-  "init": false,
   "map": ["backup:rw"],
   "ports": {
     "80/tcp": null
