@@ -24,21 +24,21 @@ jobs:
           # AMD64
           - DOCKER_TAG_SUFFIX: amd64
             S6_ARCH: amd64
-            BASE_IMAGE: homeassistant/amd64-base-ubuntu:20.04
+            BASE_IMAGE: ghcr.io/home-assistant/amd64-base-ubuntu:20.04
             PLATFORMS: linux/amd64
             QEMU_ARCH: x86_64
 
           # ARM32V7
           - DOCKER_TAG_SUFFIX: armv7
             S6_ARCH: armv7
-            BASE_IMAGE: homeassistant/armv7-base-ubuntu:20.04
+            BASE_IMAGE: ghcr.io/home-assistant/armv7-base-ubuntu:20.04
             PLATFORMS: linux/arm/v7
             QEMU_ARCH: arm
 
           # ARM64V8
           - DOCKER_TAG_SUFFIX: aarch64
             S6_ARCH: aarch64
-            BASE_IMAGE: homeassistant/aarch64-base-ubuntu:20.04
+            BASE_IMAGE: ghcr.io/home-assistant/aarch64-base-ubuntu:20.04
             PLATFORMS: linux/arm64
             QEMU_ARCH: aarch64
 
