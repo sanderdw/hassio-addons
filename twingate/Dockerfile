@@ -13,7 +13,8 @@ RUN /app/install.sh
 
 # HOMEASSISTANT Add-On OVERRIDES
 COPY rootfs /
-RUN chmod a+x /etc/s6-overlay/s6-rc.d/set-hassio-vars/run
+
+RUN chmod a+x /etc/s6-overlay/s6-rc.d/init-docker-entrypoint/run
 
 # Labels
 LABEL \
