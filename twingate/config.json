@@ -8,7 +8,9 @@
   "url": "https://github.com/sanderdw/hassio-addons",
   "startup": "application",
   "boot": "auto",
-  "uart": false,
+  "map":{
+    "type": "share"
+  },
   "options": {
     "TWINGATE_NETWORK": "",
     "TWINGATE_ACCESS_TOKEN": "",

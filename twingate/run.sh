@@ -22,3 +22,5 @@ function _hass {
 #---------------------------------------------------------------------------------------------------------------------------
 
 _hass
+twingate setup --headless /share/twingate.json
+twingate start

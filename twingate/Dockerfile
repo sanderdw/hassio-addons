@@ -10,7 +10,6 @@ COPY run.sh /
 ADD https://binaries.twingate.com/client/linux/install.sh /app/install.sh
 RUN chmod a+x /app/install.sh
 RUN /app/install.sh
-RUN chmod a+x /run.sh
 
 RUN chmod a+x /run.sh
 
