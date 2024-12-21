@@ -16,7 +16,7 @@ on:
       - 'twingate/config.json'
 
 jobs:
-  dsmr-datalogger:
+  twingate:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -83,10 +83,10 @@ jobs:
             type=semver,pattern={{major}}
             type=raw,value=${{ steps.data.outputs.HA_RELEASE }}
       - name: Build and push
-        uses: docker/build-push-action@v6.10.0
+        uses: docker/build-push-action@v6
         with:
           context: ./twingate
-          platforms: ${{ steps.data.outputs.PLATFORMS }}
+          platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
