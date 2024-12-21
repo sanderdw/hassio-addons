@@ -8,6 +8,7 @@ ENV LANG C.UTF-8
 COPY config.json /app/ha_addon_version.json
 COPY run.sh /
 ADD https://binaries.twingate.com/client/linux/install.sh install.sh
+RUN chmod a+x install.sh
 RUN install.sh
 RUN chmod a+x /run.sh
 
