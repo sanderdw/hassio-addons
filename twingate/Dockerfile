@@ -6,14 +6,14 @@ ARG HA_RELEASE
 ENV LANG=C.UTF-8
 # Copy data for add-on
 COPY config.json /app/ha_addon_version.json
-COPY run.sh /
+
 ADD https://binaries.twingate.com/client/linux/install.sh /app/install.sh
 RUN chmod a+x /app/install.sh
 RUN /app/install.sh
 
-RUN chmod a+x /run.sh
-
-CMD [ "/run.sh" ]
+# HOMEASSISTANT Add-On OVERRIDES
+COPY rootfs /
+RUN chmod a+x /etc/s6-overlay/s6-rc.d/set-hassio-vars/run
 
 # Labels
 LABEL \
