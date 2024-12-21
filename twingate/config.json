@@ -8,6 +8,7 @@
   "url": "https://github.com/sanderdw/hassio-addons",
   "startup": "application",
   "boot": "auto",
+  "init": false,
   "map": [
     {
       "type": "share",
