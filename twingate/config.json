@@ -3,14 +3,17 @@
   "version": "0.0.1",
   "slug": "twingate",
   "description": "",
-  "arch": ["armv7", "aarch64", "amd64"],
+  "arch": ["aarch64", "amd64"],
   "image": "sanderdw/ha-twingate-{arch}",
   "url": "https://github.com/sanderdw/hassio-addons",
   "startup": "application",
   "boot": "auto",
-  "map":{
-    "type": "share"
-  },
+  "map": [
+    {
+      "type": "share",
+      "read_only": false
+    }
+  ],
   "options": {
     "TWINGATE_NETWORK": "",
     "TWINGATE_ACCESS_TOKEN": "",
