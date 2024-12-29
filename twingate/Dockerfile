@@ -3,18 +3,24 @@ FROM $BUILD_FROM
 ARG BUILD_ARCH
 ARG HA_RELEASE
 
-ENV LANG=C.UTF-8
-# Copy data for add-on
-COPY config.json /app/ha_addon_version.json
+ENV LANG C.UTF-8
 
-ADD https://binaries.twingate.com/client/linux/install.sh /app/install.sh
-RUN chmod a+x /app/install.sh
-RUN /app/install.sh
+RUN apk add --no-cache jq
 
-# HOMEASSISTANT Add-On OVERRIDES
-COPY rootfs /
-RUN chmod a+x /etc/s6-overlay/s6-rc.d/init-docker-entrypoint/run
-RUN chmod a+x /etc/s6-overlay/s6-rc.d/init-docker-entrypoint/type
+RUN \
+    mkdir -p /usr/src/bashio \
+    && curl -L -f -s "https://github.com/hassio-addons/bashio/archive/v0.16.2.tar.gz" \
+        | tar -xzf - --strip 1 -C /usr/src/bashio \
+    && mv /usr/src/bashio/lib /usr/lib/bashio \
+    && ln -s /usr/lib/bashio/bashio /usr/bin/bashio \
+    \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /usr/src/*
+
+COPY run.sh /
+RUN chmod a+x /run.sh
+
+CMD [ "/run.sh" ]
 
 # Labels
 LABEL \
