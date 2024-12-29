@@ -3,9 +3,9 @@ FROM $BUILD_FROM
 ARG BUILD_ARCH
 ARG HA_RELEASE
 
-ENV LANG C.UTF-8
+ENV LANG=C.UTF-8
 
-RUN apk add --no-cache jq
+#RUN apk add --no-cache jq
 
 RUN \
     mkdir -p /usr/src/bashio \
