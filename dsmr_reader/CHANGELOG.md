@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.12.0
+
+- Upgrade alpine to 3.21
+- Upgrade postgresql to 17.x
+- Upgrade to Python 3.12
+- Update readme
+- Import first the docker secrets
+
 ## 1.11.3
 
 - Datalogger automatically restarts again
