@@ -2,11 +2,8 @@
 
 ## 1.12.0
 
-- Upgrade alpine to 3.21
+- Use a remote share as backup folder [issue](https://github.com/sanderdw/hassio-addons/issues/82)
 - Upgrade postgresql to 17.x
-- Upgrade to Python 3.12
-- Update readme
-- Import first the docker secrets
 
 ## 1.11.3
 
