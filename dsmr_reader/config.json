@@ -13,7 +13,16 @@
   "panel_icon": "mdi:leaf-circle-outline",
   "hassio_api": true,
   "init": false,
-  "map": ["backup:rw"],
+  "map": [
+    {
+      "type": "share",
+      "read_only": false
+    },
+    {
+      "type": "backup",
+      "read_only": false
+    }
+  ],
   "ports": {
     "80/tcp": null
   },
