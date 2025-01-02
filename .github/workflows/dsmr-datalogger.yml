@@ -58,7 +58,7 @@ jobs:
           # i386
           - DOCKER_TAG_SUFFIX: i386
             S6_ARCH: i386
-            BASE_IMAGE: ghcr.io/home-assistant/i386-base-python:3.13
+            BASE_IMAGE: ghcr.io/home-assistant/i386-base-python:3.13-alpine3.21
             PLATFORMS: linux/i386
             QEMU_ARCH: i386
 
