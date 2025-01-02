@@ -2,4 +2,4 @@
 
 pwd
 python -V
-python dsmr_datalogger_api_client.py
+python /run/s6/legacy-services/example/dsmr_datalogger_api_client.py
