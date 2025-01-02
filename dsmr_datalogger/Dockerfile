@@ -7,7 +7,7 @@ ENV LANG=C.UTF-8
 # Copy data for add-on
 COPY config.json /app/ha_addon_version.json
 COPY rootfs /
-COPY dsmr_datalogger_api_client.py /run/s6/legacy-services/example/
+COPY dsmr_datalogger_api_client.py /run/s6/legacy-services/example/dsmr_datalogger_api_client.py
 COPY requirements.txt /
 RUN mkdir -p /etc/dsmr_logs
 RUN pip install --no-cache-dir -r requirements.txt
