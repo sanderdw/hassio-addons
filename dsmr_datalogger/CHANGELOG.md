@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.0
+
+- Happy 2025!
+- Update packages
+- Technical: Github Action workflow updated (switch to ghcr.io)
+
 ## 1.1.0
 
 - As always, backup first!

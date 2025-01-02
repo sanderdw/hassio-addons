@@ -3,7 +3,7 @@ FROM $BUILD_FROM
 ARG BUILD_ARCH
 ARG HA_RELEASE
 
-ENV LANG C.UTF-8
+ENV LANG=C.UTF-8
 # Copy data for add-on
 COPY config.json /app/ha_addon_version.json
 COPY run.sh /

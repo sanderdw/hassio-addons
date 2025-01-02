@@ -6,7 +6,7 @@ on:
   push:
     branches:
       - 'master'
-      - 'datalogger'
+      - 'logger-1.2.0'
     tags:
       - 'v*.*.*'
     paths:
@@ -19,6 +19,11 @@ on:
 jobs:
   dsmr-datalogger:
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+      attestations: write
+      id-token: write
     strategy:
       matrix:
         include:
@@ -32,76 +37,85 @@ jobs:
           # ARM32V6
           - DOCKER_TAG_SUFFIX: armhf
             S6_ARCH: armhf
-            BASE_IMAGE: homeassistant/armhf-base-python:3.9
+            BASE_IMAGE: ghcr.io/home-assistant/armhf-base-python:3.13
             PLATFORMS: linux/arm/v6
             QEMU_ARCH: arm
 
           # ARM32V7
           - DOCKER_TAG_SUFFIX: armv7
             S6_ARCH: armv7
-            BASE_IMAGE: homeassistant/armv7-base-python:3.9
+            BASE_IMAGE: ghcr.io/home-assistant/armv7-base-python:3.13
             PLATFORMS: linux/arm/v7
             QEMU_ARCH: arm
 
           # ARM64V8
           - DOCKER_TAG_SUFFIX: aarch64
             S6_ARCH: aarch64
-            BASE_IMAGE: homeassistant/aarch64-base-python:3.9
+            BASE_IMAGE: ghcr.io/home-assistant/aarch64-base-python:3.13
             PLATFORMS: linux/arm64
             QEMU_ARCH: aarch64
 
           # i386
           - DOCKER_TAG_SUFFIX: i386
             S6_ARCH: i386
-            BASE_IMAGE: homeassistant/i386-base-python:3.9
+            BASE_IMAGE: ghcr.io/home-assistant/i386-base-python:3.13
             PLATFORMS: linux/i386
             QEMU_ARCH: i386
 
     steps:
       # Get the repository's code
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       # https://github.com/docker/setup-qemu-action
       - name: Get the version from config.json
         id: data
         run: |
           version=$(jq --raw-output '.version' ./dsmr_datalogger/config.json)
-          echo "::set-output name=HA_RELEASE::$version"
+          echo "HA_RELEASE=$version" >> "$GITHUB_OUTPUT"
       - name: DSMR addon release
-        run: echo ${{ steps.data.outputs.HA_RELEASE }}
+        env:
+          HA_RELEASE: ${{ steps.data.outputs.HA_RELEASE }}
+        run: echo "$HA_RELEASE"
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
+        uses: docker/setup-qemu-action@v3
       # https://github.com/docker/setup-buildx-action
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v1
-      - name: Login to Docker Hub
+        uses: docker/setup-buildx-action@v3
+      - name: Log in to Docker Hub
         if: github.event_name != 'pull_request'
-        uses: docker/login-action@v1
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Log in to ghcr.io
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Docker meta
         id: meta # you'll use this in the next step
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@v5
         with:
           # list of Docker images to use as base name for tags
           images: |
             sanderdw/ha-dsmr-datalogger-${{ matrix.DOCKER_TAG_SUFFIX }}
+            ghcr.io/${{ github.repository }}/ha-dsmr-datalogger-${{ matrix.DOCKER_TAG_SUFFIX }}
           # Docker tags based on the following events/attributes
           tags: |
             type=schedule
-            type=ref,event=branch
             type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
             type=raw,value=${{ steps.data.outputs.HA_RELEASE }}
       - name: Build and push
-        uses: docker/build-push-action@v2
+        id: push
+        uses: docker/build-push-action@v5
         with:
           context: ./dsmr_datalogger
-          platforms: ${{ steps.data.outputs.PLATFORMS }}
+          platforms: ${{ matrix.PLATFORMS }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -109,3 +123,9 @@ jobs:
             BUILD_FROM=${{matrix.BASE_IMAGE}}
             HA_RELEASE=${{ steps.data.outputs.HA_RELEASE }}
             BUILD_ARCH=${{matrix.S6_ARCH}}
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: ghcr.io/${{ github.repository }}/ha-dsmr-reader-${{ matrix.DOCKER_TAG_SUFFIX }}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
