@@ -42,4 +42,4 @@ function _hass {
 _hass
 
 ## Run your program
-exec /usr/bin/my_program
+exec /usr/bin/datalogger

@@ -3,8 +3,10 @@
 ## 1.2.0
 
 - Happy 2025!
+- Use of base-python:3.13-alpine3.21
 - Update packages
 - Technical: Github Action workflow updated (switch to ghcr.io)
+- Technical: S6 Overlay v3
 
 ## 1.1.0
 
