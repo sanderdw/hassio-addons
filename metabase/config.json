@@ -22,13 +22,15 @@
   ],
   "init": false,
   "options": {
-    "MB_DB_TYPE=" : "h2",
+    "MB_DB_TYPE=": "h2",
     "MB_DB_DBNAME": "metabase",
     "MB_DB_USER": "postgres",
     "MB_DB_PASS": "homeassistant",
     "MB_DB_HOST": "77b2833f-timescaledb",
     "MB_DB_PORT": "5432",
-    "MB_DB_FILE": "/share/metabase.db"
+    "MB_DB_FILE": "/share/metabase.db",
+    "JAVA_TIMEZONE": "Europe/Amsterdam",
+    "JAVA_OPTS": "-Xmx2g"
   },
   "schema": {
     "MB_DB_TYPE": "str",
@@ -37,7 +39,9 @@
     "MB_DB_PASS": "password",
     "MB_DB_HOST": "str",
     "MB_DB_PORT": "str",
-    "MB_DB_FILE": "str"
+    "MB_DB_FILE": "str",
+    "JAVA_TIMEZONE": "str",
+    "JAVA_OPTS": "str"
   },
   "image": "ghcr.io/sanderdw/hassio-addons/ha-metabase"
 }

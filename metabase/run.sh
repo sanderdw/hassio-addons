@@ -26,7 +26,10 @@ function _hass {
   export MB_DB_PASS=$(bashio::config 'MB_DB_PASS')
   export MB_DB_HOST=$(bashio::config 'MB_DB_HOST')
   export MB_DB_PORT=$(bashio::config 'MB_DB_PORT')
-  _info "Datalogger started"
+  export JAVA_TIMEZONE=$(bashio::config 'JAVA_TIMEZONE')
+  export JAVA_OPTS=$(bashio::config 'JAVA_OPTS')
+  export MB_CHECK_FOR_UPDATES="false"
+  _info "Metabase started"
 }
 
 #---------------------------------------------------------------------------------------------------------------------------
