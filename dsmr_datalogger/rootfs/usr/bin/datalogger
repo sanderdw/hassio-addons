@@ -1,0 +1,3 @@
+#!/bin/bash
+
+python /usr/bin/dsmr_datalogger_api_client.py

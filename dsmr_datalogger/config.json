@@ -1,13 +1,14 @@
 {
   "name": "DSMR Datalogger",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "slug": "dsmr_datalogger",
   "description": "The datalogger only option of DSMR (https://dsmr-reader.readthedocs.io)",
   "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
-  "image": "sanderdw/ha-dsmr-datalogger-{arch}",
+  "image": "ghcr.io/sanderdw/hassio-addons/ha-dsmr-datalogger-{arch}",
   "url": "https://github.com/sanderdw/hassio-addons",
   "startup": "application",
   "boot": "auto",
+  "init": false,
   "uart": true,
   "options": {
     "DATALOGGER_INPUT_METHOD": "serial",
