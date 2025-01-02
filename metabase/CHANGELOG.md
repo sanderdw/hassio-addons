@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0
+
+- Update to Metabase 0.52.4
+
 ## 0.5.0
 
 - Update to Metabase 0.43.0

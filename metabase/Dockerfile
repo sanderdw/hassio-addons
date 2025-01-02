@@ -1,24 +1,18 @@
-FROM --platform=$BUILDPLATFORM openjdk:19-buster AS build
-ARG TARGETPLATFORM
-ARG BUILDPLATFORM
+FROM metabase/metabase:v0.52.4.4
 ARG HA_RELEASE
-RUN echo "I am running on $BUILDPLATFORM, building for $TARGETPLATFORM" > /log
-RUN echo "build - Working on the following addon release: $HA_RELEASE"
-COPY config.yaml /home/ha_addon_version.yaml
-ADD https://downloads.metabase.com/v0.43.0/metabase.jar /home
+RUN apk add --no-cache jq
+RUN \
+    mkdir -p /usr/src/bashio \
+    && curl -L -f -s "https://github.com/hassio-addons/bashio/archive/v0.16.2.tar.gz" \
+        | tar -xzf - --strip 1 -C /usr/src/bashio \
+    && mv /usr/src/bashio/lib /usr/lib/bashio \
+    && ln -s /usr/lib/bashio/bashio /usr/bin/bashio \
+    \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /usr/src/*
 COPY run.sh /
 RUN chmod a+x /run.sh
-
-FROM openjdk:19-buster
-ARG HA_RELEASE
-RUN echo "final - Working on the following addon release: $HA_RELEASE"
-RUN apt-get update \
-    && apt-get install -y jq
-COPY --from=build /home /home
-COPY --from=build /run.sh /run.sh
-ENV MB_DB_TYPE=postgres
-EXPOSE 3000
-CMD [ "/run.sh" ]
+ENTRYPOINT ["/run.sh"]
 
 # Labels
 LABEL \
