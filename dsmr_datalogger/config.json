@@ -8,6 +8,7 @@
   "url": "https://github.com/sanderdw/hassio-addons",
   "startup": "application",
   "boot": "auto",
+  "init": false,
   "uart": true,
   "options": {
     "DATALOGGER_INPUT_METHOD": "serial",
