@@ -1,4 +1,5 @@
 #!/bin/bash
 
-
+echo pwd
+python -V
 python dsmr_datalogger_api_client.py
