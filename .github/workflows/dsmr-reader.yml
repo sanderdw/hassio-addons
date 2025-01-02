@@ -102,6 +102,7 @@ jobs:
             type=semver,pattern={{major}}
             type=raw,value=${{ steps.data.outputs.HA_RELEASE }}
       - name: Build and push
+        id: push
         uses: docker/build-push-action@v5
         with:
           context: ./dsmr_reader
@@ -113,3 +114,9 @@ jobs:
             BUILD_FROM=${{matrix.BASE_IMAGE}}
             HA_RELEASE=${{ steps.data.outputs.HA_RELEASE }}
             BUILD_ARCH=${{matrix.S6_ARCH}}
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: ghcr.io/${{ github.repository }}/ha-dsmr-reader-${{ matrix.DOCKER_TAG_SUFFIX }}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
