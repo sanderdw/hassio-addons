@@ -1,5 +1,3 @@
 #!/bin/bash
 
-pwd
-python -V
-python /run/s6/legacy-services/example/dsmr_datalogger_api_client.py
+python /usr/bin/dsmr_datalogger_api_client.py

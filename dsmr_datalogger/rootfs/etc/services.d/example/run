@@ -42,8 +42,4 @@ function _hass {
 _hass
 
 ## Run your program
-_info "EXEC"
-pwd
-python -V
-python /run/s6/legacy-services/example/dsmr_datalogger_api_client.py
-_info "EXEC"
+exec /usr/bin/my_program
