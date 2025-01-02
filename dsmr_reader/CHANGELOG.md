@@ -2,8 +2,10 @@
 
 ## 1.12.0
 
+- Happy 2025!
 - Use a remote share as backup folder [issue](https://github.com/sanderdw/hassio-addons/issues/82)
-- Upgrade postgresql to 17.x
+- Support for PostgreSQL 17
+- Technical: Github Action workflow updated (switch to ghcr.io)
 
 ## 1.11.3
 
