@@ -1,7 +1,6 @@
 # Home Assistant Add-on: DSMR Reader
-
 [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fsanderdw%2Fhassio-addons)
-[![Community Forum][forum-shield]][forum]https://community.home-assistant.io/t/dsmr-reader-add-on-for-home-assistant/279087https://community.home-assistant.io/t/dsmr-reader-add-on-for-home-assistant/279087
+[![Community Forum][forum-shield]][forum]
 
 Provide a tool to easily extract, store and visualize data transferred by the DSMR protocol of your smart meter.
 
@@ -39,7 +38,8 @@ Note: Having problems or questions? Please check the community forum first https
 Note: Need to perform commands on the commandline? After entering the container bash ("```docker exec -it addon_0826754b_dsmr_reader bash```") you need to execute this command "```. /cli-helper.sh```" to apply the settings correctly from the addon Configuration tab.
 
 [dsmr-shield]: https://img.shields.io/badge/DSMR%20Reader%20Version-%205.11-purple.svg?style=flat-square
-[addon-shield]: https://img.shields.io/badge/Addon%20Version-%201.12.0-purple.svg?style=flat-square
+[addon-shield]: https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fgithub.com%2Fsanderdw%2Fhassio-addons%2Fraw%2Frefs%2Fheads%2Fmaster%2Fdsmr_reader%2Fconfig.json&query=version&style=flat-square&label=Addon%20Version
+
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg?style=flat-square
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg?style=flat-square
 [armv7-shield]: https://img.shields.io/badge/armv7-yes-green.svg?style=flat-square
