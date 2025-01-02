@@ -6,7 +6,7 @@ The datalogger only option of DSMR (https://dsmr-reader.readthedocs.io). This wi
 
 [![GitHub Build Status](https://github.com/sanderdw/hassio-addons/workflows/DSMR%20Datalogger/badge.svg?logo=github)](https://github.com/sanderdw/hassio-addons/actions) ![addon-shield] ![Supports aarch64 Architecture][aarch64-shield] ![Supports amd64 Architecture][amd64-shield] ![Supports armhf Architecture][armhf-shield] ![Supports armv7 Architecture][armv7-shield] ![Supports i386 Architecture][i386-shield]
 
-[addon-shield]: https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fgithub.com%2Fsanderdw%2Fhassio-addons%2Fraw%2Frefs%2Fheads%2Fmaster%2Fdsmr_logger%2Fconfig.json&query=version&style=flat-square&label=Addon%20Version
+[addon-shield]: https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fgithub.com%2Fsanderdw%2Fhassio-addons%2Fraw%2Frefs%2Fheads%2Fmaster%2Fdsmr_datalogger%2Fconfig.json&query=version&style=flat-square&label=Addon%20Version
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg?style=flat-square
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg?style=flat-square
 [armhf-shield]: https://img.shields.io/badge/armhf-yes-green.svg?style=flat-square
