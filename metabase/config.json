@@ -16,19 +16,19 @@
   ],
   "map": [
     {
-      "type": "share",
+      "type": "backup",
       "read_only": false
     }
   ],
   "init": false,
   "options": {
-    "MB_DB_TYPE=": "h2",
+    "MB_DB_TYPE=": "postgres",
     "MB_DB_DBNAME": "metabase",
     "MB_DB_USER": "postgres",
     "MB_DB_PASS": "homeassistant",
     "MB_DB_HOST": "77b2833f-timescaledb",
     "MB_DB_PORT": "5432",
-    "MB_DB_FILE": "/share/metabase.db",
+    "MB_DB_FILE": "/backup/metabase.db",
     "JAVA_TIMEZONE": "Europe/Amsterdam",
     "JAVA_OPTS": "-Xmx2g"
   },
