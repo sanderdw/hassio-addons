@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.0
+
+- Happy 2025!
+- Update to Metabase 0.52.4
+- Added Metabase [environment variables](https://www.metabase.com/docs/latest/configuring-metabase/environment-variables) in config:
+  - Database [type](https://www.metabase.com/docs/latest/installation-and-operation/configuring-application-database)
+  - [Timezone](https://www.metabase.com/docs/latest/installation-and-operation/running-metabase-on-docker#setting-the-java-timezone)
+  - Allocating [custom memory](https://www.metabase.com/docs/latest/troubleshooting-guide/running#allocating-more-memory-to-the-jvm) to the JVM
+- NOTE: Currently only x86 supported, Metabase is currently [testing](https://github.com/metabase/metabase/issues/13119#issuecomment-2539434988) an official ARM Release and will be added again later.
+
 ## 0.5.0
 
 - Update to Metabase 0.43.0

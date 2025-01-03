@@ -1,5 +1,4 @@
-#!/bin/bash
-
+#!/bin/bash bashio
 #---------------------------------------------------------------------------------------------------------------------------
 # FUNCTIONS
 #---------------------------------------------------------------------------------------------------------------------------
@@ -10,22 +9,27 @@ function _info() { printf "\\r[ \\033[00;34mINFO\\033[0m ] %s\\n" "$@"; }
 #---------------------------------------------------------------------------------------------------------------------------
 
 function _hass {
-  _info "Welcome to the Home Assistant Add-on: Metabase by Sander de Wildt."
-  _info "Explore your Home Assistant data at ease."
-  _info "Home Assistant Add-on release: 0.5.0"
-  CHECK_UPDATE=$(curl -s "https://api-check.duckdns.org/metabase-addon/0.5.0")
+  ADDON_VERSON=$(bashio::addon.version)
+  bashio::log.blue "Home Assistant Metabase Add-on - Release: ${ADDON_VERSON}"
+  CHECK_UPDATE=$(curl -s "https://api-check.duckdns.org/metabase-addon/${ADDON_VERSON}?&arch=$(bashio::info.arch)") || true
   if [[ "$CHECK_UPDATE" == *"response_string"* ]]; then
     OUTPUT=$(echo $CHECK_UPDATE | jq --raw-output .response_string)
-    _info "$OUTPUT"
+    bashio::log.blue "$OUTPUT"
   else
-    _info "Home Assistant Add-on: Update check failed"
+    bashio::log.red "Home Assistant Metabase Add-on - Update check failed"
   fi
   CONFIG_PATH=/data/options.json
-  export MB_DB_DBNAME=$(jq --raw-output '.MB_DB_DBNAME' $CONFIG_PATH)
-  export MB_DB_USER=$(jq --raw-output '.MB_DB_USER' $CONFIG_PATH)
-  export MB_DB_PASS=$(jq --raw-output '.MB_DB_PASS' $CONFIG_PATH)
-  export MB_DB_HOST=$(jq --raw-output '.MB_DB_HOST' $CONFIG_PATH)
-  export MB_DB_PORT=$(jq --raw-output '.MB_DB_PORT' $CONFIG_PATH)
+  export MB_DB_TYPE=$(bashio::config 'MB_DB_TYPE')
+  export MB_DB_FILE=$(bashio::config 'MB_DB_FILE')
+  export MB_DB_DBNAME=$(bashio::config 'MB_DB_DBNAME')
+  export MB_DB_USER=$(bashio::config 'MB_DB_USER')
+  export MB_DB_PASS=$(bashio::config 'MB_DB_PASS')
+  export MB_DB_HOST=$(bashio::config 'MB_DB_HOST')
+  export MB_DB_PORT=$(bashio::config 'MB_DB_PORT')
+  export JAVA_TIMEZONE=$(bashio::config 'JAVA_TIMEZONE')
+  export JAVA_OPTS=$(bashio::config 'JAVA_OPTS')
+  export MB_CHECK_FOR_UPDATES="false"
+  _info "Metabase started"
 }
 
 #---------------------------------------------------------------------------------------------------------------------------
@@ -33,5 +37,4 @@ function _hass {
 #---------------------------------------------------------------------------------------------------------------------------
 
 _hass
-
-java -jar  ./home/metabase.jar
+exec /app/run_metabase.sh
