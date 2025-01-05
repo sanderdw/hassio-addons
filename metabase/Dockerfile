@@ -4,6 +4,13 @@ ARG BUILD_ARCH
 ARG HA_RELEASE
 
 RUN apt-get install -y jq
+
+RUN if [ "$BUILD_ARCH" = "amd64" ]; then \
+        apk add --no-cache jq; \
+    elif [ "$BUILD_ARCH" = "aarch64" ]; then \
+        apt-get install -y jq; \
+    fi
+
 RUN \
     mkdir -p /usr/src/bashio \
     && curl -L -f -s "https://github.com/hassio-addons/bashio/archive/v0.16.2.tar.gz" \
