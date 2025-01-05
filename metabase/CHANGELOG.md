@@ -2,6 +2,7 @@
 
 ## 1.0.1
 
+- Fix version check
 - Beta Arm support, the HEAD of development on the Metabase repository. Use at your own risk.
 - NOTE: Standard database [type](https://www.metabase.com/docs/latest/installation-and-operation/configuring-application-database) is changed to h2 to remove the dependency on an external database/addon.
 
