@@ -3,7 +3,7 @@ FROM $BUILD_FROM
 ARG BUILD_ARCH
 ARG HA_RELEASE
 
-RUN apk add --no-cache jq
+RUN apt-get install -y jq
 RUN \
     mkdir -p /usr/src/bashio \
     && curl -L -f -s "https://github.com/hassio-addons/bashio/archive/v0.16.2.tar.gz" \

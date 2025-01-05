@@ -102,9 +102,3 @@ jobs:
             BUILD_FROM=${{matrix.BASE_IMAGE}}
             HA_RELEASE=${{steps.data.outputs.HA_RELEASE}}
             BUILD_ARCH=${{matrix.S6_ARCH}}
-      - name: Generate artifact attestation
-        uses: actions/attest-build-provenance@v2
-        with:
-          subject-name: ghcr.io/${{ github.repository }}/ha-metabase
-          subject-digest: ${{ steps.push.outputs.digest }}
-          push-to-registry: true
