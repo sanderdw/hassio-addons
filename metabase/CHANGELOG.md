@@ -3,7 +3,7 @@
 ## 1.0.1
 
 - Fix version check
-- Beta Arm support, the HEAD of development on the Metabase repository. Use at your own risk.
+- Beta Arm support, the HEAD of development on the Metabase repository, use at your own risk. Will be replaced with the official Metabase provided ARM Release later.
 - NOTE: Standard database [type](https://www.metabase.com/docs/latest/installation-and-operation/configuring-application-database) is changed to h2 to remove the dependency on an external database/addon.
 
   Using Metabase with an H2 application database is not recommended for production deployments. For production deployments, we highly recommend using Postgres instead. If you decide to continue to use H2, please be sure to back up the database file regularly (stored in the backup folder of HA).
