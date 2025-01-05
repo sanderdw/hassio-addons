@@ -2,7 +2,10 @@
 
 ## 1.0.1
 
-- BETA Arm support
+- Beta Arm support, the HEAD of development on the Metabase repository. Use at your own risk.
+- NOTE: Standard database [type](https://www.metabase.com/docs/latest/installation-and-operation/configuring-application-database) is changed to h2 to remove the dependency on an external database/addon.
+
+  Using Metabase with an H2 application database is not recommended for production deployments. For production deployments, we highly recommend using Postgres instead. If you decide to continue to use H2, please be sure to back up the database file regularly (stored in the backup folder of HA).
 
 ## 1.0.0
 
@@ -11,7 +14,7 @@
 - Added Metabase [environment variables](https://www.metabase.com/docs/latest/configuring-metabase/environment-variables) in config:
   - Database [type](https://www.metabase.com/docs/latest/installation-and-operation/configuring-application-database)
   - [Timezone](https://www.metabase.com/docs/latest/installation-and-operation/running-metabase-on-docker#setting-the-java-timezone)
-  - Allocating [custom memory](https://www.metabase.com/docs/latest/troubleshooting-guide/running#allocating-more-memory-to-the-jvm) to the JVM
+  - Allocating [custom memory](https://www.metabase.com/docs/latest/troubleshooting-guide/running#allocating-more-memory-to-the-jvm) sizing to the addon
 - NOTE: Currently only x86 supported, Metabase is currently [testing](https://github.com/metabase/metabase/issues/13119#issuecomment-2539434988) an official ARM Release and will be added again later.
 
 ## 0.5.0
