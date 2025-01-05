@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.1
+
+- BETA Arm support
+
 ## 1.0.0
 
 - Happy 2025!

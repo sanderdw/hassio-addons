@@ -6,7 +6,7 @@ on:
   push:
     branches:
       - 'master'
-      - 'metabase-1.0.0'
+      - 'metabase-1.0.1'
     tags:
       - '*.*.*'
     paths:
@@ -25,6 +25,21 @@ jobs:
       contents: read
       attestations: write
       id-token: write
+    strategy:
+      matrix:
+        include:
+          # AMD64
+          - DOCKER_TAG_SUFFIX: amd64
+            S6_ARCH: amd64
+            BASE_IMAGE: metabase/metabase:v0.52.4.4
+            PLATFORMS: linux/amd64
+            QEMU_ARCH: x86_64
+          # ARM64V8
+          - DOCKER_TAG_SUFFIX: aarch64
+            S6_ARCH: aarch64
+            BASE_IMAGE: metabase/metabase-enterprise-head:latest-ubuntu
+            PLATFORMS: linux/arm64
+            QEMU_ARCH: aarch64
     steps:
       # Get the repository's code
       - name: Checkout
@@ -59,12 +74,11 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Docker meta
         id: meta # you'll use this in the next step
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@v5
         with:
           # list of Docker images to use as base name for tags
           images: |
-            sanderdw/ha-metabase
-            ghcr.io/${{ github.repository }}/ha-metabase
+            ghcr.io/${{ github.repository }}/ha-metabase-${{ matrix.DOCKER_TAG_SUFFIX }}
           # Docker tags based on the following events/attributes
           tags: |
             type=schedule
@@ -80,12 +94,14 @@ jobs:
           context: ./metabase
           # https://github.com/metabase/metabase/issues/13119#issuecomment-2539434988
           # platforms: linux/amd64,linux/arm64
-          platforms: linux/amd64
+          platforms: ${{ matrix.PLATFORMS }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            HA_RELEASE=${{ steps.data.outputs.HA_RELEASE }}
+            BUILD_FROM=${{matrix.BASE_IMAGE}}
+            HA_RELEASE=${{steps.data.outputs.HA_RELEASE}}
+            BUILD_ARCH=${{matrix.S6_ARCH}}
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v2
         with:

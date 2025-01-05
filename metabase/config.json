@@ -1,6 +1,6 @@
 {
   "name": "Metabase",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "slug": "metabase",
   "description": "Meet the easy, open source way for everyone to ask questions and learn from data.",
   "url": "https://github.com/sanderdw/hassio-addons/blob/master/metabase/README.md",
@@ -43,5 +43,5 @@
     "JAVA_TIMEZONE": "str",
     "JAVA_OPTS": "str"
   },
-  "image": "ghcr.io/sanderdw/hassio-addons/ha-metabase"
+  "image": "ghcr.io/sanderdw/hassio-addons/ha-metabase-{arch}"
 }
