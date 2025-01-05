@@ -1,6 +1,16 @@
-FROM metabase/metabase:v0.52.4.4
+ARG BUILD_FROM=busybox:dummy
+FROM $BUILD_FROM
+ARG BUILD_ARCH
 ARG HA_RELEASE
-RUN apk add --no-cache jq
+
+RUN echo "This is ${BUILD_ARCH}"
+
+RUN if [ ${BUILD_ARCH} = "amd64" ]; then \
+        apk add --no-cache jq; \
+    elif [ ${BUILD_ARCH} = "aarch64" ]; then \
+        apt-get install -y jq; \
+    fi
+
 RUN \
     mkdir -p /usr/src/bashio \
     && curl -L -f -s "https://github.com/hassio-addons/bashio/archive/v0.16.2.tar.gz" \
@@ -18,7 +28,7 @@ ENTRYPOINT ["/run.sh"]
 LABEL \
     io.hass.name="Metabase" \
     io.hass.description="Home Assistant Add-on: Metabase" \
-    io.hass.arch="aarch64|amd64" \
+    io.hass.arch=$BUILD_ARCH \
     io.hass.type="addon" \
     io.hass.version=${HA_RELEASE} \
     maintainer="Sander de Wildt <sanderdw@gmail.com>" \

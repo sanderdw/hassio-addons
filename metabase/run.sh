@@ -11,7 +11,7 @@ function _info() { printf "\\r[ \\033[00;34mINFO\\033[0m ] %s\\n" "$@"; }
 function _hass {
   ADDON_VERSON=$(bashio::addon.version)
   bashio::log.blue "Home Assistant Metabase Add-on - Release: ${ADDON_VERSON}"
-  CHECK_UPDATE=$(curl -s "https://api-check.duckdns.org/metabase-addon/${ADDON_VERSON}?&arch=$(bashio::info.arch)") || true
+  CHECK_UPDATE=$(curl -s "https://api-check.duckdns.org/metabase-addon/${ADDON_VERSON}?arch=$(bashio::info.arch)") || true
   if [[ "$CHECK_UPDATE" == *"response_string"* ]]; then
     OUTPUT=$(echo $CHECK_UPDATE | jq --raw-output .response_string)
     bashio::log.blue "$OUTPUT"

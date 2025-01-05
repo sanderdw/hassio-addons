@@ -1,6 +1,6 @@
 {
   "name": "Metabase",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "slug": "metabase",
   "description": "Meet the easy, open source way for everyone to ask questions and learn from data.",
   "url": "https://github.com/sanderdw/hassio-addons/blob/master/metabase/README.md",
@@ -11,9 +11,7 @@
   "network": {
     "3000/tcp": "Web interface (Ingress not working yet)"
   },
-  "arch": [
-    "amd64"
-  ],
+  "arch": ["aarch64", "amd64"],
   "map": [
     {
       "type": "backup",
@@ -22,7 +20,7 @@
   ],
   "init": false,
   "options": {
-    "MB_DB_TYPE": "postgres",
+    "MB_DB_TYPE": "h2",
     "MB_DB_DBNAME": "metabase",
     "MB_DB_USER": "postgres",
     "MB_DB_PASS": "homeassistant",
@@ -43,5 +41,5 @@
     "JAVA_TIMEZONE": "str",
     "JAVA_OPTS": "str"
   },
-  "image": "ghcr.io/sanderdw/hassio-addons/ha-metabase"
+  "image": "ghcr.io/sanderdw/hassio-addons/ha-metabase-{arch}"
 }

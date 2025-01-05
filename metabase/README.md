@@ -24,7 +24,7 @@ See config instructions here: https://github.com/sanderdw/hassio-addons
 5. Install this addon.
 6. Configure settings in the "Configuration" tab if defaults are changed by you.
    1. For H2 use `MB_DB_TYPE=h2` in the configuration tab
-   2. For Postgres the defaults should already work
+   2. For Postgres/TimescaleDB use `MB_DB_TYPE=postgres` in the configuration tab
 7. Start Metabase addon.
 8. Go to http://yourhomeassistant:7778 (wait untill add-on is initialized) - Note: Ingress not working yet.
 9. Walkthrough the Metabase setup.
@@ -33,7 +33,7 @@ See config instructions here: https://github.com/sanderdw/hassio-addons
 12. Add [any other](https://www.metabase.com/data_sources/) source supported by Metabase
 13. Explore!
 
-[aarch64-shield]: https://img.shields.io/badge/aarch64-no-red.svg?style=flat-square
+[aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg?style=flat-square
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg?style=flat-square
 [metabase-shield]: https://img.shields.io/badge/Metabase%20Version-%200.52.4-purple.svg?style=flat-square
 [addon-shield]: https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fgithub.com%2Fsanderdw%2Fhassio-addons%2Fraw%2Frefs%2Fheads%2Fmaster%2Fmetabase%2Fconfig.json&query=version&style=flat-square&label=Addon%20Version
