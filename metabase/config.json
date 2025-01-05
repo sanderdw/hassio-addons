@@ -11,9 +11,7 @@
   "network": {
     "3000/tcp": "Web interface (Ingress not working yet)"
   },
-  "arch": [
-    "amd64"
-  ],
+  "arch": ["aarch64", "amd64"],
   "map": [
     {
       "type": "backup",

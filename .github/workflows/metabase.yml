@@ -37,7 +37,7 @@ jobs:
           # ARM64V8
           - DOCKER_TAG_SUFFIX: aarch64
             S6_ARCH: aarch64
-            BASE_IMAGE: metabase/metabase-enterprise-head:latest-ubuntu
+            BASE_IMAGE: metabase/metabase-head:latest-ubuntu
             PLATFORMS: linux/arm64
             QEMU_ARCH: aarch64
     steps:
