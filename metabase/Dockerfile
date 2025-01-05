@@ -5,9 +5,9 @@ ARG HA_RELEASE
 
 RUN apt-get install -y jq
 
-RUN if [ "$BUILD_ARCH" = "amd64" ]; then \
+RUN if [ $BUILD_ARCH = "amd64" ]; then \
         apk add --no-cache jq; \
-    elif [ "$BUILD_ARCH" = "aarch64" ]; then \
+    elif [ $BUILD_ARCH = "aarch64" ]; then \
         apt-get install -y jq; \
     fi
 
