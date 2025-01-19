@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.12.1
+
+- Fix sending e-mail [issue](https://community.home-assistant.io/t/dsmr-reader-add-on-for-home-assistant/279087/446)
+
 ## 1.12.0
 
 - Happy 2025!
