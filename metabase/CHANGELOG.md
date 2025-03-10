@@ -16,7 +16,7 @@
 ## 1.0.0
 
 - Happy 2025!
-0.52.4
+- Update to Metabase 0.52.4
 - Added Metabase [environment variables](https://www.metabase.com/docs/latest/configuring-metabase/environment-variables) in config:
   - Database [type](https://www.metabase.com/docs/latest/installation-and-operation/configuring-application-database)
   - [Timezone](https://www.metabase.com/docs/latest/installation-and-operation/running-metabase-on-docker#setting-the-java-timezone)
