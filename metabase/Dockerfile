@@ -5,11 +5,7 @@ ARG HA_RELEASE
 
 RUN echo "This is ${BUILD_ARCH}"
 
-RUN if [ ${BUILD_ARCH} = "amd64" ]; then \
-        apk add --no-cache jq; \
-    elif [ ${BUILD_ARCH} = "aarch64" ]; then \
-        apk add --no-cache jq; \
-    fi
+RUN apk add --no-cache jq
 
 RUN \
     mkdir -p /usr/src/bashio \
