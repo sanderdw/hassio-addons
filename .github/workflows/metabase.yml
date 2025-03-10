@@ -6,7 +6,7 @@ on:
   push:
     branches:
       - 'master'
-      - 'metabase-1.0.1'
+      - 'metabase-1.1.0'
     tags:
       - '*.*.*'
     paths:
@@ -28,13 +28,13 @@ jobs:
           # AMD64
           - DOCKER_TAG_SUFFIX: amd64
             S6_ARCH: amd64
-            BASE_IMAGE: metabase/metabase:v0.52.4.4
+            BASE_IMAGE: metabase/metabase:v0.53.5.5
             PLATFORMS: linux/amd64
             QEMU_ARCH: x86_64
           # ARM64V8
           - DOCKER_TAG_SUFFIX: aarch64
             S6_ARCH: aarch64
-            BASE_IMAGE: metabase/metabase-head:latest-ubuntu
+            BASE_IMAGE: metabase/metabase:v0.53.5.5
             PLATFORMS: linux/arm64
             QEMU_ARCH: aarch64
     steps:
@@ -99,6 +99,7 @@ jobs:
             HA_RELEASE=${{steps.data.outputs.HA_RELEASE}}
             BUILD_ARCH=${{matrix.S6_ARCH}}
       - name: Generate artifact attestation
+        if: github.ref == 'refs/heads/master'
         uses: actions/attest-build-provenance@v2
         with:
           subject-name: ghcr.io/${{ github.repository }}/ha-metabase-${{ matrix.DOCKER_TAG_SUFFIX }}

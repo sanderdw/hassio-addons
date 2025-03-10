@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.0
+
+- Update to Metabase 0.53.5.5
+- Official Arm support
+
 ## 1.0.1
 
 - Fix version check
