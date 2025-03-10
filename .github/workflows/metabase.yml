@@ -99,6 +99,7 @@ jobs:
             HA_RELEASE=${{steps.data.outputs.HA_RELEASE}}
             BUILD_ARCH=${{matrix.S6_ARCH}}
       - name: Generate artifact attestation
+        if: github.ref == 'refs/heads/master'
         uses: actions/attest-build-provenance@v2
         with:
           subject-name: ghcr.io/${{ github.repository }}/ha-metabase-${{ matrix.DOCKER_TAG_SUFFIX }}
