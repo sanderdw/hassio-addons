@@ -1,6 +1,6 @@
 {
   "name": "Metabase",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "slug": "metabase",
   "description": "Meet the easy, open source way for everyone to ask questions and learn from data.",
   "url": "https://github.com/sanderdw/hassio-addons/blob/master/metabase/README.md",
