@@ -6,7 +6,7 @@ on:
   push:
     branches:
       - 'master'
-      - 'metabase-1.2.0'
+      - 'metabase-1.1.1'
     tags:
       - '*.*.*'
     paths:
@@ -28,13 +28,13 @@ jobs:
           # AMD64
           - DOCKER_TAG_SUFFIX: amd64
             S6_ARCH: amd64
-            BASE_IMAGE: metabase/metabase:v0.54.6.1
+            BASE_IMAGE: metabase/metabase:v0.53.9
             PLATFORMS: linux/amd64
             QEMU_ARCH: x86_64
           # ARM64V8
           - DOCKER_TAG_SUFFIX: aarch64
             S6_ARCH: aarch64
-            BASE_IMAGE: metabase/metabase:v0.54.6.1
+            BASE_IMAGE: metabase/metabase:v0.53.9
             PLATFORMS: linux/arm64
             QEMU_ARCH: aarch64
     steps:
