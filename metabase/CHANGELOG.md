@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.1
+
+- Update to Metabase 0.55.9.3
+
 ## 1.1.1
 
 - Update to Metabase 0.53.9
