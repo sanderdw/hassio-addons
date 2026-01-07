@@ -103,7 +103,7 @@ jobs:
             type=raw,value=${{ steps.data.outputs.HA_RELEASE }}
       - name: Build and push
         id: push
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: ./dsmr_reader
           platforms: ${{ matrix.PLATFORMS }}
