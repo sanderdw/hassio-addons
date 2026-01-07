@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.12.2
+
+- Update to DSMR-reader v5.12 (This is the final v5 release)
+  - Updated Dropbox SDK to latest version in favor of incompatible API changes on January 1st, 2026.
+- DSMR-reader v6 upcoming release [information](https://dsmr-reader.readthedocs.io/en/v6/reference/changelog/)
+
 ## 1.12.1
 
 - Fix sending e-mail [issue](https://community.home-assistant.io/t/dsmr-reader-add-on-for-home-assistant/279087/446)
