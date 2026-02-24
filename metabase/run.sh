@@ -5,18 +5,18 @@
 function _info() { printf "\\r[ \\033[00;34mINFO\\033[0m ] %s\\n" "$@"; }
 
 #---------------------------------------------------------------------------------------------------------------------------
-# HOMEASSISTANT Add-On OVERRIDES
+# HOMEASSISTANT App OVERRIDES
 #---------------------------------------------------------------------------------------------------------------------------
 
 function _hass {
   ADDON_VERSON=$(bashio::addon.version)
-  bashio::log.blue "Home Assistant Metabase Add-on - Release: ${ADDON_VERSON}"
+  bashio::log.blue "Home Assistant Metabase App - Release: ${ADDON_VERSON}"
   CHECK_UPDATE=$(curl -s "https://api-check.duckdns.org/metabase-addon/${ADDON_VERSON}?arch=$(bashio::info.arch)") || true
   if [[ "$CHECK_UPDATE" == *"response_string"* ]]; then
     OUTPUT=$(echo $CHECK_UPDATE | jq --raw-output .response_string)
     bashio::log.blue "$OUTPUT"
   else
-    bashio::log.red "Home Assistant Metabase Add-on - Update check failed"
+    bashio::log.red "Home Assistant Metabase App - Update check failed"
   fi
   CONFIG_PATH=/data/options.json
   export MB_DB_TYPE=$(bashio::config 'MB_DB_TYPE')
