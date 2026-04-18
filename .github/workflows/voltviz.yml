@@ -13,6 +13,7 @@ on:
       - 'voltviz/rootfs/**'
       - 'voltviz/config.json'
       - .github/workflows/voltviz.yml
+      - 'voltviz/run.sh'
 
 jobs:
   voltviz:
