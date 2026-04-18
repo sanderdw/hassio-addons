@@ -1,4 +1,4 @@
-# Home Assistant Add-on: VoltViz
+# Home Assistant App: VoltViz
 
 A dynamic, real-time music visualizer that transforms sound into stunning visual experiences. Synchronize with your system audio, microphone and [Music Assistant](https://music-assistant.io/) support (through [Sendspin](https://www.sendspin-audio.com/)) and watch your music come alive.
 
@@ -15,9 +15,19 @@ A dynamic, real-time music visualizer that transforms sound into stunning visual
 ## Installation
 
 1. Add the repository to Home Assistant: `https://github.com/sanderdw/hassio-addons`
-2. Install the **VoltViz** add-on
-3. Start the add-on
+2. Install the **VoltViz** App
+3. Start the App
 4. Click **OPEN WEB UI** to access VoltViz via Ingress
+5. Connect to Sendspin (For Music Assistant)
+6. Press play
+7. To control the VoltViz player you need to unhide the VoltViz client -> Settings -> Players -> VoltViz -> Uncheck Hide....
+8. Save on the bottom
+9. Select the VoltViz player
+
+<video controls>
+  <source src="https://uto-mix.sanwil.net/install-voltviz.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
 
 ## Configuration
 
@@ -27,7 +37,7 @@ A dynamic, real-time music visualizer that transforms sound into stunning visual
 
 ## Ingress
 
-This add-on uses Home Assistant Ingress for seamless integration. Click "OPEN WEB UI" in the add-on panel to access VoltViz directly within Home Assistant.
+This App uses Home Assistant Ingress for seamless integration. Click "OPEN WEB UI" in the add-on panel to access VoltViz directly within Home Assistant.
 
 ## Sendspin / Music Assistant
 
@@ -35,13 +45,13 @@ VoltViz supports [Music Assistant](https://music-assistant.io/) through [Sendspi
 
 ### Server-side proxy (recommended)
 
-By default, VoltViz connects to Sendspin directly from the browser. This only works on internal networks without HTTPS (due to mixed content restrictions). To solve this, the add-on can proxy Sendspin through the server side:
+By default, VoltViz connects to Sendspin directly from the browser. This only works on internal networks without HTTPS (due to mixed content restrictions). To solve this, the app can proxy Sendspin through the server side:
 
 1. In the add-on **Configuration** tab, set `SENDSPIN_URL` to your Music Assistant's internal address:
    ```
    http://d5369777-music-assistant:8927
    ```
-2. Restart the add-on
+2. Restart the app
 3. Open VoltViz and click the Sendspin button
 4. Enter `./sendspin-proxy/` as the server URL and click Connect
 
