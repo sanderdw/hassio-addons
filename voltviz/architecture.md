@@ -18,7 +18,7 @@ The add-on supports two access modes:
 ┌─────────────────────────────────────────────────────────────────────┐
 │ Browser (HTTPS)                                                     │
 │                                                                     │
-│  VoltViz UI ──▶ Sendspin URL pre-filled to ./sendspin-proxy/        │
+│  VoltViz UI ──▶ ?sendspin=./sendspin-proxy/ (via nginx redirect)     │
 │       │                                                             │
 │       ├─ HTTP requests ──▶ https://ha.example.com/local_voltviz/    │
 │       │                    (served by HA Ingress → nginx:8099)       │
@@ -116,8 +116,8 @@ The original VoltViz `default.conf` already serves the SPA on port 80. The
 add-on exposes this as host port 8099 by default (`"80/tcp": 8099` in config.json).
 
 - `"webui": "http://[HOST]:[PORT:80]"` enables the "OPEN WEB UI" button for direct access
-- At startup, `run.sh` injects `include /etc/nginx/addon.d/*.conf;` into `default.conf`
-  so the `/sendspin-proxy/` location is available on both ports
+- At startup, `run.sh` injects `include /etc/nginx/addon.d/*.conf;` and the `?sendspin=`
+  redirect into `default.conf` so the proxy and pre-fill work on both ports
 - Users can change or disable the port mapping in the add-on Network settings
 
 ### ingress.conf
@@ -138,6 +138,10 @@ server {
     sub_filter 'src="/' 'src="./';
 
     location / {
+        # Auto-add sendspin param on initial page load if not already present
+        if ($args !~* "sendspin") {
+            return 302 "?sendspin=./sendspin-proxy/";
+        }
         try_files $uri $uri/ /index.html;
     }
 
@@ -151,6 +155,10 @@ server {
     include /etc/nginx/addon.d/*.conf;
 }
 ```
+
+The `return 302` uses a relative URL so the browser preserves the original
+scheme (HTTPS). A `rewrite ... redirect` would generate an absolute `http://`
+URL since nginx itself listens on plain HTTP, causing mixed-content errors.
 
 ---
 
@@ -176,8 +184,8 @@ The add-on proxies Sendspin traffic server-side through nginx:
    proxies all requests (including WebSocket upgrades) to that URL
 3. The proxy config is shared between both nginx configs (ingress and direct)
    via the `/etc/nginx/addon.d/` include directory
-4. The Sendspin URL input in VoltViz is pre-filled with `./sendspin-proxy/` — the
-   user just clicks Connect
+4. On initial page load, nginx redirects to `?sendspin=./sendspin-proxy/` — VoltViz
+   natively reads the query parameter and pre-fills the connect dialog
 
 ### Generated nginx proxy config
 
@@ -202,18 +210,24 @@ Key details:
 - `proxy_read_timeout 86400` keeps long-lived WebSocket connections alive (24h)
 - The trailing `/` on `proxy_pass` strips the `/sendspin-proxy/` prefix before forwarding
 
-### Proxy shared between ingress and direct access
+### Proxy and redirect shared between ingress and direct access
 
 The proxy config is written to `/etc/nginx/addon.d/sendspin-proxy.conf` and
-included by both nginx server blocks:
+included by both nginx server blocks. The `?sendspin=` redirect is also present
+in both configs:
 
-- **ingress.conf** (port 8099) — has `include /etc/nginx/addon.d/*.conf;` built-in
-- **default.conf** (port 80) — `run.sh` injects the include at startup via:
+- **ingress.conf** (port 8099) — has `include /etc/nginx/addon.d/*.conf;` and the
+  redirect built-in
+- **default.conf** (port 80) — `run.sh` injects both at startup:
   ```bash
+  # Add proxy include
   sed -i '/^}/i\    include /etc/nginx/addon.d/*.conf;' /etc/nginx/conf.d/default.conf
+  # Add sendspin redirect
+  sed -i '/try_files.*index\.html/i\        if ($args !~* "sendspin") {\n            return 302 "?sendspin=./sendspin-proxy/";\n        }' /etc/nginx/conf.d/default.conf
   ```
 
-This ensures `/sendspin-proxy/` works regardless of how the user accesses VoltViz.
+This ensures `/sendspin-proxy/` and the URL pre-fill work regardless of how the
+user accesses VoltViz.
 
 ---
 
@@ -271,26 +285,22 @@ sed -i 's|\([a-zA-Z_$][a-zA-Z0-9_$]*\)\.host}/sendspin|\1.host}${\1.pathname.rep
 
 This preserves the full path from the URL, stripping only the trailing slash.
 
-#### Patch 3: Pre-fill Sendspin URL default
+#### Sendspin URL Pre-fill (nginx redirect, not a JS patch)
 
-```bash
-sed -i 's|useState("")|useState("./sendspin-proxy/")|g' "$ASSETS"/*.js
+Instead of patching the JS bundle to change defaults, both nginx configs
+(ingress.conf and default.conf) redirect the initial page load to include
+`?sendspin=./sendspin-proxy/` as a query parameter. VoltViz natively reads the
+`?sendspin=` parameter and pre-fills the connect dialog.
+
+```nginx
+if ($args !~* "sendspin") {
+    return 302 "?sendspin=./sendspin-proxy/";
+}
 ```
 
-**Before:** `useState("")` (empty Sendspin URL field)
-**After:**  `useState("./sendspin-proxy/")` (pre-filled with proxy path)
-
-In VoltViz, `useState("")` is only used for the `sendspinUrl` state variable.
-This makes the Sendspin dialog open with the proxy URL already filled in.
-
-#### Patch 4: Update placeholder text
-
-```bash
-sed -i 's|http://homeassistant\.local:8927|./sendspin-proxy/|g' "$ASSETS"/*.js
-```
-
-**Before:** placeholder shows `http://homeassistant.local:8927`
-**After:**  placeholder shows `./sendspin-proxy/`
+- Uses `return 302` with a relative URL to preserve the original scheme (HTTPS)
+- Only triggers when no `sendspin` param is already present
+- For direct access, `run.sh` injects this block into `default.conf` at startup
 
 #### Backward Compatibility
 
@@ -299,7 +309,7 @@ All patches are backward-compatible with absolute URLs:
   (base is ignored for absolute URLs)
 - `pathname` for `http://192.168.1.100:8927` is `/`, which after
   `replace(/\/$/, "")` becomes `""`, producing the same result as before
-- Patches 3 and 4 only change defaults — users can still type any URL
+- The `?sendspin=` redirect only sets a default — users can still type any URL
 
 ### Upstream Fix
 
@@ -327,7 +337,7 @@ to the fixed version, the runtime patch in `run.sh` is no longer needed.
    ```
 
 2. **Remove the patch block** from `run.sh`. Delete everything from the
-   `# ---------------------------------------------------------------------------` comment down to and including the Patch 4 line.
+   `# ---------------------------------------------------------------------------` comment down to and including the Patch 2 `fi`.
    Keep the `#!/bin/sh`, `CONFIG_PATH=...`, and everything from
    `# Create addon.d directory` onward.
 
@@ -340,10 +350,16 @@ to the fixed version, the runtime patch in `run.sh` is no longer needed.
    # Create addon.d directory for optional nginx includes
    mkdir -p /etc/nginx/addon.d
 
-   # Inject addon.d include into default.conf (port 80) for non-ingress access
-   if ! grep -q 'addon.d' /etc/nginx/conf.d/default.conf 2>/dev/null; then
-       sed -i '/^}/i\    include /etc/nginx/addon.d/*.conf;' /etc/nginx/conf.d/default.conf
-       echo "VoltViz: Added sendspin proxy include to default.conf (port 80)"
+   # Inject addon.d include and sendspin rewrite into default.conf (port 80)
+   if [ -f /etc/nginx/conf.d/default.conf ]; then
+       if ! grep -q 'addon.d' /etc/nginx/conf.d/default.conf; then
+           sed -i '/^}/i\    include /etc/nginx/addon.d/*.conf;' /etc/nginx/conf.d/default.conf
+           echo "VoltViz: Added sendspin proxy include to default.conf (port 80)"
+       fi
+       if ! grep -q 'sendspin' /etc/nginx/conf.d/default.conf; then
+           sed -i '/try_files.*index\.html/i\        if ($args !~* "sendspin") {\n            return 302 "?sendspin=./sendspin-proxy/";\n        }' /etc/nginx/conf.d/default.conf
+           echo "VoltViz: Added sendspin redirect to default.conf (port 80)"
+       fi
    fi
 
    # Generate Sendspin proxy config if SENDSPIN_URL is configured
