@@ -9,15 +9,19 @@
   "startup": "application",
   "boot": "auto",
   "ingress": true,
+  "ingress_stream": true,
   "panel_icon": "mdi:waveform",
+  "webui": "http://[HOST]:[PORT:80]",
   "init": false,
   "ports": {
-    "80/tcp": null
+    "80/tcp": 8099
   },
   "ports_description": {
-    "80/tcp": "Web UI port (not needed when using Ingress)"
+    "80/tcp": "Web UI port (direct access, not needed when using Ingress)"
   },
-  "options": {},
+  "options": {
+    "SENDSPIN_URL": "http://d5369777-music-assistant:8927"
+  },
   "schema": {
     "SENDSPIN_URL": "str?"
   }

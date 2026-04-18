@@ -28,6 +28,15 @@ else
     echo "VoltViz: Warning - sendspin-js WebSocket pattern not found, proxy may not work"
 fi
 
+# Patch 3: pre-fill Sendspin URL default to ./sendspin-proxy/
+# In VoltViz source, useState("") is only used for the sendspinUrl state
+sed -i 's|useState("")|useState("./sendspin-proxy/")|g' "$ASSETS"/*.js 2>/dev/null \
+    && echo "VoltViz: Pre-filled Sendspin URL default to ./sendspin-proxy/"
+
+# Patch 4: change placeholder text to match
+sed -i 's|http://homeassistant\.local:8927|./sendspin-proxy/|g' "$ASSETS"/*.js 2>/dev/null \
+    && echo "VoltViz: Updated Sendspin placeholder to ./sendspin-proxy/"
+
 # Create addon.d directory for optional nginx includes
 mkdir -p /etc/nginx/addon.d
 
