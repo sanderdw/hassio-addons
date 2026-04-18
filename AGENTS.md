@@ -17,6 +17,7 @@ This is a **Home Assistant Add-ons repository** containing custom add-ons for Ho
 | `dsmr_datalogger` | Lightweight datalogger for DSMR smart meters, forwards telegrams via API | armhf, armv7, aarch64, amd64, i386 |
 | `dsmr_reader` | Full DSMR Reader application for smart meter data visualization | armhf, armv7, aarch64, amd64 |
 | `metabase` | Open-source business intelligence and analytics platform | aarch64, amd64 |
+| `voltviz` | Real-time music visualizer with Music Assistant/Sendspin support | aarch64, amd64 |
 
 ## Repository Structure
 
@@ -46,12 +47,21 @@ hassio-addons/
 │       ├── cli-helper.sh    # CLI helper for container access
 │       └── etc/             # s6-overlay and nginx configurations
 │
-└── metabase/                # Metabase add-on
+├── metabase/                # Metabase add-on
+│   ├── config.json
+│   ├── Dockerfile
+│   ├── CHANGELOG.md
+│   ├── README.md
+│   └── run.sh               # Entrypoint script
+│
+└── voltviz/                 # VoltViz add-on
     ├── config.json
     ├── Dockerfile
     ├── CHANGELOG.md
     ├── README.md
-    └── run.sh               # Entrypoint script
+    └── rootfs/
+        └── etc/nginx/conf.d/
+            └── ingress.conf  # Nginx ingress configuration
 ```
 
 ## Key Files Explained
@@ -187,6 +197,14 @@ Update base image versions in the respective GitHub workflow files.
 - Supports H2 (embedded) or PostgreSQL database
 - No Ingress support yet - uses direct port access
 - Memory-intensive (configure `JAVA_OPTS` appropriately)
+
+### VoltViz
+- Real-time music visualizer web application
+- Based on published Docker image (ghcr.io/sanderdw/voltviz)
+- Uses Ingress for Home Assistant integration
+- Supports Music Assistant through Sendspin audio streaming
+- Pure frontend app - no backend configuration needed
+- Nginx-based with ingress proxy on port 8099
 
 ## Code Style
 

@@ -1,10 +1,11 @@
-# Home Assistant Add-ons: DSMR Reader/Datalogger & Metabase
+# Home Assistant Add-ons: DSMR Reader/Datalogger, Metabase & VoltViz
 [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fsanderdw%2Fhassio-addons)
 [![Community Forum][forum-shield]][forum]
 
 [![GitHub Build Status](https://github.com/sanderdw/hassio-addons/workflows/DSMR%20Reader/badge.svg?logo=github)](https://github.com/sanderdw/hassio-addons/actions)
 [![GitHub Build Status](https://github.com/sanderdw/hassio-addons/workflows/DSMR%20Datalogger/badge.svg?logo=github)](https://github.com/sanderdw/hassio-addons/actions)
 [![GitHub Build Status](https://github.com/sanderdw/hassio-addons/workflows/Metabase/badge.svg?logo=github)](https://github.com/sanderdw/hassio-addons/actions)
+[![GitHub Build Status](https://github.com/sanderdw/hassio-addons/workflows/VoltViz/badge.svg?logo=github)](https://github.com/sanderdw/hassio-addons/actions)
 ## About DSMR Reader/Datalogger
 
 Provide a tool to easily extract, store and visualize data transferred by the DSMR protocol of your smart meter.
@@ -18,6 +19,10 @@ Meet the easy, open source way for everyone to ask questions and learn from data
 See the Metabase webpage (https://www.metabase.com) for more background information.
 
 ![Metabase](images/metabase.png)
+
+## About VoltViz
+A dynamic, real-time music visualizer that transforms sound into stunning visual experiences. Synchronize with your system audio, microphone and Music Assistant support (through Sendspin) and watch your music come alive.
+See the VoltViz webpage (https://voltviz.com) for more background information.
 
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg?style=flat-square
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg?style=flat-square
