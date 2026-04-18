@@ -28,22 +28,19 @@ else
     echo "VoltViz: Warning - sendspin-js WebSocket pattern not found, proxy may not work"
 fi
 
-# Patch 3: pre-fill Sendspin URL default to ./sendspin-proxy/
-# In VoltViz source, useState("") is only used for the sendspinUrl state
-sed -i 's|useState("")|useState("./sendspin-proxy/")|g' "$ASSETS"/*.js 2>/dev/null \
-    && echo "VoltViz: Pre-filled Sendspin URL default to ./sendspin-proxy/"
-
-# Patch 4: change placeholder text to match
-sed -i 's|http://homeassistant\.local:8927|./sendspin-proxy/|g' "$ASSETS"/*.js 2>/dev/null \
-    && echo "VoltViz: Updated Sendspin placeholder to ./sendspin-proxy/"
-
 # Create addon.d directory for optional nginx includes
 mkdir -p /etc/nginx/addon.d
 
-# Inject addon.d include into default.conf (port 80) for non-ingress access
-if ! grep -q 'addon.d' /etc/nginx/conf.d/default.conf 2>/dev/null; then
-    sed -i '/^}/i\    include /etc/nginx/addon.d/*.conf;' /etc/nginx/conf.d/default.conf
-    echo "VoltViz: Added sendspin proxy include to default.conf (port 80)"
+# Inject addon.d include and sendspin rewrite into default.conf (port 80) for non-ingress access
+if [ -f /etc/nginx/conf.d/default.conf ]; then
+    if ! grep -q 'addon.d' /etc/nginx/conf.d/default.conf; then
+        sed -i '/^}/i\    include /etc/nginx/addon.d/*.conf;' /etc/nginx/conf.d/default.conf
+        echo "VoltViz: Added sendspin proxy include to default.conf (port 80)"
+    fi
+    if ! grep -q 'sendspin' /etc/nginx/conf.d/default.conf; then
+        sed -i '/try_files.*index\.html/i\        if ($args !~* "sendspin") {\n            rewrite ^/$ $uri?sendspin=./sendspin-proxy/ redirect;\n        }' /etc/nginx/conf.d/default.conf
+        echo "VoltViz: Added sendspin redirect to default.conf (port 80)"
+    fi
 fi
 
 # Generate Sendspin proxy config if SENDSPIN_URL is configured

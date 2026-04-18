@@ -10,11 +10,15 @@ the upstream fix is released.
 
 ## Architecture
 
+The add-on supports two access modes:
+
+### Mode 1: Via HA Ingress (recommended, works over HTTPS)
+
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
 │ Browser (HTTPS)                                                     │
 │                                                                     │
-│  VoltViz UI ──▶ user enters ./sendspin-proxy/ as Sendspin URL       │
+│  VoltViz UI ──▶ Sendspin URL pre-filled to ./sendspin-proxy/        │
 │       │                                                             │
 │       ├─ HTTP requests ──▶ https://ha.example.com/local_voltviz/    │
 │       │                    (served by HA Ingress → nginx:8099)       │
@@ -28,7 +32,7 @@ the upstream fix is released.
 ┌──────────────────────┐          ┌────────────────────────────────┐
 │ Home Assistant        │          │ VoltViz Add-on Container       │
 │ Ingress Proxy         │ ──────▶ │                                │
-│ (172.30.32.2)         │  :8099  │  nginx                         │
+│ (172.30.32.2)         │  :8099  │  nginx (ingress.conf)          │
 │                       │         │  ├── / → static files (SPA)    │
 │                       │         │  └── /sendspin-proxy/ → proxy  │
 │                       │         │       to Music Assistant        │
@@ -40,6 +44,40 @@ the upstream fix is released.
                                   │ d5369777-music-assistant  │
                                   │ :8927                     │
                                   └──────────────────────────┘
+```
+
+### Mode 2: Direct access (non-ingress, port 80 → host 8099)
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│ Browser (HTTP)                                                      │
+│                                                                     │
+│  VoltViz UI ──▶ http://192.168.100.60:8099                          │
+│       │                                                             │
+│       ├─ HTTP requests ──▶ direct to container port 80              │
+│       │                    (served by nginx default.conf)            │
+│       │                                                             │
+│       └─ WebSocket ──────▶ ws://192.168.100.60:8099/                │
+│                            sendspin-proxy/sendspin                   │
+│                            (nginx default.conf → proxy)             │
+└─────────────────────────────────────────────────────────────────────┘
+          │
+          ▼
+┌────────────────────────────────┐
+│ VoltViz Add-on Container       │
+│                                │
+│  nginx (default.conf :80)      │
+│  ├── / → static files (SPA)    │
+│  └── /sendspin-proxy/ → proxy  │ ← injected by run.sh at startup
+│       to Music Assistant       │
+└───────────┬────────────────────┘
+            │
+            ▼ HTTP/WS
+┌──────────────────────────┐
+│ Music Assistant           │
+│ d5369777-music-assistant  │
+│ :8927                     │
+└──────────────────────────┘
 ```
 
 ---
@@ -60,16 +98,27 @@ voltviz/
 
 ---
 
-## How Ingress Works
+## How Dual Access Works
 
-Home Assistant Ingress proxies browser requests to the add-on container. The
-add-on does not need to be exposed on any external port.
+### Ingress (port 8099 inside container)
 
-1. `config.json` sets `"ingress": true` — HA knows to proxy to this add-on
+Home Assistant Ingress proxies browser requests to the add-on container.
+
+1. `config.json` sets `"ingress": true` and `"ingress_stream": true` (for WebSocket support)
 2. HA Ingress connects to the container on port **8099** (the default `ingress_port`)
 3. Only requests from `172.30.32.2` (the HA Ingress proxy) are accepted
 4. The nginx `sub_filter` directives rewrite absolute paths (`href="/..."`) to
    relative paths (`href="./..."`) so the SPA works behind the ingress path prefix
+
+### Direct access (port 80 inside container → host port 8099)
+
+The original VoltViz `default.conf` already serves the SPA on port 80. The
+add-on exposes this as host port 8099 by default (`"80/tcp": 8099` in config.json).
+
+- `"webui": "http://[HOST]:[PORT:80]"` enables the "OPEN WEB UI" button for direct access
+- At startup, `run.sh` injects `include /etc/nginx/addon.d/*.conf;` into `default.conf`
+  so the `/sendspin-proxy/` location is available on both ports
+- Users can change or disable the port mapping in the add-on Network settings
 
 ### ingress.conf
 
@@ -121,11 +170,14 @@ blocks WebSocket connections to plain **HTTP** servers on the local network due 
 
 The add-on proxies Sendspin traffic server-side through nginx:
 
-1. User sets `SENDSPIN_URL` in the add-on config to the internal Music Assistant
-   address (e.g. `http://d5369777-music-assistant:8927`)
+1. `SENDSPIN_URL` defaults to `http://d5369777-music-assistant:8927` in the add-on config
+   (works out of the box for most Music Assistant setups)
 2. At startup, `run.sh` generates an nginx `location /sendspin-proxy/` block that
    proxies all requests (including WebSocket upgrades) to that URL
-3. The browser connects to `./sendspin-proxy/` which stays on the same HTTPS origin
+3. The proxy config is shared between both nginx configs (ingress and direct)
+   via the `/etc/nginx/addon.d/` include directory
+4. The Sendspin URL input in VoltViz is pre-filled with `./sendspin-proxy/` — the
+   user just clicks Connect
 
 ### Generated nginx proxy config
 
@@ -149,6 +201,19 @@ Key details:
 - `proxy_http_version 1.1` + `Upgrade`/`Connection` headers enable WebSocket proxying
 - `proxy_read_timeout 86400` keeps long-lived WebSocket connections alive (24h)
 - The trailing `/` on `proxy_pass` strips the `/sendspin-proxy/` prefix before forwarding
+
+### Proxy shared between ingress and direct access
+
+The proxy config is written to `/etc/nginx/addon.d/sendspin-proxy.conf` and
+included by both nginx server blocks:
+
+- **ingress.conf** (port 8099) — has `include /etc/nginx/addon.d/*.conf;` built-in
+- **default.conf** (port 80) — `run.sh` injects the include at startup via:
+  ```bash
+  sed -i '/^}/i\    include /etc/nginx/addon.d/*.conf;' /etc/nginx/conf.d/default.conf
+  ```
+
+This ensures `/sendspin-proxy/` works regardless of how the user accesses VoltViz.
 
 ---
 
@@ -206,13 +271,35 @@ sed -i 's|\([a-zA-Z_$][a-zA-Z0-9_$]*\)\.host}/sendspin|\1.host}${\1.pathname.rep
 
 This preserves the full path from the URL, stripping only the trailing slash.
 
+#### Patch 3: Pre-fill Sendspin URL default
+
+```bash
+sed -i 's|useState("")|useState("./sendspin-proxy/")|g' "$ASSETS"/*.js
+```
+
+**Before:** `useState("")` (empty Sendspin URL field)
+**After:**  `useState("./sendspin-proxy/")` (pre-filled with proxy path)
+
+In VoltViz, `useState("")` is only used for the `sendspinUrl` state variable.
+This makes the Sendspin dialog open with the proxy URL already filled in.
+
+#### Patch 4: Update placeholder text
+
+```bash
+sed -i 's|http://homeassistant\.local:8927|./sendspin-proxy/|g' "$ASSETS"/*.js
+```
+
+**Before:** placeholder shows `http://homeassistant.local:8927`
+**After:**  placeholder shows `./sendspin-proxy/`
+
 #### Backward Compatibility
 
-Both patches are backward-compatible with absolute URLs:
+All patches are backward-compatible with absolute URLs:
 - `new URL("http://192.168.1.100:8927", window.location.href)` → works fine
   (base is ignored for absolute URLs)
 - `pathname` for `http://192.168.1.100:8927` is `/`, which after
   `replace(/\/$/, "")` becomes `""`, producing the same result as before
+- Patches 3 and 4 only change defaults — users can still type any URL
 
 ### Upstream Fix
 
@@ -239,33 +326,10 @@ to the fixed version, the runtime patch in `run.sh` is no longer needed.
    ARG BUILD_FROM=ghcr.io/sanderdw/voltviz:<NEW_VERSION>
    ```
 
-2. **Remove the patch block** from `run.sh`. Delete everything between the
-   dashed comment lines (lines 4–30):
-
-   ```sh
-   #!/bin/sh
-   CONFIG_PATH=/data/options.json
-
-   # DELETE EVERYTHING FROM HERE...
-   # ---------------------------------------------------------------------------
-   # Patch sendspin-js in the bundled JS so it works behind HA Ingress proxy.
-   # ...
-   # ---------------------------------------------------------------------------
-   ASSETS=/usr/share/nginx/html/assets
-   # Patch 1: ...
-   sed -i ...
-   # Patch 2: ...
-   if grep -rq ...
-       sed -i ...
-   else
-       echo ...
-   fi
-   # ...TO HERE
-
-   # Keep everything below (nginx proxy config generation)
-   mkdir -p /etc/nginx/addon.d
-   # ... rest of run.sh stays ...
-   ```
+2. **Remove the patch block** from `run.sh`. Delete everything from the
+   `# ---------------------------------------------------------------------------` comment down to and including the Patch 4 line.
+   Keep the `#!/bin/sh`, `CONFIG_PATH=...`, and everything from
+   `# Create addon.d directory` onward.
 
    The resulting `run.sh` should look like:
 
@@ -275,6 +339,12 @@ to the fixed version, the runtime patch in `run.sh` is no longer needed.
 
    # Create addon.d directory for optional nginx includes
    mkdir -p /etc/nginx/addon.d
+
+   # Inject addon.d include into default.conf (port 80) for non-ingress access
+   if ! grep -q 'addon.d' /etc/nginx/conf.d/default.conf 2>/dev/null; then
+       sed -i '/^}/i\    include /etc/nginx/addon.d/*.conf;' /etc/nginx/conf.d/default.conf
+       echo "VoltViz: Added sendspin proxy include to default.conf (port 80)"
+   fi
 
    # Generate Sendspin proxy config if SENDSPIN_URL is configured
    if [ -f "$CONFIG_PATH" ]; then
@@ -318,14 +388,32 @@ to the fixed version, the runtime patch in `run.sh` is no longer needed.
 
 ### config.json options
 
-| Option | Type | Required | Description |
-|--------|------|----------|-------------|
-| `SENDSPIN_URL` | `str?` | No | Internal URL of the Sendspin server. Example: `http://d5369777-music-assistant:8927` |
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `SENDSPIN_URL` | `str?` | `http://d5369777-music-assistant:8927` | Internal URL of the Sendspin server |
+
+### config.json key settings
+
+| Setting | Value | Purpose |
+|---------|-------|----------|
+| `ingress` | `true` | Enable HA Ingress |
+| `ingress_stream` | `true` | Enable WebSocket streaming through Ingress |
+| `webui` | `http://[HOST]:[PORT:80]` | Direct access "OPEN WEB UI" button |
+| `ports` | `{"80/tcp": 8099}` | Container port 80 mapped to host port 8099 |
+| `init` | `false` | VoltViz image has its own CMD (nginx) |
 
 ### User setup
 
 1. Install the add-on from the repository
-2. (Optional) Set `SENDSPIN_URL` in the Configuration tab
+2. `SENDSPIN_URL` defaults to Music Assistant — change if needed
 3. Start the add-on
-4. Click **OPEN WEB UI**
-5. To connect Sendspin: enter `./sendspin-proxy/` in the Sendspin dialog
+4. Click **OPEN WEB UI** (via Ingress or direct access)
+5. Click the Sendspin button — the URL is pre-filled with `./sendspin-proxy/`
+6. Click Connect
+
+### Access modes
+
+| Mode | URL | Sendspin proxy |
+|------|-----|----------------|
+| Ingress (HTTPS) | `https://ha.example.com/local_voltviz/` | `./sendspin-proxy/` ✅ |
+| Direct (HTTP) | `http://192.168.100.60:8099/` | `./sendspin-proxy/` ✅ |
