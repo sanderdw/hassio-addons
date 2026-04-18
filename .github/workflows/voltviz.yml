@@ -1,0 +1,94 @@
+name: VoltViz
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'master'
+      - 'voltviz-0.13.3'
+    tags:
+      - '*.*.*'
+    paths:
+      - 'voltviz/Dockerfile'
+      - 'voltviz/rootfs/**'
+      - 'voltviz/config.json'
+      - .github/workflows/voltviz.yml
+      - 'voltviz/run.sh'
+
+jobs:
+  voltviz:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+      attestations: write
+      id-token: write
+    strategy:
+      matrix:
+        include:
+          # AMD64
+          - DOCKER_TAG_SUFFIX: amd64
+            BASE_IMAGE: ghcr.io/sanderdw/voltviz:0.13.3
+            PLATFORMS: linux/amd64
+
+          # ARM64V8
+          - DOCKER_TAG_SUFFIX: aarch64
+            BASE_IMAGE: ghcr.io/sanderdw/voltviz:0.13.3
+            PLATFORMS: linux/arm64/v8
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Get the version from config.json
+        id: data
+        run: |
+          version=$(jq --raw-output '.version' ./voltviz/config.json)
+          echo "HA_RELEASE=$version" >> "$GITHUB_OUTPUT"
+      - name: VoltViz addon release
+        env:
+          HA_RELEASE: ${{ steps.data.outputs.HA_RELEASE }}
+        run: echo "$HA_RELEASE"
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Log in to ghcr.io
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ghcr.io/${{ github.repository }}/ha-voltviz-${{ matrix.DOCKER_TAG_SUFFIX }}
+          tags: |
+            type=schedule
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=raw,value=${{ steps.data.outputs.HA_RELEASE }}
+      - name: Build and push
+        id: push
+        uses: docker/build-push-action@v6
+        with:
+          context: ./voltviz
+          platforms: ${{ matrix.PLATFORMS }}
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            BUILD_FROM=${{matrix.BASE_IMAGE}}
+            HA_RELEASE=${{ steps.data.outputs.HA_RELEASE }}
+            BUILD_ARCH=${{matrix.DOCKER_TAG_SUFFIX}}
+      - name: Generate artifact attestation
+        if: github.ref == 'refs/heads/master'
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: ghcr.io/${{ github.repository }}/ha-voltviz-${{ matrix.DOCKER_TAG_SUFFIX }}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
