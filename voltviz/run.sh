@@ -40,6 +40,12 @@ sed -i 's|http://homeassistant\.local:8927|./sendspin-proxy/|g' "$ASSETS"/*.js 2
 # Create addon.d directory for optional nginx includes
 mkdir -p /etc/nginx/addon.d
 
+# Inject addon.d include into default.conf (port 80) for non-ingress access
+if ! grep -q 'addon.d' /etc/nginx/conf.d/default.conf 2>/dev/null; then
+    sed -i '/^}/i\    include /etc/nginx/addon.d/*.conf;' /etc/nginx/conf.d/default.conf
+    echo "VoltViz: Added sendspin proxy include to default.conf (port 80)"
+fi
+
 # Generate Sendspin proxy config if SENDSPIN_URL is configured
 if [ -f "$CONFIG_PATH" ]; then
     SENDSPIN_URL=$(jq --raw-output '.SENDSPIN_URL // empty' "$CONFIG_PATH")
