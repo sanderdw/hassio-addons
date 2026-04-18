@@ -38,7 +38,7 @@ if [ -f /etc/nginx/conf.d/default.conf ]; then
         echo "VoltViz: Added sendspin proxy include to default.conf (port 80)"
     fi
     if ! grep -q 'sendspin' /etc/nginx/conf.d/default.conf; then
-        sed -i '/try_files.*index\.html/i\        if ($args !~* "sendspin") {\n            rewrite ^/$ $uri?sendspin=./sendspin-proxy/ redirect;\n        }' /etc/nginx/conf.d/default.conf
+        sed -i '/try_files.*index\.html/i\        if ($args !~* "sendspin") {\n            return 302 "?sendspin=./sendspin-proxy/";\n        }' /etc/nginx/conf.d/default.conf
         echo "VoltViz: Added sendspin redirect to default.conf (port 80)"
     fi
 fi
