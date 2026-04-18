@@ -18,5 +18,7 @@
     "80/tcp": "Web UI port (not needed when using Ingress)"
   },
   "options": {},
-  "schema": {}
+  "schema": {
+    "SENDSPIN_URL": "str?"
+  }
 }

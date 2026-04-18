@@ -3,10 +3,17 @@ FROM $BUILD_FROM
 ARG BUILD_ARCH
 ARG HA_RELEASE
 
-# Add ingress configuration for Home Assistant
+# Install jq for reading add-on config
+RUN apk add --no-cache jq
+
+# Add ingress configuration and entrypoint for Home Assistant
 COPY rootfs/ /
+COPY run.sh /
+RUN chmod a+x /run.sh
 
 EXPOSE 8099
+
+CMD ["/run.sh"]
 
 # Labels
 LABEL \

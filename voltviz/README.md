@@ -21,7 +21,9 @@ A dynamic, real-time music visualizer that transforms sound into stunning visual
 
 ## Configuration
 
-This add-on has no configuration options. All settings are controlled through the VoltViz web interface.
+| Option | Description |
+|--------|-------------|
+| `SENDSPIN_URL` | (Optional) Internal URL of your Sendspin server for server-side proxying. Example: `http://d5369777-music-assistant:8927` |
 
 ## Ingress
 
@@ -29,7 +31,28 @@ This add-on uses Home Assistant Ingress for seamless integration. Click "OPEN WE
 
 ## Sendspin / Music Assistant
 
-VoltViz supports [Music Assistant](https://music-assistant.io/) through [Sendspin](https://www.sendspin-audio.com/). Click the Sendspin button in the VoltViz UI and enter your server URL to visualize audio from any Sendspin-compatible server.
+VoltViz supports [Music Assistant](https://music-assistant.io/) through [Sendspin](https://www.sendspin-audio.com/).
+
+### Server-side proxy (recommended)
+
+By default, VoltViz connects to Sendspin directly from the browser. This only works on internal networks without HTTPS (due to mixed content restrictions). To solve this, the add-on can proxy Sendspin through the server side:
+
+1. In the add-on **Configuration** tab, set `SENDSPIN_URL` to your Music Assistant's internal address:
+   ```
+   http://d5369777-music-assistant:8927
+   ```
+2. Restart the add-on
+3. Open VoltViz and click the Sendspin button
+4. Copy the URL from your browser's address bar and append `sendspin-proxy/`:
+   ```
+   http://homeassistant.local:8123/api/hassio_ingress/<TOKEN>/sendspin-proxy/
+   ```
+
+This routes the audio stream through the HA Ingress proxy, so it works over HTTPS and doesn't require direct network access to the Music Assistant server.
+
+### Direct connection
+
+Alternatively, click the Sendspin button and enter the server URL directly (e.g. `http://192.168.1.100:8927`). This requires HTTP access from the browser to the server.
 
 ## Deep-Link Support
 
