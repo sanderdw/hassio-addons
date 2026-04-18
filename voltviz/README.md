@@ -24,10 +24,7 @@ A dynamic, real-time music visualizer that transforms sound into stunning visual
 8. Save on the bottom
 9. Select the VoltViz player
 
-<video controls>
-  <source src="https://uto-mix.sanwil.net/install-voltviz.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+Video: https://youtu.be/ONP__FHpd-M
 
 ## Configuration
 
