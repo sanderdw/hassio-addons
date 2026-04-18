@@ -43,12 +43,11 @@ By default, VoltViz connects to Sendspin directly from the browser. This only wo
    ```
 2. Restart the add-on
 3. Open VoltViz and click the Sendspin button
-4. Copy the URL from your browser's address bar and append `sendspin-proxy/`:
-   ```
-   http://homeassistant.local:8123/api/hassio_ingress/<TOKEN>/sendspin-proxy/
-   ```
+4. Enter `./sendspin-proxy/` as the server URL and click Connect
 
-This routes the audio stream through the HA Ingress proxy, so it works over HTTPS and doesn't require direct network access to the Music Assistant server.
+This routes all Sendspin traffic (including WebSocket) through HA Ingress, so it works over HTTPS without direct network access to the Music Assistant server.
+
+You can also bookmark it by appending `?sendspin=./sendspin-proxy/` to the VoltViz URL — the connection dialog will open automatically with the URL pre-filled.
 
 ### Direct connection
 
