@@ -5,7 +5,7 @@ ARG HA_RELEASE
 
 RUN echo "This is ${BUILD_ARCH}"
 
-RUN apk add --no-cache jq
+RUN apk add --no-cache jq nginx
 
 RUN \
     mkdir -p /usr/src/bashio \
@@ -16,6 +16,9 @@ RUN \
     \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /usr/src/*
+
+# Add nginx ingress configuration and ingress JS patch
+COPY rootfs/ /
 COPY run.sh /
 RUN chmod a+x /run.sh
 ENTRYPOINT ["/run.sh"]

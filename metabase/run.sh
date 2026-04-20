@@ -29,6 +29,23 @@ function _hass {
   export JAVA_TIMEZONE=$(bashio::config 'JAVA_TIMEZONE')
   export JAVA_OPTS=$(bashio::config 'JAVA_OPTS')
   export MB_CHECK_FOR_UPDATES="false"
+
+  # Configure ingress
+  bashio::log.blue "Home Assistant Metabase Add-on - Configuring ingress"
+  INGRESS_ENTRY=$(bashio::addon.ingress_entry)
+  bashio::log.blue "Home Assistant Metabase Add-on - Ingress entry: ${INGRESS_ENTRY}"
+
+  # Template the ingress path into nginx config and JS patch
+  sed -i "s|%%ingress_entry%%|${INGRESS_ENTRY}|g" /etc/nginx/conf.d/ingress.conf
+  sed -i "s|%%ingress_entry%%|${INGRESS_ENTRY}|g" /usr/share/ingress/patch.js
+
+  # Disable Metabase redirect to HTTPS (behind HA proxy)
+  export MB_REDIRECT_ALL_REQUESTS_TO_HTTPS="false"
+
+  # Start nginx for ingress
+  nginx -c /etc/nginx/nginx.conf
+  bashio::log.green "Home Assistant Metabase Add-on - Nginx ingress proxy started"
+
   _info "Metabase started"
 }
 

@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.0.0
+
+- Add Home Assistant Ingress support (access Metabase directly from the HA sidebar)
+- Nginx reverse proxy for ingress with automatic URL rewriting
+- Direct port access (7778) still available as fallback
+
+## 1.3.0
+
+- Update to Metabase 0.60.1.5
+
 ## 1.2.0
 
 - Update to Metabase 0.56.11.1

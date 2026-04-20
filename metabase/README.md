@@ -26,7 +26,7 @@ See config instructions here: https://github.com/sanderdw/hassio-addons
    1. For H2 use `MB_DB_TYPE=h2` in the configuration tab
    2. For Postgres/TimescaleDB use `MB_DB_TYPE=postgres` in the configuration tab
 7. Start Metabase addon.
-8. Go to http://yourhomeassistant:7778 (wait untill add-on is initialized) - Note: Ingress not working yet.
+8. Open Metabase via the sidebar panel (Ingress) or go to http://yourhomeassistant:7778 for direct access.
 9. Walkthrough the Metabase setup.
 10. _Optional:_ Add the Home Assistant PostgreSQL DB (You need to have the recorder configured: https://www.home-assistant.io/integrations/recorder/)
 11. _Optional:_ Add the DSMR Reader PostgreSQL DB
