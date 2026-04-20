@@ -42,6 +42,9 @@ function _hass {
   # Disable Metabase redirect to HTTPS (behind HA proxy)
   export MB_REDIRECT_ALL_REQUESTS_TO_HTTPS="false"
 
+  # Set site URL to the ingress path to suppress client-side basename warning
+  export MB_SITE_URL="http://homeassistant.local:8123${INGRESS_ENTRY}"
+
   # Start nginx for ingress
   nginx -c /etc/nginx/nginx.conf
   bashio::log.green "Home Assistant Metabase Add-on - Nginx ingress proxy started"
