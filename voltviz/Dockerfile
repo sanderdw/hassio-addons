@@ -3,8 +3,8 @@ FROM $BUILD_FROM
 ARG BUILD_ARCH
 ARG HA_RELEASE
 
-# Install jq for reading add-on config
-RUN apk add --no-cache jq
+# Install jq and bash for reading add-on config
+RUN apk add --no-cache jq bash
 
 RUN \
     mkdir -p /usr/src/bashio \

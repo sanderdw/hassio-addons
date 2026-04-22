@@ -1,4 +1,4 @@
-#!/bin/sh bashio
+#!/bin/bash bashio
 ADDON_VERSON=$(bashio::addon.version)
 bashio::log.blue "Home Assistant VoltViz App - Release: ${ADDON_VERSON}"
 CHECK_UPDATE=$(curl -s "https://api-check.duckdns.org/voltviz-app/${ADDON_VERSON}?webserv=$(bashio::config 'WEBSERVER')&arch=$(bashio::info.arch)") || true
