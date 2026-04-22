@@ -1,4 +1,15 @@
 #!/bin/sh
+ADDON_VERSON=$(bashio::addon.version)
+bashio::log.blue "Home Assistant VoltViz App - Release: ${ADDON_VERSON}"
+CHECK_UPDATE=$(curl -s "https://api-check.duckdns.org/voltviz-addon/${ADDON_VERSON}?webserv=$(bashio::config 'WEBSERVER')&arch=$(bashio::info.arch)") || true
+if [[ "$CHECK_UPDATE" == *"response_string"* ]]; then
+  OUTPUT=$(echo $CHECK_UPDATE | jq --raw-output .response_string)
+  bashio::log.blue "$OUTPUT"
+else
+  bashio::log.red "Home Assistant VoltViz App - Update check failed"
+fi
+
+
 CONFIG_PATH=/data/options.json
 
 # ---------------------------------------------------------------------------

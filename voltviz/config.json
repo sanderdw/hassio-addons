@@ -1,6 +1,6 @@
 {
   "name": "VoltViz",
-  "version": "0.13.3",
+  "version": "0.14.0",
   "slug": "voltviz",
   "description": "A dynamic, real-time music visualizer that transforms sound into stunning visual experiences",
   "arch": ["aarch64", "amd64"],
