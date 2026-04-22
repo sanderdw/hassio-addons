@@ -5,7 +5,7 @@ on:
   push:
     branches:
       - 'master'
-      - 'voltviz-0.13.3'
+      - 'voltviz-*.*.*'
     tags:
       - '*.*.*'
     paths:
@@ -28,17 +28,17 @@ jobs:
         include:
           # AMD64
           - DOCKER_TAG_SUFFIX: amd64
-            BASE_IMAGE: ghcr.io/sanderdw/voltviz:0.13.3
+            BASE_IMAGE: ghcr.io/sanderdw/voltviz:0.14.0
             PLATFORMS: linux/amd64
 
           # ARM64V8
           - DOCKER_TAG_SUFFIX: aarch64
-            BASE_IMAGE: ghcr.io/sanderdw/voltviz:0.13.3
+            BASE_IMAGE: ghcr.io/sanderdw/voltviz:0.14.0
             PLATFORMS: linux/arm64/v8
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Get the version from config.json
         id: data
         run: |
@@ -49,19 +49,19 @@ jobs:
           HA_RELEASE: ${{ steps.data.outputs.HA_RELEASE }}
         run: echo "$HA_RELEASE"
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
       - name: Log in to ghcr.io
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Docker meta
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: |
             ghcr.io/${{ github.repository }}/ha-voltviz-${{ matrix.DOCKER_TAG_SUFFIX }}
@@ -74,7 +74,7 @@ jobs:
             type=raw,value=${{ steps.data.outputs.HA_RELEASE }}
       - name: Build and push
         id: push
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ./voltviz
           platforms: ${{ matrix.PLATFORMS }}

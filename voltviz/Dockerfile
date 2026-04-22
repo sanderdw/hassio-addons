@@ -1,10 +1,20 @@
-ARG BUILD_FROM=ghcr.io/sanderdw/voltviz:0.13.3
+ARG BUILD_FROM=ghcr.io/sanderdw/voltviz:latest
 FROM $BUILD_FROM
 ARG BUILD_ARCH
 ARG HA_RELEASE
 
-# Install jq for reading add-on config
-RUN apk add --no-cache jq
+# Install jq and bash for reading add-on config
+RUN apk add --no-cache jq bash
+
+RUN \
+    mkdir -p /usr/src/bashio \
+    && curl -L -f -s "https://github.com/hassio-addons/bashio/archive/refs/tags/v0.17.5.tar.gz" \
+        | tar -xzf - --strip 1 -C /usr/src/bashio \
+    && mv /usr/src/bashio/lib /usr/lib/bashio \
+    && ln -s /usr/lib/bashio/bashio /usr/bin/bashio \
+    \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /usr/src/*
 
 # Add ingress configuration and entrypoint for Home Assistant
 COPY rootfs/ /
