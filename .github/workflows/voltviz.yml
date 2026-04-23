@@ -28,12 +28,12 @@ jobs:
         include:
           # AMD64
           - DOCKER_TAG_SUFFIX: amd64
-            BASE_IMAGE: ghcr.io/sanderdw/voltviz:0.14.0
+            BASE_IMAGE: ghcr.io/sanderdw/voltviz:0.15.0
             PLATFORMS: linux/amd64
 
           # ARM64V8
           - DOCKER_TAG_SUFFIX: aarch64
-            BASE_IMAGE: ghcr.io/sanderdw/voltviz:0.14.0
+            BASE_IMAGE: ghcr.io/sanderdw/voltviz:0.15.0
             PLATFORMS: linux/arm64/v8
 
     steps:
