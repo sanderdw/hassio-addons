@@ -8,7 +8,7 @@ Credits to Dennis Siemensma for creating the DSMR Reader software (https://dsmr-
 
 [![GitHub Build Status](https://github.com/sanderdw/hassio-addons/workflows/DSMR%20Reader/badge.svg?logo=github)](https://github.com/sanderdw/hassio-addons/actions) ![dsmr-shield] ![addon-shield] ![aarch64-shield] ![amd64-shield] ![armv7-shield] ![armhf-shield]
 
-![DSMR Reader](https://github.com/sanderdw/hassio-addons/raw/master/images/dsmr_reader.png)
+![DSMR Reader](https://github.com/sanderdw/hassio-addons/raw/main/images/dsmr_reader.png)
 
 ## Configure the repository
 
@@ -38,7 +38,7 @@ Note: Having problems or questions? Please check the community forum first https
 Note: Need to perform commands on the commandline? After entering the container bash ("```docker exec -it addon_0826754b_dsmr_reader bash```") you need to execute this command "```. /cli-helper.sh```" to apply the settings correctly from the addon Configuration tab.
 
 [dsmr-shield]: https://img.shields.io/badge/DSMR%20Reader%20Version-%205.12-purple.svg?style=flat-square
-[addon-shield]: https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fgithub.com%2Fsanderdw%2Fhassio-addons%2Fraw%2Frefs%2Fheads%2Fmaster%2Fdsmr_reader%2Fconfig.json&query=version&style=flat-square&label=Addon%20Version
+[addon-shield]: https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fgithub.com%2Fsanderdw%2Fhassio-addons%2Fraw%2Frefs%2Fheads%2Fmain%2Fdsmr_reader%2Fconfig.json&query=version&style=flat-square&label=Addon%20Version
 
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg?style=flat-square
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg?style=flat-square

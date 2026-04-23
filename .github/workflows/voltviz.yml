@@ -86,7 +86,7 @@ jobs:
             HA_RELEASE=${{ steps.data.outputs.HA_RELEASE }}
             BUILD_ARCH=${{matrix.DOCKER_TAG_SUFFIX}}
       - name: Generate artifact attestation
-        if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/main'
         uses: actions/attest-build-provenance@v2
         with:
           subject-name: ghcr.io/${{ github.repository }}/ha-voltviz-${{ matrix.DOCKER_TAG_SUFFIX }}

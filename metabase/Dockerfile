@@ -35,5 +35,5 @@ LABEL \
     org.opencontainers.image.licenses="GNU Affero General Public License (AGPL)" \
     org.opencontainers.image.url="https://github.com/sanderdw/hassio-addons" \
     org.opencontainers.image.source="https://github.com/sanderdw/hassio-addons" \
-    org.opencontainers.image.documentation="https://raw.githubusercontent.com/sanderdw/hassio-addons/master/README.md" \
+    org.opencontainers.image.documentation="https://raw.githubusercontent.com/sanderdw/hassio-addons/main/README.md" \
     org.opencontainers.image.version=${HA_RELEASE}

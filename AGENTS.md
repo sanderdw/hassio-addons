@@ -104,7 +104,7 @@ Contains files to be copied into the container root filesystem:
 Located in `.github/workflows/`, these build and push multi-arch container images to:
 - GitHub Container Registry (ghcr.io)
 
-Triggered on pushes to `master` branch or when specific add-on files change.
+Triggered on pushes to `main` branch or when specific add-on files change.
 
 ## Development Guidelines
 

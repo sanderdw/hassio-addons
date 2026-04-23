@@ -40,5 +40,5 @@ LABEL \
     org.opencontainers.image.licenses="MIT" \
     org.opencontainers.image.url="https://github.com/sanderdw/hassio-addons" \
     org.opencontainers.image.source="https://github.com/sanderdw/hassio-addons" \
-    org.opencontainers.image.documentation="https://raw.githubusercontent.com/sanderdw/hassio-addons/master/voltviz/README.md" \
+    org.opencontainers.image.documentation="https://raw.githubusercontent.com/sanderdw/hassio-addons/main/voltviz/README.md" \
     org.opencontainers.image.version=${HA_RELEASE}

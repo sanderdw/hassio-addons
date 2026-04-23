@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - 'master'
+      - 'main'
       - 'logger-1.2.0'
     tags:
       - 'v*.*.*'

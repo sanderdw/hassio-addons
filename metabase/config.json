@@ -3,7 +3,7 @@
   "version": "1.2.0",
   "slug": "metabase",
   "description": "Meet the easy, open source way for everyone to ask questions and learn from data.",
-  "url": "https://github.com/sanderdw/hassio-addons/blob/master/metabase/README.md",
+  "url": "https://github.com/sanderdw/hassio-addons/blob/main/metabase/README.md",
   "startup": "application",
   "ports": {
     "3000/tcp": 7778
