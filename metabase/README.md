@@ -13,10 +13,10 @@ Meet the easy, open source way for everyone to ask questions and learn from data
 
 See config instructions here: https://github.com/sanderdw/hassio-addons
 
-## Configure the add-on
+## Configure the app
 
 1. Database type options:
-   1. **H2**, skip the TimescaleDB addon installation and go to step 5
+   1. **H2**, skip the TimescaleDB app installation and go to step 5
    2. **Postgres**, continue with step 2
 2. Install PostgresDB (TimescaleDB) by Expaso: https://community.home-assistant.io/t/home-assistant-add-on-postgresql-timescaledb/198176.
 3. Add the `"metabase"` db as an exta database entry in the Configuration tab. No need to set it under timescale_enabled as well.
@@ -26,7 +26,7 @@ See config instructions here: https://github.com/sanderdw/hassio-addons
    1. For H2 use `MB_DB_TYPE=h2` in the configuration tab
    2. For Postgres/TimescaleDB use `MB_DB_TYPE=postgres` in the configuration tab
 7. Start Metabase addon.
-8. Go to http://yourhomeassistant:7778 (wait untill add-on is initialized) - Note: Ingress not working yet.
+8. Go to http://yourhomeassistant:7778 (wait untill add-on is initialized) - Note: Ingress not supported.
 9. Walkthrough the Metabase setup.
 10. _Optional:_ Add the Home Assistant PostgreSQL DB (You need to have the recorder configured: https://www.home-assistant.io/integrations/recorder/)
 11. _Optional:_ Add the DSMR Reader PostgreSQL DB
@@ -35,7 +35,7 @@ See config instructions here: https://github.com/sanderdw/hassio-addons
 
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg?style=flat-square
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg?style=flat-square
-[metabase-shield]: https://img.shields.io/badge/Metabase%20Version-%200.56.11-purple.svg?style=flat-square
+[metabase-shield]: https://img.shields.io/badge/Metabase%20Version-%200.60.3-purple.svg?style=flat-square
 [addon-shield]: https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fgithub.com%2Fsanderdw%2Fhassio-addons%2Fraw%2Frefs%2Fheads%2Fmain%2Fmetabase%2Fconfig.json&query=version&style=flat-square&label=Addon%20Version
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=for-the-badge
 [forum]: https://community.home-assistant.io/t/metabase-add-on-for-home-assistant/286413
