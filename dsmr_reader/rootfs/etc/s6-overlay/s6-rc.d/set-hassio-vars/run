@@ -70,7 +70,7 @@ function _hass {
     bashio::log.blue "Home Assistant DSMR Reader app - Ingress enabled"
     # Patch ingress server to contain the correct paths
     ingress_entry=$(bashio::addon.ingress_entry)
-    sed -i "s#%%entry%%#${ingress_entry}#g" /etc/nginx/http.d/ingress.conf
+    sed -i "s#%%entry%%#${ingress_entry}#g" /etc/nginx/conf.d/ingress.conf
     django_static="$(bashio::addon.ingress_entry)/static/"
     printf ${django_static} > /run/s6/container_environment/DJANGO_STATIC_URL
     django_url="$(bashio::addon.ingress_entry)/"
@@ -78,7 +78,7 @@ function _hass {
     printf 'True' > /run/s6/container_environment/DJANGO_USE_X_FORWARDED_HOST
     # Patch resolver to match DNS, not sure if needed
     dns_host=$(bashio::dns.host)
-    sed -i "s/%%dns_host%%/${dns_host}/g" /etc/nginx/http.d/resolver.conf
+    sed -i "s/%%dns_host%%/${dns_host}/g" /etc/nginx/conf.d/resolver.conf
   elif [ "$(bashio::config 'WEBSERVER')" == 'Custom' ]
   then
     if [ "$(bashio::addon.port '80/tcp')" == "" ]
@@ -94,12 +94,12 @@ function _hass {
       printf ${django_url} > /run/s6/container_environment/DJANGO_FORCE_SCRIPT_NAME
       fi
     printf 'True' > /run/s6/container_environment/DJANGO_USE_X_FORWARDED_HOST
-    rm /etc/nginx/http.d/resolver.conf
+    rm /etc/nginx/conf.d/resolver.conf
     bashio::log.green "Home Assistant DSMR Reader App - Custom reverse proxy enabled (Note: Ingress will not work), DSMR Reader is accesable at:"
     bashio::log.green "Home Assistant DSMR Reader App - http://${ip_address}:$(bashio::addon.port '80/tcp')/"
     # Patch resolver to match DNS, not sure if needed
     #dns_host=$(bashio::dns.host)
-    #sed -i "s/%%dns_host%%/${dns_host}/g" /etc/nginx/http.d/resolver.conf
+    #sed -i "s/%%dns_host%%/${dns_host}/g" /etc/nginx/conf.d/resolver.conf
   elif [ "$(bashio::config 'WEBSERVER')" == 'Standard' ]
   then
     if [ "$(bashio::addon.port '80/tcp')" == "" ]
@@ -107,7 +107,7 @@ function _hass {
       bashio::log.red "Home Assistant DSMR Reader App - No port configured, configure a UI port in the Network options"
       exit 1
       fi
-    rm /etc/nginx/http.d/resolver.conf
+    rm /etc/nginx/conf.d/resolver.conf
     bashio::log.green "Home Assistant DSMR Reader App - Ingress disabled, when started, DSMR Reader is accesable at:"
     bashio::log.green "Home Assistant DSMR Reader App - http://${ip_address}:$(bashio::addon.port '80/tcp')/"
   fi
