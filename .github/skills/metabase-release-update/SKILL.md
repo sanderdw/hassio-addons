@@ -14,6 +14,7 @@ A consistent Metabase release update across workflow automation and app metadata
 - Updated Metabase base image tag in `.github/workflows/metabase.yml` when required
 - Updated app version in `metabase/config.json` when required
 - New release entry at the top of `metabase/CHANGELOG.md`
+- Updated metabase-shield in `README.md` to reflect the new Metabase version
 
 ## When to Use
 Use this skill when:
