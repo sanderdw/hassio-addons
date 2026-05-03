@@ -1,9 +1,9 @@
 {
   "name": "DSMR Reader",
-  "version": "1.12.2",
+  "version": "1.12.3",
   "slug": "dsmr_reader",
   "description": "Used for reading the smart meter DSMR P1 port (https://dsmr-reader.readthedocs.io)",
-  "arch": ["armhf", "armv7", "aarch64", "amd64"],
+  "arch": ["armv7", "aarch64", "amd64"],
   "image": "ghcr.io/sanderdw/hassio-addons/ha-dsmr-reader-{arch}",
   "url": "https://github.com/sanderdw/hassio-addons",
   "startup": "application",

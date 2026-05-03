@@ -17,7 +17,7 @@ RUN \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /usr/src/*
 
-# HOMEASSISTANT Add-On OVERRIDES
+# HOMEASSISTANT app OVERRIDES
 COPY rootfs /
 RUN chmod a+x /etc/s6-overlay/s6-rc.d/set-hassio-vars/run
 
