@@ -6,37 +6,39 @@
 
 function _hass {
   ADDON_VERSON=$(bashio::addon.version)
-  bashio::log.blue "Home Assistant DSMR Reader app - Release: ${ADDON_VERSON}"
+  bashio::log.blue "Home Assistant DSMR Reader App - Release: ${ADDON_VERSON}"
   CHECK_UPDATE=$(curl -s "https://api-check.duckdns.org/dsmr-reader-addon/${ADDON_VERSON}?webserv=$(bashio::config 'WEBSERVER')&arch=$(bashio::info.arch)") || true
   if [[ "$CHECK_UPDATE" == *"response_string"* ]]; then
     OUTPUT=$(echo $CHECK_UPDATE | jq --raw-output .response_string)
     bashio::log.blue "$OUTPUT"
   else
-    bashio::log.red "Home Assistant DSMR Reader app - Update check failed"
+    bashio::log.red "Home Assistant DSMR Reader App - Update check failed"
   fi
   if [ -z "${DJANGO_DATABASE_HOST}" ] || [ "${DJANGO_DATABASE_HOST}" == 'dsmrdb' ]; then
-    bashio::log.blue "Home Assistant DSMR Reader app - Configuring addon settings"
-    printf $(bashio::config 'DSMRREADER_ADMIN_USER') > /var/run/s6/container_environment/DSMRREADER_ADMIN_USER
-    printf $(bashio::config 'DSMRREADER_ADMIN_PASSWORD') > /var/run/s6/container_environment/DSMRREADER_ADMIN_PASSWORD
-    printf $(bashio::config 'DJANGO_DATABASE_NAME') > /var/run/s6/container_environment/DJANGO_DATABASE_NAME
-    printf $(bashio::config 'DJANGO_DATABASE_USER') > /var/run/s6/container_environment/DJANGO_DATABASE_USER
-    printf $(bashio::config 'DJANGO_DATABASE_PASSWORD') > /var/run/s6/container_environment/DJANGO_DATABASE_PASSWORD
-    printf $(bashio::config 'DJANGO_DATABASE_HOST') > /var/run/s6/container_environment/DJANGO_DATABASE_HOST
-    printf $(bashio::config 'DJANGO_DATABASE_PORT') > /var/run/s6/container_environment/DJANGO_DATABASE_PORT
-    printf $(bashio::config 'DSMRREADER_OPERATION_MODE') > /var/run/s6/container_environment/DSMRREADER_OPERATION_MODE
-    if [ "$(bashio::config 'DSMRREADER_OPERATION_MODE')" == 'api_client' ]
+    bashio::log.blue "Home Assistant DSMR Reader App - Configuring addon settings"
+    mkdir -p /run/s6/container_environment
+    printf $(bashio::config 'DSMRREADER_ADMIN_USER') > /run/s6/container_environment/DSMRREADER_ADMIN_USER
+    printf $(bashio::config 'DSMRREADER_ADMIN_PASSWORD') > /run/s6/container_environment/DSMRREADER_ADMIN_PASSWORD
+    printf $(bashio::config 'DJANGO_DATABASE_NAME') > /run/s6/container_environment/DJANGO_DATABASE_NAME
+    printf $(bashio::config 'DJANGO_DATABASE_USER') > /run/s6/container_environment/DJANGO_DATABASE_USER
+    printf $(bashio::config 'DJANGO_DATABASE_PASSWORD') > /run/s6/container_environment/DJANGO_DATABASE_PASSWORD
+    printf $(bashio::config 'DJANGO_DATABASE_HOST') > /run/s6/container_environment/DJANGO_DATABASE_HOST
+    printf $(bashio::config 'DJANGO_DATABASE_PORT') > /run/s6/container_environment/DJANGO_DATABASE_PORT
+    printf $(bashio::config 'CONTAINER_RUN_MODE') > /run/s6/container_environment/CONTAINER_RUN_MODE
+    if [ "$(bashio::config 'CONTAINER_RUN_MODE')" == 'remote_datalogger' ]
     then
-      printf $(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_API_HOSTS') > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_API_HOSTS
-      printf $(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_API_KEYS') > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_API_KEYS
+      printf $(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_API_HOSTS') > /run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_API_HOSTS
+      printf $(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_API_KEYS') > /run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_API_KEYS
     fi
-    printf $(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT') > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT
-    printf $(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_INPUT_METHOD') > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_INPUT_METHOD
-    printf $(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_SERIAL_BAUDRATE') > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_SERIAL_BAUDRATE
-    printf $(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST') > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST
-    printf $(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT') > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT
-    printf $(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_SLEEP') > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_SLEEP
-    printf $(bashio::config 'DSMRREADER_LOGLEVEL') > /var/run/s6/container_environment/DSMRREADER_LOGLEVEL
-    printf "true" > /var/run/s6/container_environment/ENABLE_IFRAME
+    printf $(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_SERIAL_DEVICE') > /run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_SERIAL_DEVICE
+    printf $(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_INPUT_METHOD') > /run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_INPUT_METHOD
+    printf $(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_SERIAL_BAUDRATE') > /run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_SERIAL_BAUDRATE
+    printf $(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_SERIAL_BYTESIZE') > /run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_SERIAL_BYTESIZE
+    printf $(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST') > /run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST
+    printf $(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT') > /run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT
+    printf $(bashio::config 'DSMRREADER_LOGLEVEL') > /run/s6/container_environment/DSMRREADER_LOGLEVEL
+    printf $(bashio::config 'DJANGO_TIME_ZONE') > /run/s6/container_environment/DJANGO_TIME_ZONE
+    printf $(bashio::config 'DJANGO_SECRET_KEY') > /run/s6/container_environment/DJANGO_SECRET_KEY
     # Setting env exports for using in cli when needed
     export DSMRREADER_ADMIN_USER=$(bashio::config 'DSMRREADER_ADMIN_USER')
     export DSMRREADER_ADMIN_PASSWORD=$(bashio::config 'DSMRREADER_ADMIN_PASSWORD')
@@ -45,20 +47,21 @@ function _hass {
     export DJANGO_DATABASE_PASSWORD=$(bashio::config 'DJANGO_DATABASE_PASSWORD')
     export DJANGO_DATABASE_HOST=$(bashio::config 'DJANGO_DATABASE_HOST')
     export DJANGO_DATABASE_PORT=$(bashio::config 'DJANGO_DATABASE_PORT')
-    export DSMRREADER_OPERATION_MODE=$(bashio::config 'DSMRREADER_OPERATION_MODE')
-    if [ "$(bashio::config 'DSMRREADER_OPERATION_MODE')" == 'api_client' ]
+    export CONTAINER_RUN_MODE=$(bashio::config 'CONTAINER_RUN_MODE')
+    if [ "$(bashio::config 'CONTAINER_RUN_MODE')" == 'remote_datalogger' ]
     then
       export DSMRREADER_REMOTE_DATALOGGER_API_HOSTS=$(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_API_HOSTS')
       export DSMRREADER_REMOTE_DATALOGGER_API_KEYS=$(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_API_KEYS')
     fi
-    export DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT=$(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT')
+    export DSMRREADER_REMOTE_DATALOGGER_SERIAL_DEVICE=$(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_SERIAL_DEVICE')
     export DSMRREADER_REMOTE_DATALOGGER_INPUT_METHOD=$(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_INPUT_METHOD')
     export DSMRREADER_REMOTE_DATALOGGER_SERIAL_BAUDRATE=$(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_SERIAL_BAUDRATE')
+    export DSMRREADER_REMOTE_DATALOGGER_SERIAL_BYTESIZE=$(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_SERIAL_BYTESIZE')
     export DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST=$(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST')
     export DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT=$(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT')
-    export DSMRREADER_REMOTE_DATALOGGER_SLEEP=$(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_SLEEP')
     export DSMRREADER_LOGLEVEL=$(bashio::config 'DSMRREADER_LOGLEVEL')
-    export ENABLE_IFRAME='true'
+    export DJANGO_TIME_ZONE=$(bashio::config 'DJANGO_TIME_ZONE')
+    export DJANGO_SECRET_KEY=$(bashio::config 'DJANGO_SECRET_KEY')
   fi
   raw_ip_network=$(bashio::network.ipv4_address)
   ip_address=${raw_ip_network%???}
@@ -67,46 +70,46 @@ function _hass {
     bashio::log.blue "Home Assistant DSMR Reader app - Ingress enabled"
     # Patch ingress server to contain the correct paths
     ingress_entry=$(bashio::addon.ingress_entry)
-    sed -i "s#%%entry%%#${ingress_entry}#g" /etc/nginx/http.d/ingress.conf
+    sed -i "s#%%entry%%#${ingress_entry}#g" /etc/nginx/conf.d/ingress.conf
     django_static="$(bashio::addon.ingress_entry)/static/"
-    printf ${django_static} > /var/run/s6/container_environment/DJANGO_STATIC_URL
+    printf ${django_static} > /run/s6/container_environment/DJANGO_STATIC_URL
     django_url="$(bashio::addon.ingress_entry)/"
-    printf ${django_url} > /var/run/s6/container_environment/DJANGO_FORCE_SCRIPT_NAME
-    printf 'True' > /var/run/s6/container_environment/DJANGO_USE_X_FORWARDED_HOST
+    printf ${django_url} > /run/s6/container_environment/DJANGO_FORCE_SCRIPT_NAME
+    printf 'True' > /run/s6/container_environment/DJANGO_USE_X_FORWARDED_HOST
     # Patch resolver to match DNS, not sure if needed
     dns_host=$(bashio::dns.host)
-    sed -i "s/%%dns_host%%/${dns_host}/g" /etc/nginx/http.d/resolver.conf
+    sed -i "s/%%dns_host%%/${dns_host}/g" /etc/nginx/conf.d/resolver.conf
   elif [ "$(bashio::config 'WEBSERVER')" == 'Custom' ]
   then
     if [ "$(bashio::addon.port '80/tcp')" == "" ]
       then
-      bashio::log.red "Home Assistant DSMR Reader app - No port configured, configure a UI port in the Network options"
+      bashio::log.red "Home Assistant DSMR Reader App - No port configured, configure a UI port in the Network options"
       exit 1
       fi
     django_static=$(bashio::config 'DJANGO_STATIC_URL')
-    printf ${django_static} > /var/run/s6/container_environment/DJANGO_STATIC_URL
+    printf ${django_static} > /run/s6/container_environment/DJANGO_STATIC_URL
     if [ "$(bashio::config 'DJANGO_FORCE_SCRIPT_NAME')" != "" ]
       then
       django_url=$(bashio::config 'DJANGO_FORCE_SCRIPT_NAME')
-      printf ${django_url} > /var/run/s6/container_environment/DJANGO_FORCE_SCRIPT_NAME
+      printf ${django_url} > /run/s6/container_environment/DJANGO_FORCE_SCRIPT_NAME
       fi
-    printf 'True' > /var/run/s6/container_environment/DJANGO_USE_X_FORWARDED_HOST
-    rm /etc/nginx/http.d/resolver.conf
-    bashio::log.green "Home Assistant DSMR Reader app - Custom reverse proxy enabled (Note: Ingress will not work), DSMR Reader is accesable at:"
-    bashio::log.green "Home Assistant DSMR Reader app - http://${ip_address}:$(bashio::addon.port '80/tcp')/"
+    printf 'True' > /run/s6/container_environment/DJANGO_USE_X_FORWARDED_HOST
+    rm /etc/nginx/conf.d/resolver.conf
+    bashio::log.green "Home Assistant DSMR Reader App - Custom reverse proxy enabled (Note: Ingress will not work), DSMR Reader is accesable at:"
+    bashio::log.green "Home Assistant DSMR Reader App - http://${ip_address}:$(bashio::addon.port '80/tcp')/"
     # Patch resolver to match DNS, not sure if needed
     #dns_host=$(bashio::dns.host)
-    #sed -i "s/%%dns_host%%/${dns_host}/g" /etc/nginx/http.d/resolver.conf
+    #sed -i "s/%%dns_host%%/${dns_host}/g" /etc/nginx/conf.d/resolver.conf
   elif [ "$(bashio::config 'WEBSERVER')" == 'Standard' ]
   then
     if [ "$(bashio::addon.port '80/tcp')" == "" ]
       then
-      bashio::log.red "Home Assistant DSMR Reader app - No port configured, configure a UI port in the Network options"
+      bashio::log.red "Home Assistant DSMR Reader App - No port configured, configure a UI port in the Network options"
       exit 1
       fi
-    rm /etc/nginx/http.d/resolver.conf
-    bashio::log.green "Home Assistant DSMR Reader app - Ingress disabled, when started, DSMR Reader is accesable at:"
-    bashio::log.green "Home Assistant DSMR Reader app - http://${ip_address}:$(bashio::addon.port '80/tcp')/"
+    rm /etc/nginx/conf.d/resolver.conf
+    bashio::log.green "Home Assistant DSMR Reader App - Ingress disabled, when started, DSMR Reader is accesable at:"
+    bashio::log.green "Home Assistant DSMR Reader App - http://${ip_address}:$(bashio::addon.port '80/tcp')/"
   fi
 }
 
