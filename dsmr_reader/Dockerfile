@@ -23,8 +23,12 @@ RUN chmod a+x /etc/s6-overlay/s6-rc.d/set-hassio-vars/run
 
 # Enable iframe support for HA Ingress (upstream CONTAINER_ENABLE_IFRAME is broken in v6)
 RUN SETTINGS_FILE=$(find /app -path "*/dsmrreader/settings*" -name "*.py" | head -1) && \
-    if [ -n "$SETTINGS_FILE" ] && ! grep -q "X_FRAME_OPTIONS" "$SETTINGS_FILE"; then \
-        echo "X_FRAME_OPTIONS = 'ALLOWALL'" >> "$SETTINGS_FILE"; \
+    if [ -n "$SETTINGS_FILE" ]; then \
+        if grep -q "X_FRAME_OPTIONS" "$SETTINGS_FILE"; then \
+            sed -i "s/^X_FRAME_OPTIONS.*/X_FRAME_OPTIONS = 'ALLOWALL'/" "$SETTINGS_FILE"; \
+        else \
+            echo "X_FRAME_OPTIONS = 'ALLOWALL'" >> "$SETTINGS_FILE"; \
+        fi; \
     fi
 
 ENV DUID=0
