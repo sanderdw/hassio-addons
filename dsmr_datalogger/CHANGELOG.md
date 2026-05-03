@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.1
+
+- Technical: Update GitHub Actions workflow to the latest action versions
+
 ## 1.2.0
 
 - Happy 2025!
