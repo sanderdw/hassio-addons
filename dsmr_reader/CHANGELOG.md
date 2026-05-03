@@ -1,5 +1,17 @@
 # Changelog
 
+## 2.0.0
+
+- **Breaking:** Update to DSMR Reader Docker v6 (image `xirixiz/dsmr-reader-docker:6.0.2`)
+- **Breaking:** `DSMRREADER_OPERATION_MODE` renamed to `CONTAINER_RUN_MODE` with new values: `standalone`, `server_remote_datalogger`, `remote_datalogger` (previously `standalone`, `api_server`, `api_client`)
+- **Breaking:** `DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT` renamed to `DSMRREADER_REMOTE_DATALOGGER_SERIAL_DEVICE`
+- **Breaking:** `ENABLE_IFRAME` renamed to `CONTAINER_ENABLE_IFRAME`
+- **Breaking:** `DSMRREADER_REMOTE_DATALOGGER_SLEEP` removed
+- New option `DSMRREADER_REMOTE_DATALOGGER_SERIAL_BYTESIZE`
+- New option `DJANGO_TIME_ZONE` (replaces TZ env var, recommended: `Europe/Amsterdam`)
+- New option `DJANGO_SECRET_KEY`
+- See [upgrade guide](https://www.yunta.nl/dsmr-reader-docker-docs/general/upgrade-guide/) for full details
+
 ## 1.12.3
 
 - Technical: Bashio update to v0.17.5

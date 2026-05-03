@@ -23,20 +23,22 @@ function _hass {
     printf $(bashio::config 'DJANGO_DATABASE_PASSWORD') > /var/run/s6/container_environment/DJANGO_DATABASE_PASSWORD
     printf $(bashio::config 'DJANGO_DATABASE_HOST') > /var/run/s6/container_environment/DJANGO_DATABASE_HOST
     printf $(bashio::config 'DJANGO_DATABASE_PORT') > /var/run/s6/container_environment/DJANGO_DATABASE_PORT
-    printf $(bashio::config 'DSMRREADER_OPERATION_MODE') > /var/run/s6/container_environment/DSMRREADER_OPERATION_MODE
-    if [ "$(bashio::config 'DSMRREADER_OPERATION_MODE')" == 'api_client' ]
+    printf $(bashio::config 'CONTAINER_RUN_MODE') > /var/run/s6/container_environment/CONTAINER_RUN_MODE
+    if [ "$(bashio::config 'CONTAINER_RUN_MODE')" == 'remote_datalogger' ]
     then
       printf $(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_API_HOSTS') > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_API_HOSTS
       printf $(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_API_KEYS') > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_API_KEYS
     fi
-    printf $(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT') > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT
+    printf $(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_SERIAL_DEVICE') > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_SERIAL_DEVICE
     printf $(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_INPUT_METHOD') > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_INPUT_METHOD
     printf $(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_SERIAL_BAUDRATE') > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_SERIAL_BAUDRATE
+    printf $(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_SERIAL_BYTESIZE') > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_SERIAL_BYTESIZE
     printf $(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST') > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST
     printf $(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT') > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT
-    printf $(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_SLEEP') > /var/run/s6/container_environment/DSMRREADER_REMOTE_DATALOGGER_SLEEP
     printf $(bashio::config 'DSMRREADER_LOGLEVEL') > /var/run/s6/container_environment/DSMRREADER_LOGLEVEL
-    printf "true" > /var/run/s6/container_environment/ENABLE_IFRAME
+    printf $(bashio::config 'DJANGO_TIME_ZONE') > /var/run/s6/container_environment/DJANGO_TIME_ZONE
+    printf $(bashio::config 'DJANGO_SECRET_KEY') > /var/run/s6/container_environment/DJANGO_SECRET_KEY
+    printf "true" > /var/run/s6/container_environment/CONTAINER_ENABLE_IFRAME
     # Setting env exports for using in cli when needed
     export DSMRREADER_ADMIN_USER=$(bashio::config 'DSMRREADER_ADMIN_USER')
     export DSMRREADER_ADMIN_PASSWORD=$(bashio::config 'DSMRREADER_ADMIN_PASSWORD')
@@ -45,20 +47,22 @@ function _hass {
     export DJANGO_DATABASE_PASSWORD=$(bashio::config 'DJANGO_DATABASE_PASSWORD')
     export DJANGO_DATABASE_HOST=$(bashio::config 'DJANGO_DATABASE_HOST')
     export DJANGO_DATABASE_PORT=$(bashio::config 'DJANGO_DATABASE_PORT')
-    export DSMRREADER_OPERATION_MODE=$(bashio::config 'DSMRREADER_OPERATION_MODE')
-    if [ "$(bashio::config 'DSMRREADER_OPERATION_MODE')" == 'api_client' ]
+    export CONTAINER_RUN_MODE=$(bashio::config 'CONTAINER_RUN_MODE')
+    if [ "$(bashio::config 'CONTAINER_RUN_MODE')" == 'remote_datalogger' ]
     then
       export DSMRREADER_REMOTE_DATALOGGER_API_HOSTS=$(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_API_HOSTS')
       export DSMRREADER_REMOTE_DATALOGGER_API_KEYS=$(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_API_KEYS')
     fi
-    export DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT=$(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT')
+    export DSMRREADER_REMOTE_DATALOGGER_SERIAL_DEVICE=$(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_SERIAL_DEVICE')
     export DSMRREADER_REMOTE_DATALOGGER_INPUT_METHOD=$(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_INPUT_METHOD')
     export DSMRREADER_REMOTE_DATALOGGER_SERIAL_BAUDRATE=$(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_SERIAL_BAUDRATE')
+    export DSMRREADER_REMOTE_DATALOGGER_SERIAL_BYTESIZE=$(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_SERIAL_BYTESIZE')
     export DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST=$(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST')
     export DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT=$(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT')
-    export DSMRREADER_REMOTE_DATALOGGER_SLEEP=$(bashio::config 'DSMRREADER_REMOTE_DATALOGGER_SLEEP')
     export DSMRREADER_LOGLEVEL=$(bashio::config 'DSMRREADER_LOGLEVEL')
-    export ENABLE_IFRAME='true'
+    export DJANGO_TIME_ZONE=$(bashio::config 'DJANGO_TIME_ZONE')
+    export DJANGO_SECRET_KEY=$(bashio::config 'DJANGO_SECRET_KEY')
+    export CONTAINER_ENABLE_IFRAME='true'
   fi
   raw_ip_network=$(bashio::network.ipv4_address)
   ip_address=${raw_ip_network%???}
