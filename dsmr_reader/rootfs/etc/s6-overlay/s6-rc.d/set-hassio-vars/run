@@ -39,7 +39,6 @@ function _hass {
     printf $(bashio::config 'DSMRREADER_LOGLEVEL') > /run/s6/container_environment/DSMRREADER_LOGLEVEL
     printf $(bashio::config 'DJANGO_TIME_ZONE') > /run/s6/container_environment/DJANGO_TIME_ZONE
     printf $(bashio::config 'DJANGO_SECRET_KEY') > /run/s6/container_environment/DJANGO_SECRET_KEY
-    printf "true" > /run/s6/container_environment/CONTAINER_ENABLE_IFRAME
     # Setting env exports for using in cli when needed
     export DSMRREADER_ADMIN_USER=$(bashio::config 'DSMRREADER_ADMIN_USER')
     export DSMRREADER_ADMIN_PASSWORD=$(bashio::config 'DSMRREADER_ADMIN_PASSWORD')
@@ -63,7 +62,6 @@ function _hass {
     export DSMRREADER_LOGLEVEL=$(bashio::config 'DSMRREADER_LOGLEVEL')
     export DJANGO_TIME_ZONE=$(bashio::config 'DJANGO_TIME_ZONE')
     export DJANGO_SECRET_KEY=$(bashio::config 'DJANGO_SECRET_KEY')
-    export CONTAINER_ENABLE_IFRAME='true'
   fi
   raw_ip_network=$(bashio::network.ipv4_address)
   ip_address=${raw_ip_network%???}
