@@ -2,10 +2,9 @@
 
 ## 1.12.3
 
-- Update to DSMR-reader App v1.12.3
-- Remove unsupported `armhf` architecture
 - Technical: Bashio update to v0.17.5
 - Technical: GitHub Actions workflow and base image tag updates
+- Remove unsupported `armhf` architecture
 - Note: This is just a technical update
 
 ## 1.12.2
