@@ -1,6 +1,6 @@
 {
   "name": "DSMR Datalogger",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "slug": "dsmr_datalogger",
   "description": "The datalogger only option of DSMR (https://dsmr-reader.readthedocs.io)",
   "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
