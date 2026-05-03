@@ -8,7 +8,7 @@
 
 ## 1.12.1
 
-- Fix sending e-mail [issue](https://community.home-assistant.io/t/dsmr-reader-add-on-for-home-assistant/279087/446)
+- Fix sending e-mail [issue](https://community.home-assistant.io/t/dsmr-reader-app-for-home-assistant/279087/446)
 
 ## 1.12.0
 
@@ -72,7 +72,7 @@
 ## 1.6.1
 
 - Update to DSMR-reader v5.5.1
-- New cli-helper to fix (https://community.home-assistant.io/t/dsmr-reader-add-on-for-home-assistant/279087/286)
+- New cli-helper to fix (https://community.home-assistant.io/t/dsmr-reader-app-for-home-assistant/279087/286)
 
 ## 1.6.0
 

@@ -6,7 +6,7 @@ on:
   push:
     branches:
       - 'main'
-      - 'reader-1.12.2'
+      - 'reader-*.*.*'
     tags:
       - '*.*.*'
     paths:
@@ -28,35 +28,35 @@ jobs:
           # AMD64
           - DOCKER_TAG_SUFFIX: amd64
             S6_ARCH: amd64
-            BASE_IMAGE: ghcr.io/xirixiz/dsmr-reader-docker:5.12.0-2025.12.31
+            BASE_IMAGE: ghcr.io/xirixiz/dsmr-reader-docker:5.12.0
             PLATFORMS: linux/amd64
             QEMU_ARCH: x86_64
 
           # ARM32V6
           - DOCKER_TAG_SUFFIX: armhf
             S6_ARCH: armhf
-            BASE_IMAGE: ghcr.io/xirixiz/dsmr-reader-docker:5.12.0-2025.12.31
+            BASE_IMAGE: ghcr.io/xirixiz/dsmr-reader-docker:5.12.0
             PLATFORMS: linux/arm/v6
             QEMU_ARCH: arm
 
           # ARM32V7
           - DOCKER_TAG_SUFFIX: armv7
             S6_ARCH: armv7
-            BASE_IMAGE: ghcr.io/xirixiz/dsmr-reader-docker:5.12.0-2025.12.31
+            BASE_IMAGE: ghcr.io/xirixiz/dsmr-reader-docker:5.12.0
             PLATFORMS: linux/arm/v7
             QEMU_ARCH: arm
 
           # ARM64V8
           - DOCKER_TAG_SUFFIX: aarch64
             S6_ARCH: aarch64
-            BASE_IMAGE: ghcr.io/xirixiz/dsmr-reader-docker:5.12.0-2025.12.31
+            BASE_IMAGE: ghcr.io/xirixiz/dsmr-reader-docker:5.12.0
             PLATFORMS: linux/arm64/v8
             QEMU_ARCH: aarch64
 
     steps:
       # Get the repository's code
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       # https://github.com/docker/setup-qemu-action
       - name: Get the version from config.json
         id: data
@@ -68,26 +68,26 @@ jobs:
           HA_RELEASE: ${{ steps.data.outputs.HA_RELEASE }}
         run: echo "$HA_RELEASE"
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
       # https://github.com/docker/setup-buildx-action
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
       - name: Log in to Docker Hub
         if: github.event_name != 'pull_request'
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Log in to ghcr.io
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Docker meta
         id: meta # you'll use this in the next step
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           # list of Docker images to use as base name for tags
           images: |
@@ -103,7 +103,7 @@ jobs:
             type=raw,value=${{ steps.data.outputs.HA_RELEASE }}
       - name: Build and push
         id: push
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ./dsmr_reader
           platforms: ${{ matrix.PLATFORMS }}
@@ -116,7 +116,7 @@ jobs:
             BUILD_ARCH=${{matrix.S6_ARCH}}
       - name: Generate artifact attestation
         if: github.ref == 'refs/heads/main'
-        uses: actions/attest-build-provenance@v2
+        uses: actions/attest-build-provenance@v4
         with:
           subject-name: ghcr.io/${{ github.repository }}/ha-dsmr-reader-${{ matrix.DOCKER_TAG_SUFFIX }}
           subject-digest: ${{ steps.push.outputs.digest }}
