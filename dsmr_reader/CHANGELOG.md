@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.0.0
+
+- As always, backup database first!
+- After updating, it's adviced to reset options. Go to configuration tab -> Menu -> `Reset to defaults` -> set it up again
+- **Breaking:** Update to [DSMR Reader v6](https://dsmr-reader.readthedocs.io/en/v6/)
+  - Image `xirixiz/dsmr-reader-docker:6.0.2`
+- **Breaking:** `DSMRREADER_OPERATION_MODE` renamed to `CONTAINER_RUN_MODE` with new values: `standalone`, `server_remote_datalogger`, `remote_datalogger` (previously `standalone`, `api_server`, `api_client`)
+- New option `DJANGO_TIME_ZONE` (replaces TZ env var, recommended: `Europe/Amsterdam`)
+- New option `DJANGO_SECRET_KEY`
+- Fix/New option `DJANGO_CSRF_TRUSTED_ORIGINS` to fix [CSRF 403 errors](https://github.com/sanderdw/hassio-addons/issues/95) when using SSL on configuration page
+
 ## 1.12.3
 
 - Technical: Bashio update to v0.17.5

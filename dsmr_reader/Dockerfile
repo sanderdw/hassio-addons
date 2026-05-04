@@ -5,7 +5,7 @@ ARG HA_RELEASE
 
 ENV LANG=C.UTF-8
 
-RUN apk add --no-cache jq
+RUN apt-get update && apt-get install -y --no-install-recommends jq && rm -rf /var/lib/apt/lists/*
 
 RUN \
     mkdir -p /usr/src/bashio \
