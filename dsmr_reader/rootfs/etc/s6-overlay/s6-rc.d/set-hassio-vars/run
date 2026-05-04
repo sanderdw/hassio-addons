@@ -40,6 +40,9 @@ function _hass {
     printf $(bashio::config 'DJANGO_TIME_ZONE') > /run/s6/container_environment/DJANGO_TIME_ZONE
     printf $(bashio::config 'DJANGO_SECRET_KEY') > /run/s6/container_environment/DJANGO_SECRET_KEY
     printf $(bashio::config 'DJANGO_X_FRAME_OPTIONS') > /run/s6/container_environment/DJANGO_X_FRAME_OPTIONS
+    if bashio::config.has_value 'DJANGO_CSRF_TRUSTED_ORIGINS'; then
+      printf $(bashio::config 'DJANGO_CSRF_TRUSTED_ORIGINS') > /run/s6/container_environment/DJANGO_CSRF_TRUSTED_ORIGINS
+    fi
     # Setting env exports for using in cli when needed
     export DSMRREADER_ADMIN_USER=$(bashio::config 'DSMRREADER_ADMIN_USER')
     export DSMRREADER_ADMIN_PASSWORD=$(bashio::config 'DSMRREADER_ADMIN_PASSWORD')
@@ -64,6 +67,9 @@ function _hass {
     export DJANGO_TIME_ZONE=$(bashio::config 'DJANGO_TIME_ZONE')
     export DJANGO_SECRET_KEY=$(bashio::config 'DJANGO_SECRET_KEY')
     export DJANGO_X_FRAME_OPTIONS=$(bashio::config 'DJANGO_X_FRAME_OPTIONS')
+    if bashio::config.has_value 'DJANGO_CSRF_TRUSTED_ORIGINS'; then
+      export DJANGO_CSRF_TRUSTED_ORIGINS=$(bashio::config 'DJANGO_CSRF_TRUSTED_ORIGINS')
+    fi
   fi
   raw_ip_network=$(bashio::network.ipv4_address)
   ip_address=${raw_ip_network%???}

@@ -52,7 +52,8 @@
     "DJANGO_SECRET_KEY": "dsmrreader",
     "DJANGO_FORCE_SCRIPT_NAME": "",
     "DJANGO_STATIC_URL": "static/",
-    "DJANGO_X_FRAME_OPTIONS": "ALLOWALL"
+    "DJANGO_X_FRAME_OPTIONS": "ALLOWALL",
+    "DJANGO_CSRF_TRUSTED_ORIGINS": "https://my-home-assistant-url.duckdns.org"
   },
   "schema": {
     "WEBSERVER": "list(Ingress|Standard|Custom)",
@@ -77,6 +78,7 @@
     "DJANGO_SECRET_KEY": "str",
     "DJANGO_FORCE_SCRIPT_NAME": "str?",
     "DJANGO_STATIC_URL": "str?",
-    "DJANGO_X_FRAME_OPTIONS": "list(SAMEORIGIN|DENY|ALLOWALL)"
+    "DJANGO_X_FRAME_OPTIONS": "list(SAMEORIGIN|DENY|ALLOWALL)",
+    "DJANGO_CSRF_TRUSTED_ORIGINS": "str?"
   }
 }
