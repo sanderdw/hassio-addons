@@ -36,7 +36,7 @@
     "DJANGO_DATABASE_NAME": "dsmrreader",
     "DJANGO_DATABASE_USER": "postgres",
     "DJANGO_DATABASE_PASSWORD": "homeassistant",
-    "DJANGO_DATABASE_HOST": "77b2833f-timescaledb",
+    "DJANGO_DATABASE_HOST": "1d11d3ee-timescaledb",
     "DJANGO_DATABASE_PORT": "5432",
     "CONTAINER_RUN_MODE": "standalone",
     "DSMRREADER_REMOTE_DATALOGGER_API_HOSTS": "http(s)://<YOUR_DSMR_HOST>:<PORT>",
