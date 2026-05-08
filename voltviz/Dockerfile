@@ -3,7 +3,7 @@ FROM $BUILD_FROM
 ARG BUILD_ARCH
 ARG HA_RELEASE
 
-# Install jq and bash for reading add-on config
+# Install jq and bash for reading app config
 RUN apk add --no-cache jq bash
 
 RUN \
@@ -28,14 +28,14 @@ CMD ["/run.sh"]
 # Labels
 LABEL \
     io.hass.name="VoltViz" \
-    io.hass.description="Home Assistant Add-on: VoltViz" \
+    io.hass.description="Home Assistant App: VoltViz" \
     io.hass.arch=$BUILD_ARCH \
-    io.hass.type="addon" \
+    io.hass.type="app" \
     io.hass.version=${HA_RELEASE} \
     maintainer="Sander de Wildt <sanderdw@gmail.com>" \
     org.opencontainers.image.title="VoltViz" \
-    org.opencontainers.image.description="Home Assistant Add-on: VoltViz" \
-    org.opencontainers.image.vendor="Sanderdw's add-on repository" \
+    org.opencontainers.image.description="Home Assistant App: VoltViz" \
+    org.opencontainers.image.vendor="Sanderdw's app repository" \
     org.opencontainers.image.authors="Sander de Wildt <sanderdw@gmail.com>" \
     org.opencontainers.image.licenses="MIT" \
     org.opencontainers.image.url="https://github.com/sanderdw/hassio-addons" \
