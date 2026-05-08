@@ -1,4 +1,4 @@
-# VoltViz Home Assistant Add-on: Technical Documentation
+# VoltViz Home Assistant App: Technical Documentation
 
 ## Overview
 

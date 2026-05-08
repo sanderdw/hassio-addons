@@ -1,6 +1,12 @@
 # Changelog
 
-## [0.15.0] - 2026-04-23
+## [0.16.0] - 2026-05-08
+
+### Added
+- Aurora Waves visualizer – raymarched fractal wave field with glowing volumetric accumulation, audio-reactive wave amplitudes, glow, and time scaling (Three.js/WebGL).
+- MS Defrag visualizer – nostalgic Microsoft Defragmenter screen with cluster grid, audio-driven reading/writing/optimizing events, progress bar, and elapsed clock (Canvas 2D).
+- Fractal Orb visualizer – raymarched fractal energy sphere with audio-reactive density, internal animation speed, glow, chromatic aberration, and pulsing scale (Three.js/WebGL).
+- Dependency bumps
 
 ### Added
 - MilkDrop Warp visualizer – deep-tunnel feedback variant with vortex spiral warp, radial frequency bars, waveform spirals, concentric depth rings, and cross-shaped energy flare (Three.js/WebGL).

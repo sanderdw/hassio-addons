@@ -35,7 +35,7 @@ Youtube Video: [https://youtu.be/ONP__FHpd-M](https://youtu.be/ONP__FHpd-M)
 
 ## Ingress
 
-This App uses Home Assistant Ingress for seamless integration. Click "OPEN WEB UI" in the add-on panel to access VoltViz directly within Home Assistant.
+This App uses Home Assistant Ingress for seamless integration. Click "OPEN WEB UI" in the app panel to access VoltViz directly within Home Assistant.
 
 ## Sendspin / Music Assistant
 
@@ -45,7 +45,7 @@ VoltViz supports [Music Assistant](https://music-assistant.io/) through [Sendspi
 
 By default, VoltViz connects to Sendspin directly from the browser. This only works on internal networks without HTTPS (due to mixed content restrictions). To solve this, the app can proxy Sendspin through the server side:
 
-1. In the add-on **Configuration** tab, set `SENDSPIN_URL` to your Music Assistant's internal address:
+1. In the app **Configuration** tab, set `SENDSPIN_URL` to your Music Assistant's internal address:
    ```
    http://d5369777-music-assistant:8927
    ```
