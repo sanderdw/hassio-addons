@@ -42,9 +42,25 @@ if [ -f "$CONFIG_PATH" ]; then
             bashio::log.red "Sendspin URL is not reachable: ${SENDSPIN_URL} - continuing anyway"
         fi
 
+        # Derive MA API URL (port 8095) from SendSpin URL (port 8927)
+        MA_API_URL=$(echo "$SENDSPIN_URL" | sed 's|:8927|:8095|')
+        echo "VoltViz: Music Assistant API proxy enabled -> ${MA_API_URL}"
+
         cat > /etc/nginx/addon.d/sendspin-proxy.conf << PROXYEOF
 location /sendspin-proxy/ {
     proxy_pass ${SENDSPIN_URL}/;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade \$http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_set_header Host \$host;
+    proxy_set_header X-Real-IP \$remote_addr;
+    proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+    proxy_read_timeout 86400;
+    proxy_send_timeout 86400;
+}
+
+location /ma-api-proxy/ {
+    proxy_pass ${MA_API_URL}/;
     proxy_http_version 1.1;
     proxy_set_header Upgrade \$http_upgrade;
     proxy_set_header Connection "upgrade";
