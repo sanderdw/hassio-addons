@@ -62,6 +62,8 @@ PROXYEOF
             MA_INGRESS=$(curl -s -H "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
                 "http://supervisor/addons/${MA_SLUG}/info" | jq -r '.data.ingress_entry // empty')
             if [ -n "$MA_INGRESS" ]; then
+                # Ensure trailing slash
+                MA_INGRESS="${MA_INGRESS%/}/"
                 echo "VoltViz: Music Assistant ingress entry -> ${MA_INGRESS}"
                 # Write MA ingress path for frontend to read
                 echo "{\"ingress_entry\":\"${MA_INGRESS}\"}" > /usr/share/nginx/html/ma-config.json
