@@ -42,10 +42,6 @@ if [ -f "$CONFIG_PATH" ]; then
             bashio::log.red "Sendspin URL is not reachable: ${SENDSPIN_URL} - continuing anyway"
         fi
 
-        # Derive MA API URL (port 8095) from SendSpin URL (port 8927)
-        MA_API_URL=$(echo "$SENDSPIN_URL" | sed 's|:8927|:8095|')
-        echo "VoltViz: Music Assistant API proxy enabled -> ${MA_API_URL}"
-
         cat > /etc/nginx/addon.d/sendspin-proxy.conf << PROXYEOF
 location /sendspin-proxy/ {
     proxy_pass ${SENDSPIN_URL}/;
@@ -58,19 +54,34 @@ location /sendspin-proxy/ {
     proxy_read_timeout 86400;
     proxy_send_timeout 86400;
 }
+PROXYEOF
+
+        # Discover MA add-on IP via Supervisor API and proxy to ingress port (8094)
+        MA_SLUG=$(echo "$SENDSPIN_URL" | sed -n 's|http://\(.*\):8927|\1|p' | tr '-' '_')
+        if [ -n "$MA_SLUG" ] && [ -n "$SUPERVISOR_TOKEN" ]; then
+            MA_IP=$(curl -s -H "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
+                "http://supervisor/addons/${MA_SLUG}/info" | jq -r '.data.ip_address // empty')
+            if [ -n "$MA_IP" ]; then
+                MA_INGRESS_URL="http://${MA_IP}:8094"
+                echo "VoltViz: Music Assistant API proxy enabled -> ${MA_INGRESS_URL}"
+                cat >> /etc/nginx/addon.d/sendspin-proxy.conf << PROXYEOF
 
 location /ma-api-proxy/ {
-    proxy_pass ${MA_API_URL}/;
+    proxy_pass ${MA_INGRESS_URL}/;
     proxy_http_version 1.1;
     proxy_set_header Upgrade \$http_upgrade;
     proxy_set_header Connection "upgrade";
-    proxy_set_header Host \$host;
-    proxy_set_header X-Real-IP \$remote_addr;
-    proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+    proxy_set_header X-Ingress-Path "";
+    proxy_set_header X-Remote-User-ID "voltviz";
+    proxy_set_header X-Remote-User-Name "VoltViz";
     proxy_read_timeout 86400;
     proxy_send_timeout 86400;
 }
 PROXYEOF
+            else
+                bashio::log.red "Could not determine Music Assistant IP address"
+            fi
+        fi
     fi
 fi
 
