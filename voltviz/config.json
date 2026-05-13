@@ -1,6 +1,6 @@
 {
   "name": "VoltViz",
-  "version": "0.16.0",
+  "version": "0.17.0",
   "slug": "voltviz",
   "description": "A dynamic, real-time music visualizer that transforms sound into stunning visual experiences",
   "arch": ["aarch64", "amd64"],
@@ -12,6 +12,7 @@
   "ingress_stream": true,
   "panel_icon": "mdi:waveform",
   "webui": "http://[HOST]:[PORT:80]",
+  "hassio_api": true,
   "init": false,
   "ports": {
     "80/tcp": 8099

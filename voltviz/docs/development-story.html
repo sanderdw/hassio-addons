@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auto-Unhide Player in Music Assistant: A Development Story</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --accent: #a855f7;
+    --accent-dim: #7c3aed;
+    --success: #3fb950;
+    --error: #f85149;
+    --warning: #d29922;
+    --code-bg: #1c2128;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding: 2rem;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, var(--accent), #ec4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  h2 {
+    font-size: 1.4rem;
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+    color: var(--accent);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.5rem;
+  }
+  h3 {
+    font-size: 1.1rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+  }
+  p { margin-bottom: 1rem; color: var(--text-muted); }
+  strong { color: var(--text); }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code {
+    background: var(--code-bg);
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    overflow-x: auto;
+    margin-bottom: 1.5rem;
+    font-size: 0.85em;
+    line-height: 1.5;
+  }
+  pre code { background: none; padding: 0; }
+  .subtitle { color: var(--text-muted); margin-bottom: 2rem; font-size: 1.1rem; }
+  .architecture {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    overflow-x: auto;
+  }
+  .iteration {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    position: relative;
+  }
+  .iteration::before {
+    content: '';
+    position: absolute;
+    left: -1px;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    border-radius: 3px 0 0 3px;
+  }
+  .iteration.failed::before { background: var(--error); }
+  .iteration.partial::before { background: var(--warning); }
+  .iteration.success::before { background: var(--success); }
+  .iteration .badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    padding: 0.15em 0.6em;
+    border-radius: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .iteration.failed .badge { background: rgba(248,81,73,0.15); color: var(--error); }
+  .iteration.partial .badge { background: rgba(210,153,34,0.15); color: var(--warning); }
+  .iteration.success .badge { background: rgba(63,185,80,0.15); color: var(--success); }
+  .iteration h3 { margin-top: 0; }
+  .iteration p:last-child { margin-bottom: 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0 1.5rem;
+    font-size: 0.9rem;
+  }
+  th, td {
+    padding: 0.6rem 1rem;
+    border: 1px solid var(--border);
+    text-align: left;
+  }
+  th { background: var(--surface); color: var(--text); font-weight: 600; }
+  td { color: var(--text-muted); }
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin: 1.5rem 0;
+  }
+  .flow-step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+  .flow-arrow { color: var(--accent); font-size: 1.2rem; }
+  .highlight { background: rgba(168,85,247,0.1); border-color: var(--accent-dim); }
+  ul { margin: 0.5rem 0 1rem 1.5rem; }
+  li { color: var(--text-muted); margin-bottom: 0.3rem; }
+  .tag {
+    display: inline-block;
+    background: rgba(168,85,247,0.15);
+    color: var(--accent);
+    padding: 0.1em 0.5em;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    margin-right: 0.3rem;
+  }
+</style>
+</head>
+<body>
+
+<h1>Auto-Unhide Player in Music Assistant</h1>
+<p class="subtitle">A development story: 6 iterations from concept to working solution, driven by an AI agent with browser DevTools access.</p>
+
+<h2>The Problem</h2>
+<p>When VoltViz connects to <strong>Music Assistant</strong> (MA) via the SendSpin protocol, a player is created but <strong>hidden by default</strong> in the MA UI. Users had to manually navigate to Settings &rarr; Players &rarr; select VoltViz &rarr; unhide it. This friction needed to be eliminated.</p>
+
+<h2>Architecture</h2>
+<div class="architecture">
+<pre><code>Browser (HA Frontend)
+  └── VoltViz iframe (via HA Ingress)
+        ├── SendSpin Client ──→ nginx proxy ──→ MA Port 8927 (audio stream)
+        ├── fetch ma-config.json ──→ nginx (static file from run.sh)
+        └── WebSocket ──→ HA Ingress Proxy ──→ MA Port 8094 (auto-authenticated)
+                              │
+                    Supervisor injects
+                    X-Remote-User-ID header
+                              │
+                    MA accepts command:
+                    config/players/save
+                    { hide_in_ui: false }</code></pre>
+</div>
+
+<h2>Development Iterations</h2>
+
+<div class="iteration failed">
+  <span class="badge">Failed</span>
+  <h3>Iteration 1: Direct Nginx Proxy to Port 8095</h3>
+  <p><span class="tag">run.sh</span><span class="tag">App.tsx</span> Added nginx location <code>/ma-api-proxy/</code> pointing to MA's API port 8095. Frontend opens WebSocket and sends unhide command.</p>
+  <p><strong>Error:</strong> <code>crypto.randomUUID is not a function</code> &mdash; page runs over HTTP (insecure context), so Web Crypto API is limited.</p>
+</div>
+
+<div class="iteration partial">
+  <span class="badge">Partial</span>
+  <h3>Iteration 2: Fix crypto.randomUUID Fallback</h3>
+  <p><span class="tag">App.tsx</span> Added <code>Math.random()</code> fallback for message ID generation, same pattern already used for the player ID.</p>
+  <p><strong>Result:</strong> Function ran, WebSocket connected, but MA responded: <code>"Authentication required. Please send auth command first."</code></p>
+</div>
+
+<div class="iteration failed">
+  <span class="badge">Failed</span>
+  <h3>Iteration 3: Ingress Port 8094 with Auth Headers</h3>
+  <p><span class="tag">config.json</span><span class="tag">run.sh</span> Added <code>hassio_api: true</code>, queried Supervisor for MA's internal IP, proxied to port 8094 with <code>X-Remote-User-ID</code> header.</p>
+  <p><strong>Result:</strong> Connection silently closed. Port 8094 is IP-restricted to the Supervisor (<code>172.30.32.2</code>) only.</p>
+</div>
+
+<div class="iteration failed">
+  <span class="badge">Failed</span>
+  <h3>Iteration 4: HA Access Token</h3>
+  <p><span class="tag">evaluate_script</span> Tested using the HA JWT access token from browser localStorage to authenticate with MA's WebSocket.</p>
+  <p><strong>Result:</strong> <code>"Invalid or expired token"</code> &mdash; MA uses its own internal JWT tokens, not HA tokens.</p>
+</div>
+
+<div class="iteration partial">
+  <span class="badge">Partial</span>
+  <h3>Iteration 5: MA's HA Ingress Entry (Almost!)</h3>
+  <p><span class="tag">run.sh</span><span class="tag">App.tsx</span> Key insight: route through MA's own HA ingress endpoint. <code>run.sh</code> queries Supervisor for <code>ingress_entry</code>, writes to <code>ma-config.json</code>. Frontend connects via HA's ingress proxy.</p>
+  <p><strong>Bug:</strong> WebSocket URL <code>/api/hassio_ingress/&lt;token&gt;ws</code> missing trailing slash &rarr; 404.</p>
+</div>
+
+<div class="iteration success">
+  <span class="badge">Success</span>
+  <h3>Iteration 6: Trailing Slash Fix</h3>
+  <p><span class="tag">run.sh</span><span class="tag">App.tsx</span> Normalized ingress path to always include trailing slash. WebSocket connects, MA auto-authenticates via Supervisor headers, command succeeds.</p>
+  <p><strong>Result:</strong> Player appears in MA UI automatically. Verified via <code>players/all</code> command &mdash; <code>hide_in_ui: false</code> confirmed.</p>
+</div>
+
+<h2>Tools Used</h2>
+<table>
+  <tr><th>Tool</th><th>Purpose</th></tr>
+  <tr><td><code>Chrome DevTools MCP</code></td><td>Real-time browser inspection: console errors, network requests, page interaction, script evaluation</td></tr>
+  <tr><td><code>evaluate_script</code></td><td>Testing WebSocket auth flows directly in the browser without rebuilding</td></tr>
+  <tr><td><code>take_screenshot</code></td><td>Verifying UI state (dialog open, playback controls visible)</td></tr>
+  <tr><td><code>Agent (Explore)</code></td><td>Researching MA server codebase, HA Supervisor API, add-on communication patterns</td></tr>
+  <tr><td><code>TypeScript compiler</code></td><td>Catching type errors before each deployment cycle</td></tr>
+  <tr><td><code>navigate_page / click</code></td><td>Driving the UI (reload, click Connect, click Play)</td></tr>
+</table>
+
+<h2>Making This Fully Agentic</h2>
+<p>The development loop above required manual steps: building Docker images, restarting the add-on, and triggering the browser test. Here's how to close the loop entirely:</p>
+
+<h3>The Autonomous Pipeline</h3>
+<div class="flow">
+  <span class="flow-step">Code change</span>
+  <span class="flow-arrow">&rarr;</span>
+  <span class="flow-step">git push</span>
+  <span class="flow-arrow">&rarr;</span>
+  <span class="flow-step">GitHub Actions builds image</span>
+  <span class="flow-arrow">&rarr;</span>
+  <span class="flow-step">Push to GHCR</span>
+  <span class="flow-arrow">&rarr;</span>
+  <span class="flow-step">Supervisor pulls update</span>
+  <span class="flow-arrow">&rarr;</span>
+  <span class="flow-step">Add-on restarts</span>
+  <span class="flow-arrow">&rarr;</span>
+  <span class="flow-step highlight">Chrome DevTools MCP validates</span>
+  <span class="flow-arrow">&rarr;</span>
+  <span class="flow-step">Report / fix</span>
+</div>
+
+<h3>1. Git Automation</h3>
+<pre><code>git add src/App.tsx
+git commit -m "feat: auto-unhide player in Music Assistant"
+git push origin feature/auto-unhide</code></pre>
+<p>The agent has full git access. Commits, branches, and PRs can be created programmatically.</p>
+
+<h3>2. GitHub Actions Workflow</h3>
+<pre><code>name: Build Add-on
+on:
+  push:
+    branches: [feature/*]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci && npm run build
+      - uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: ghcr.io/sanderdw/hassio-addons/ha-voltviz-amd64:dev</code></pre>
+<p>The agent monitors with <code>gh run watch --exit-status</code> and proceeds only after a green build.</p>
+
+<h3>3. Trigger Add-on Restart</h3>
+<pre><code>curl -X POST \
+  -H "Authorization: Bearer ${HA_LONG_LIVED_TOKEN}" \
+  http://homeassistant.local:8123/api/hassio/addons/local_voltviz/restart</code></pre>
+<p>Requires a long-lived access token configured for the agent. The Supervisor API handles pulling the new image and restarting.</p>
+
+<h3>4. E2E Validation via Chrome DevTools MCP</h3>
+<pre><code>// Agent script (pseudo-code)
+navigate_page("http://ha:8123/app/local_voltviz")
+click("Connect button")
+wait_for("playback controls visible")
+evaluate_script("check ma-config.json exists")
+evaluate_script("verify WebSocket to MA ingress works")
+evaluate_script("confirm player hide_in_ui === false")</code></pre>
+<p>This is exactly what we did manually in this session. The Chrome DevTools MCP plugin makes it fully automatable.</p>
+
+<h3>What's Still Missing</h3>
+<ul>
+  <li><strong>HA API token for the agent</strong> &mdash; needed to trigger add-on restarts remotely</li>
+  <li><strong>Webhook / polling bridge</strong> &mdash; GitHub Actions needs to signal completion to the agent</li>
+  <li><strong>Automated rollback</strong> &mdash; if E2E tests fail, revert to previous image tag</li>
+  <li><strong>Image tag strategy</strong> &mdash; use <code>:dev</code> for feature branches, <code>:latest</code> for main</li>
+</ul>
+
+<h2>Key Takeaways</h2>
+<table>
+  <tr><th>Lesson</th><th>Detail</th></tr>
+  <tr><td>HA add-on auth is complex</td><td>6 iterations to find the right path. Each add-on's API has different auth requirements.</td></tr>
+  <tr><td>Ingress is the golden path</td><td>HA's ingress proxy handles auth transparently. Use it instead of reimplementing token flows.</td></tr>
+  <tr><td>Browser DevTools closes the feedback loop</td><td>Without <code>evaluate_script</code>, we'd be guessing. With it, we could test auth flows in seconds.</td></tr>
+  <tr><td>Fail fast, iterate small</td><td>Each iteration tested one hypothesis. Console errors gave immediate direction for the next attempt.</td></tr>
+  <tr><td>Secure contexts matter</td><td><code>crypto.randomUUID</code> only works over HTTPS. Always have fallbacks for HTTP environments.</td></tr>
+</table>
+
+</body>
+</html>

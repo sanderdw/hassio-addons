@@ -55,6 +55,22 @@ location /sendspin-proxy/ {
     proxy_send_timeout 86400;
 }
 PROXYEOF
+
+        # Get MA ingress entry from Supervisor API so frontend can connect via HA ingress (auto-authenticated)
+        MA_SLUG=$(echo "$SENDSPIN_URL" | sed -n 's|http://\(.*\):8927|\1|p' | tr '-' '_')
+        if [ -n "$MA_SLUG" ] && [ -n "$SUPERVISOR_TOKEN" ]; then
+            MA_INGRESS=$(curl -s -H "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
+                "http://supervisor/addons/${MA_SLUG}/info" | jq -r '.data.ingress_entry // empty')
+            if [ -n "$MA_INGRESS" ]; then
+                # Ensure trailing slash
+                MA_INGRESS="${MA_INGRESS%/}/"
+                echo "VoltViz: Music Assistant ingress entry -> ${MA_INGRESS}"
+                # Write MA ingress path for frontend to read
+                echo "{\"ingress_entry\":\"${MA_INGRESS}\"}" > /usr/share/nginx/html/ma-config.json
+            else
+                bashio::log.red "Could not determine Music Assistant ingress entry"
+            fi
+        fi
     fi
 fi
 
