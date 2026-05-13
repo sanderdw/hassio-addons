@@ -20,9 +20,7 @@ A dynamic, real-time music visualizer that transforms sound into stunning visual
 4. Click **OPEN WEB UI** to access VoltViz via Ingress
 5. Connect to Sendspin (For Music Assistant)
 6. Press play
-7. To control the VoltViz player you need to unhide the VoltViz client -> Settings -> Players -> VoltViz -> Uncheck Hide....
-8. Save on the bottom
-9. Select the VoltViz player
+7. Select the VoltViz player (automatically visible in Music Assistant after connecting)
 
 Youtube Video: [https://youtu.be/ONP__FHpd-M](https://youtu.be/ONP__FHpd-M)
 <source src="https://uto-mix.sanwil.net/install-voltviz.mp4" type="video/mp4" />
