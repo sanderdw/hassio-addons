@@ -1,9 +1,5 @@
 # Changelog
 
-## 2.0.1
-
-- Add backward-compatible schema entries for deprecated options `DSMRREADER_OPERATION_MODE` and `DSMRREADER_REMOTE_DATALOGGER_SLEEP` to prevent supervisor warnings on upgraded installations
-
 ## 2.0.0
 
 - As always, backup database first!
