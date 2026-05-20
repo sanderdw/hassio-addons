@@ -1,0 +1,7 @@
+# Test dependencies for the hassio-addons repository.
+# Install with: pip install -r requirements-test.txt
+pytest>=7.0
+pytest-cov>=4.0
+pyserial==3.5
+requests==2.32.4
+python-decouple==3.8
