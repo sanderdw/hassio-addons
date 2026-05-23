@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.18.0] - 2026-05-23
+
+### Added
+- Skins system – switch the entire UI between **Modern**, **Win95**, **Winamp**, and **CRT** themes (via `?skin=` URL parameter).
+- ASCII visualizer – Canvas 2D audio-reactive ASCII art renderer.
+- Cyber City visualizer – raymarched neon-grid cityscape flythrough with audio-driven scan pulses, fog, and dot density (Three.js/WebGL).
+- Audio Debug visualizer – diagnostic view with waveform, FFT spectrum, kick detection, stereo correlation meter, and rolling spectrogram (Canvas 2D).
+- Aurum Leaf visualizer – tentacled energy bloom with particles, kick-reactive bloom bursts, and UnrealBloom post-processing (Three.js/WebGL).
+- Sphere visualizer – raymarched KIFS-folded sphere with auto-rotation and audio-reactive brightness/zoom (Three.js/WebGL).
+- Trails Stream visualizer – bending tube-trail stream with blur, bloom, and audio-reactive exposure (Three.js/WebGL).
+- Shambhala visualizer – voxel tunnel raymarcher with space-folding, glow, and audio-reactive exposure (Three.js/WebGL).
+
+### Changed
+- FractalOrb: refactored audio analysis and visual response for tighter reactivity.
+- Vite: raised `chunkSizeWarningLimit` from 550 to 600 to accommodate the new shader-heavy visualizers.
+- Dependency bumps
+
 ## [0.17.0] - 2026-05-13
 
 ### Added
