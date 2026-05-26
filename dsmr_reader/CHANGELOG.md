@@ -5,6 +5,7 @@
 - As always, backup database first!
 - Update to [DSMR Reader v6.1](https://dsmr-reader.readthedocs.io/en/v6/reference/changelog/)
   - Image `xirixiz/dsmr-reader-docker:6.1.0`
+- Add Supervisor `watchdog` targeting the upstream `/healthcheck` endpoint so the **Open Web UI** button appears as soon as the web stack actually serves requests (note: `remote_datalogger` mode has no web UI, so the watchdog will report unhealthy in that mode)
 
 ## 2.0.0
 

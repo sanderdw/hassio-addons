@@ -10,6 +10,7 @@
   "boot": "auto",
   "uart": true,
   "ingress": true,
+  "watchdog": "http://[HOST]:[PORT:80]/healthcheck",
   "panel_icon": "mdi:leaf-circle-outline",
   "hassio_api": true,
   "init": false,
