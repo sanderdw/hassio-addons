@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.0
+
+- As always, backup database first!
+- Update to [DSMR Reader v6.1](https://dsmr-reader.readthedocs.io/en/v6/reference/changelog/)
+  - Image `xirixiz/dsmr-reader-docker:6.1.0`
+- Add Supervisor `watchdog` targeting the upstream `/healthcheck` endpoint so Home Assistant auto-restarts the add-on when the web stack stops responding (note: only relevant for `standalone` and `server_remote_datalogger`; `remote_datalogger` mode has no web UI and should not be used together with this watchdog)
+
 ## 2.0.0
 
 - As always, backup database first!
