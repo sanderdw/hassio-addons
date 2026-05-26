@@ -44,18 +44,38 @@ Provide:
   - Patch change (e.g. `6.1.0 → 6.1.1`) → patch add-on bump
 - Apply the same tier to the current add-on version. Example: addon `2.0.0` + upstream minor bump → `2.1.0`.
 
-### 3. Audit Environment Variables
-Reconcile `dsmr_reader/config.json` against the upstream env-var reference for the **target** release.
+### 3. Audit Configuration (three-way reconciliation)
+Reconcile **upstream docs ↔ `dsmr_reader/config.json` ↔ `dsmr_reader/rootfs/etc/s6-overlay/s6-rc.d/set-hassio-vars/run`** for the **target** release. All three must agree on variable names, applicable run modes, and allowed values.
 
-- Fetch https://www.yunta.nl/dsmr-reader-docker-docs/general/configuration/ (the canonical xirixiz/dsmr-reader-docker config reference). If the URL is unreachable, fall back to the xirixiz repo's `README` / `docker-compose.yml` for the target tag.
-- Build the set of upstream env vars relevant to the add-on's `CONTAINER_RUN_MODE` modes that are supported here (`standalone`, `server_remote_datalogger`, `remote_datalogger`).
-- Diff against the keys in `options` and `schema` of `dsmr_reader/config.json`:
-  - **Added upstream, missing here** → add to both `options` (with a sensible default that matches upstream) and `schema` (correct type: `str`, `str?`, `int`, `bool`, `password`, `list(...)`).
-  - **Removed/renamed upstream, still here** → remove from both `options` and `schema`. If renamed, add the new key and remove the old one; flag this as `**Breaking:**` in the changelog.
-  - **Default value changed upstream** → update `options` default unless the current value is intentionally different for the add-on; note the change in the changelog.
-  - **Type/allowed-values changed upstream** → update the `schema` entry (e.g. enum list values).
-- Skip env vars that are managed by the add-on itself (e.g. webserver/ingress wiring) or that are not user-configurable.
-- If any change is made, mention it in the changelog entry under a dedicated bullet (e.g. `- Config: added \`NEW_VAR\`, removed \`OLD_VAR\``).
+**3a. Build the upstream reference set**
+- Fetch https://www.yunta.nl/dsmr-reader-docker-docs/general/configuration/ (the canonical xirixiz/dsmr-reader-docker config reference). If unreachable, fall back to the xirixiz repo's `README` / `docker-compose.yml` for the target tag.
+- Record, for every upstream var: name, default, allowed values (if enum), and which `CONTAINER_RUN_MODE` modes it applies to.
+- Also note rename/removal items from the release changelogs (https://github.com/xirixiz/dsmr-reader-docker/releases and https://github.com/dsmrreader/dsmr-reader/releases) since the docs page only shows the current state.
+
+**3b. Diff against `dsmr_reader/config.json`**
+For each key in `options`/`schema`:
+- **Spelling**: name must match upstream exactly (case-sensitive). A near-match like `_SERIAL_PORT` vs upstream `_SERIAL_DEVICE` is a bug — rename in both files.
+- **Type / enum**: `schema` enum values (e.g. `list(ERROR|WARNING|DEBUG)`) must contain **every** value upstream accepts. Missing values (e.g. `INFO` absent from a loglevel list) is a bug.
+- **Default**: should match upstream unless intentionally diverged for the Home Assistant context — if diverged, note why in the changelog.
+- **Added upstream, missing here** → add to both `options` (sensible default) and `schema` (correct type: `str`, `str?`, `int`, `bool`, `password`, `list(...)`).
+- **Removed/renamed upstream, still here** → remove (or rename) in both `options` and `schema`. Flag as `**Breaking:**` in the changelog.
+
+For each upstream var **not** in `config.json`: decide whether to expose it. Skip add-on-managed vars (webserver/ingress wiring, things hard-set by the Dockerfile or run script). Optional `CONTAINER_ENABLE_*` toggles can stay unexposed unless the user requests them — note their absence in the audit report regardless.
+
+**3c. Diff against the s6 init script**
+Open `dsmr_reader/rootfs/etc/s6-overlay/s6-rc.d/set-hassio-vars/run` and enumerate every `_set_env '...'` and `_set_env_optional '...'` call inside `_set_env_vars`.
+- **In `config.json` but missing from the script** → the option is collected from the user but never reaches the container. Add a `_set_env` call (or `_set_env_optional` if the schema type is `str?`).
+- **In the script but missing from `config.json`** → the script will fail or export an empty string. Either add the option or remove the call.
+- **Spelling mismatch between script and config.json** → fix both to match upstream.
+- **Mode-gated vars**: `DSMRREADER_REMOTE_DATALOGGER_API_HOSTS` / `_API_KEYS` must remain inside the `if [[ "$(bashio::config 'CONTAINER_RUN_MODE')" == 'remote_datalogger' ]]` guard. If upstream adds another mode-gated var, add a similar guard.
+
+**3d. Report findings before editing**
+Produce a short audit report with sections:
+- ❌ Bugs (must fix): name mismatches, missing enum values, script/config drift.
+- ⚠️ Behaviour changes (default/type changed upstream).
+- ℹ️ Unsurfaced upstream vars (informational, opt-in).
+
+Apply the fixes, then mention each ❌/⚠️ change in the changelog entry under a dedicated bullet (e.g. `- Config: rename \`DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT\` → \`_SERIAL_DEVICE\` to match upstream`).
 
 ### 4. Update Files
 - `.github/workflows/dsmr-reader.yml`: replace `BASE_IMAGE: ghcr.io/xirixiz/dsmr-reader-docker:{OLD}` with the new tag for **all three** matrix entries (`amd64`, `armv7`, `aarch64`). Use a multi-replace to do them in one pass.
@@ -99,12 +119,17 @@ Reconcile `dsmr_reader/config.json` against the upstream env-var reference for t
 - **Breaking changes upstream**: when upstream notes config changes (renamed env vars, schema changes, etc.), reflect them in `dsmr_reader/config.json` `options`/`schema` and call them out in the changelog as `**Breaking:**`.
 - **Env-var audit unreachable**: if https://www.yunta.nl/dsmr-reader-docker-docs/general/configuration/ cannot be fetched, fall back to the xirixiz repo at the target tag; if neither is available, stop and ask the user to confirm whether to skip the audit.
 - **Env-var rename ambiguity**: if it's unclear whether an upstream env var is renamed vs. removed-and-added, stop and ask the user before changing `config.json`.
+- **Config ↔ run-script disagreement**: if `config.json` and the s6 run script disagree on a variable name and upstream docs are unambiguous, fix both to match upstream and call it out as `**Breaking:**` in the changelog (users who set the broken key will lose their value on upgrade).
 - **Already on latest**: if current image tag already equals the latest pinned tag, stop and confirm with the user before proceeding.
 
 ## Completion Criteria
 - All three `BASE_IMAGE` entries in `.github/workflows/dsmr-reader.yml` point to the new pinned `Major.Minor.Patch` tag.
 - `dsmr_reader/config.json` `version` equals the new add-on version.
 - `dsmr_reader/config.json` `options` and `schema` reflect the upstream env-var set for the target release (added, removed, renamed, or retyped keys have been reconciled), and every change is mentioned in the changelog entry.
+- Every user-facing key in `dsmr_reader/config.json` `options`/`schema` matches an upstream env var name exactly (case-sensitive).
+- Every key in `options`/`schema` has a matching `_set_env` or `_set_env_optional` call in `dsmr_reader/rootfs/etc/s6-overlay/s6-rc.d/set-hassio-vars/run`, except for add-on-managed keys (`WEBSERVER`, `DJANGO_FORCE_SCRIPT_NAME`, `DJANGO_STATIC_URL` when handled by the Ingress branch).
+- Every `_set_env*` call in the run script either matches a key in `config.json` `options` or is documented as a derived/add-on-managed value.
+- Every `list(...)` schema enum contains all values accepted by upstream for that variable.
 - `dsmr_reader/README.md` `dsmr-shield` badge shows the upstream `Major.Minor`.
 - `dsmr_reader/CHANGELOG.md` has a new top entry naming the new add-on version, the new image tag, the upstream changelog link, and any env-var changes.
 - A single atomic commit covers all changed files.
