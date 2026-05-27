@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.0
+
+- Update to Metabase 0.61.3
+- Refresh GitHub Actions workflow dependencies to latest major versions
+
 ## 1.3.0
 
 - Update to Metabase 0.60.3.6
