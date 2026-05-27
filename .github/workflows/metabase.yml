@@ -29,19 +29,19 @@ jobs:
           # AMD64
           - DOCKER_TAG_SUFFIX: amd64
             S6_ARCH: amd64
-            BASE_IMAGE: metabase/metabase:v0.60.3.6
+            BASE_IMAGE: metabase/metabase:v0.61.3
             PLATFORMS: linux/amd64
             QEMU_ARCH: x86_64
           # ARM64V8
           - DOCKER_TAG_SUFFIX: aarch64
             S6_ARCH: aarch64
-            BASE_IMAGE: metabase/metabase:v0.60.3.6
+            BASE_IMAGE: metabase/metabase:v0.61.3
             PLATFORMS: linux/arm64
             QEMU_ARCH: aarch64
     steps:
       # Get the repository's code
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       # https://github.com/docker/setup-qemu-action
       - name: Get the version from config.json
         id: data
@@ -101,7 +101,7 @@ jobs:
             BUILD_ARCH=${{matrix.S6_ARCH}}
       - name: Generate artifact attestation
         if: github.ref == 'refs/heads/main'
-        uses: actions/attest-build-provenance@v2
+        uses: actions/attest-build-provenance@v4
         with:
           subject-name: ghcr.io/${{ github.repository }}/ha-metabase-${{ matrix.DOCKER_TAG_SUFFIX }}
           subject-digest: ${{ steps.push.outputs.digest }}
