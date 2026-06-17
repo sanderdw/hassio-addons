@@ -42,7 +42,7 @@ Provide:
 ### 3. Update Configuration Files
    - Update `voltviz/config.json`: set `version` to the target version.
    - Update `voltviz/CHANGELOG.md`: prepend a new entry at the top with:
-     - Version heading: `## [VERSION] - YYYY-MM-DD`
+     - Version heading: `## [VERSION] - YYYY-MM-DD` (use today's date — the date the add-on is released — not the upstream release date)
      - `### Added` section with new features from upstream
      - `### Changed` section with improvements/refactors from upstream
      - Keep existing format and style
