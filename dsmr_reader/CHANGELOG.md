@@ -1,5 +1,18 @@
 # Changelog
 
+## 2.1.2
+
+- As always, backup database first!
+- Update to [DSMR Reader v6.1](https://dsmr-reader.readthedocs.io/en/v6/reference/changelog/)
+  - Image `xirixiz/dsmr-reader-docker:6.1.2`
+
+## 2.1.1
+
+- As always, backup database first!
+- Update to [DSMR Reader v6.1](https://dsmr-reader.readthedocs.io/en/v6/reference/changelog/)
+  - Image `xirixiz/dsmr-reader-docker:6.1.1`
+- **Breaking:** Config key `DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT` renamed to `DSMRREADER_REMOTE_DATALOGGER_SERIAL_DEVICE` to match upstream `dsmr-reader-docker` configuration
+
 ## 2.1.0
 
 - As always, backup database first!
