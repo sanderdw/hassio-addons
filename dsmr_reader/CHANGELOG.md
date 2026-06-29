@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1.2
+
+- As always, backup database first!
+- Update to [DSMR Reader v6.1](https://dsmr-reader.readthedocs.io/en/v6/reference/changelog/)
+  - Image `xirixiz/dsmr-reader-docker:6.1.2`
+
 ## 2.1.0
 
 - As always, backup database first!
