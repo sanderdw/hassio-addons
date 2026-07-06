@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.20.0] - 2026-07-06
+
+### Added
+- Particles Stream visualizer - flies a luma-sliced pixel-particle field of the album artwork toward the camera with afterimage motion blur; bass-reactive speed and brightness, with image upload (Three.js/WebGL).
+
+### Changed
+- Dependency bumps
+
 ## [0.19.1] - 2026-06-17
 
 ### Added
