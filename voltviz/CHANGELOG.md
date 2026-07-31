@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.21.1] - 2026-08-01
+
+### Fixed
+- Visualizer preview thumbnails in the gallery picker now load correctly through Home Assistant ingress (upstream now builds with relative asset URLs).
+
 ## [0.21.0] - 2026-08-01
 
 ### Added
