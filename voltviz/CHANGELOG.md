@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.21.0] - 2026-08-01
+
+### Added
+- Visualizer gallery picker – the header dropdown is replaced by a modal with preview screenshot cards for every visualizer.
+- Shuffle mode – toggle in the settings panel that switches to a random visualizer at a selectable interval (15s–10m), persisted via `shuffle`/`shuffleTime` URL params.
+- Seamless crossfade between visualizers – the previous visualizer keeps rendering while the next one loads and warms up, then fades in; applies to shuffle switches and manual selection.
+- Transition style setting (Crossfade / Quick cut / Instant) in the settings panel, persisted via the `transition` URL param – lighter modes for low-end hardware.
+- Sungalizer visualizer – retro amber-phosphor CRT quad analyzer: 2D spectrum, 3D depth-trace waterfall, scrolling spectrogram, and oscilloscope, plus a hardware-style side panel with reactive VU needle and knobs (Canvas 2D).
+
+### Changed
+- Visualizer registration consolidated into a single manifest; new visualizers need just one entry plus a generated thumbnail.
+- Dependency bumps
+
 ## [0.20.0] - 2026-07-06
 
 ### Added
