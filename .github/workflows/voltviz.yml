@@ -38,7 +38,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
       - name: Get the version from config.json
         id: data
         run: |
@@ -87,7 +87,7 @@ jobs:
             BUILD_ARCH=${{matrix.DOCKER_TAG_SUFFIX}}
       - name: Generate artifact attestation
         if: github.ref == 'refs/heads/main'
-        uses: actions/attest-build-provenance@v2
+        uses: actions/attest-build-provenance@v4
         with:
           subject-name: ghcr.io/${{ github.repository }}/ha-voltviz-${{ matrix.DOCKER_TAG_SUFFIX }}
           subject-digest: ${{ steps.push.outputs.digest }}
