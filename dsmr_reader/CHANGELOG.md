@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.2.0
+
+- As always, backup database first!
+- Update to [DSMR Reader v6.2](https://dsmr-reader.readthedocs.io/en/v6/reference/changelog/)
+  - Image `xirixiz/dsmr-reader-docker:6.2.0`
+  - Fixes midnight-border gap that silently dropped a slice of electricity consumption at day/hour boundaries
+
 ## 2.1.2
 
 - As always, backup database first!
