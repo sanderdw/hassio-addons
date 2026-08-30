@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.22.0] - 2026-08-30
+
+### Changed
+- Dependency bumps
+
+### Fixed
+- Sendspin player registration is now stable across page reloads and reconnects: the Sendspin SDK persists a long-lived identity keypair in browser storage and uses it as the Music Assistant player id, so each browser re-registers as the same player.
+- Mobile playback now unlocks audio before connecting, satisfying mobile browser autoplay policies for seamless playback.
+
+### Known limitations
+- Sendspin mode requires Music Assistant 2.10.0b13: upstream pins `@sendspin/sendspin-js` to 4.0.0 to match the `aiosendspin` 7.0.0 encryption/pairing spec, so it cannot connect to Music Assistant 2.9.x stable.
+
 ## [0.21.1] - 2026-08-01
 
 ### Fixed
