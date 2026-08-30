@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.22.2] - 2026-08-30
+
+### Fixed
+- 0.22.1's "wait for activation" check could still report connected on a bare socket open; it now waits for real server state, shows a clear error after 10 seconds against an incompatible server, and stops the endless silent reconnect loop. The visualizer also no longer starts on a silent stream before activation.
+
 ## [0.22.1] - 2026-08-30
 
 ### Fixed
