@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.22.1] - 2026-08-30
+
+### Fixed
+- The VoltViz player shows up in Music Assistant 2.10.x again: 0.22.0 advertised a product name Music Assistant does not recognize as a web player, so MA classified VoltViz as a protocol endpoint and wrapped it in a hidden auto-created "universal player" with no working transport controls. VoltViz now advertises itself as a web player again.
+- The player is automatically unhidden *and* exposed to Home Assistant once Music Assistant has actually registered it (with retries), instead of a single racy fire-and-forget call right after the socket opened.
+- The UI no longer claims "connected" on a bare WebSocket open; it waits for the server to activate the player and reports an error after 10 seconds if that never happens (e.g. an incompatible Music Assistant version).
+
+### Known limitations
+- Sendspin mode requires Music Assistant 2.10.0b14 or newer (verified against 2.10.1); older builds close the connection silently during the encryption handshake.
+
 ## [0.22.0] - 2026-08-30
 
 ### Changed
