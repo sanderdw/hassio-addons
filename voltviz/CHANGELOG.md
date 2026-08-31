@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.22.3] - 2026-08-31
+
+### Fixed
+- VoltViz and Music Assistant's built-in web player no longer collapse into a single Music Assistant player whose name flips between "VoltViz" and "Web (Chrome on Windows)" on every reconnect, freezing playback when both are open in the same browser. Both apps use the same Sendspin SDK, which stored its identity key under the same browser-storage key, and under Home Assistant Ingress both apps share that storage. VoltViz now keeps its identity under its own key, so it registers as its own, stable player. If you previously connected VoltViz from outside Ingress it will show up once as a new player; the old one can be removed in Music Assistant.
+
 ## [0.22.2] - 2026-08-30
 
 ### Fixed
