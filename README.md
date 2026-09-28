@@ -10,7 +10,7 @@
 ## About VoltViz
 A dynamic, real-time music visualizer that transforms sound into stunning visual experiences. Synchronize with your system audio, microphone and [Music Assistant](https://music-assistant.io/) support (through [Sendspin](https://www.sendspin-audio.com/)) and watch your music come alive.
 
-![VoltViz](https://raw.githubusercontent.com/sanderdw/voltviz/main/images/home-assistant/music-assistant.png)
+![VoltViz](https://raw.githubusercontent.com/sanderdw/voltviz/main/images/voltviz.png)
 
 See the VoltViz Github (https://github.com/sanderdw/voltviz) for more background information.
 

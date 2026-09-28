@@ -6,7 +6,8 @@ A dynamic, real-time music visualizer that transforms sound into stunning visual
 
 ## Features
 
-- 30+ stunning visualization styles (Particle Effects, 3D, Retro, Festival, and more)
+- 50+ stunning visualization styles (Particle Effects, 3D, Retro, Festival, and more)
+- Beat-aware audio engine with optional on-device AI Beat Tracking, Auto Gain and a Music style setting
 - Real-time audio input via microphone, system audio, or Sendspin streaming
 - GPU-accelerated rendering with Three.js and WebGL
 - Music Assistant integration through Sendspin
@@ -65,11 +66,19 @@ You can link directly to a specific visualizer with custom settings using URL pa
 
 | Parameter   | Description                         | Default |
 |-------------|-------------------------------------|---------|
-| viz         | Visualizer name (e.g. tunnel, sphere) | sphere  |
+| viz         | Visualizer name (e.g. tunnel, polysphere) | halftonepulse |
 | sensitivity | Audio reactivity multiplier (0.1–3.0) | 1.0     |
 | speed       | Animation speed multiplier (0.1–3.0) | 1.0     |
 | hueShift    | Color shift in degrees (0–360)      | 0       |
 | scale       | Element scale multiplier (0.5–3.0)  | 1.0     |
+| skin        | UI theme: modern, win95, winamp, crt | modern |
+| agc         | 1 enables Auto Gain                 | off     |
+| aibeat      | 1 enables AI Beat Tracking (extra CPU) | off  |
+| style       | Music style: electronic, hard, bass, hiphop, band, chill | auto |
+| shuffle     | 1 switches to a random visualizer at an interval | off |
+| shuffleTime | Shuffle interval in seconds (15, 30, 60, 120, 300, 600) | 60 |
+| shufflePool | Comma-separated visualizer ids to shuffle between | all |
+| transition  | crossfade, quickcut or instant      | crossfade |
 | sendspin    | Sendspin server URL                 |         |
 
 ## More info
