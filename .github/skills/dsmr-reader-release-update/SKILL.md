@@ -10,12 +10,13 @@ disable-model-invocation: false
 
 ## What This Skill Produces
 A complete DSMR Reader add-on release across config, docs and CI, including:
-- Updated base image tag in `.github/workflows/dsmr-reader.yml` for all three arch matrix entries
-- Updated app version in `dsmr_reader/config.json`
+- Updated base image tag in `.github/workflows/dsmr-reader.yml` for both arch matrix entries (`amd64`, `aarch64`)
+- Updated app version in `dsmr_reader/config.json`, plus any `options`/`schema` fixes from the configuration audit
+- Updated `dsmr_reader/rootfs/etc/s6-overlay/s6-rc.d/set-hassio-vars/run` when the audit requires it
 - New release entry at the top of `dsmr_reader/CHANGELOG.md`
 - Updated `dsmr-shield` badge in `dsmr_reader/README.md` to reflect the upstream DSMR Reader Major.Minor version
-- New git branch `reader-{addon_version}`
-- One atomic commit and a PR to `main`
+- New git branch `reader-{addon_version}` based on `origin/main`
+- When publishing (see step 6): one atomic commit and a PR to `main`
 
 ## When to Use
 Use this skill when:
@@ -31,10 +32,23 @@ Provide:
 ## Procedure
 
 ### 1. Discover Current and Target Versions
-- Read `.github/workflows/dsmr-reader.yml` to find the current `BASE_IMAGE: ghcr.io/xirixiz/dsmr-reader-docker:X.Y.Z` (all three matrix entries should share the same tag).
+- Read `.github/workflows/dsmr-reader.yml` to find the current `BASE_IMAGE: ghcr.io/xirixiz/dsmr-reader-docker:X.Y.Z` (both matrix entries should share the same tag).
 - Read `dsmr_reader/config.json` to find current add-on `version`.
 - Read the `dsmr-shield` line in `dsmr_reader/README.md` to find the current badge version.
-- Visit https://github.com/xirixiz/dsmr-reader-docker/pkgs/container/dsmr-reader-docker and pick the latest **pinned `Major.Minor.Patch`** tag. Ignore floating aliases (`latest`, `Major`, `Major.Minor`) and any prerelease tags (e.g. `-beta`, `development`) unless explicitly requested.
+- Find the latest **pinned `Major.Minor.Patch`** tag on GHCR. Floating aliases (`latest`, `Major`, `Major.Minor`) and prerelease tags (e.g. `-beta`, `development`) are filtered out; only use them if explicitly requested.
+  ```bash
+  IMAGE=xirixiz/dsmr-reader-docker
+  TOKEN=$(curl -s "https://ghcr.io/token?scope=repository:${IMAGE}:pull" | jq -r .token)
+  curl -s -H "Authorization: Bearer ${TOKEN}" "https://ghcr.io/v2/${IMAGE}/tags/list?n=10000" \
+    | jq -r '.tags[]' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1
+  ```
+  Package page for reference: https://github.com/xirixiz/dsmr-reader-docker/pkgs/container/dsmr-reader-docker
+- Verify the target tag is published for every architecture the add-on builds (`linux/amd64` and `linux/arm64`; ignore `unknown/unknown` attestation entries):
+  ```bash
+  curl -s -H "Authorization: Bearer ${TOKEN}" \
+    -H 'Accept: application/vnd.oci.image.index.v1+json, application/vnd.docker.distribution.manifest.list.v2+json' \
+    "https://ghcr.io/v2/${IMAGE}/manifests/${TAG}" | jq -r '.manifests[].platform | "\(.os)/\(.architecture)"'
+  ```
 - Visit https://github.com/dsmrreader/dsmr-reader/releases and identify the latest upstream `vMajor.Minor.Patch` release. The xirixiz image normally matches it.
 
 ### 2. Derive the Add-on Version Bump
@@ -44,17 +58,30 @@ Provide:
   - Patch change (e.g. `6.1.0 → 6.1.1`) → patch add-on bump
 - Apply the same tier to the current add-on version. Example: addon `2.0.0` + upstream minor bump → `2.1.0`.
 
-### 3. Audit Configuration (three-way reconciliation)
+### 3. Create the Release Branch
+Branch from the latest `main` **before** editing anything, so the release never picks up unrelated local work:
+```
+git status --porcelain   # must be empty; if not, stop and ask the user
+git fetch origin
+git checkout -b reader-{NEW_ADDON_VERSION} origin/main
+```
+The name matches the `reader-*.*.*` trigger in `.github/workflows/dsmr-reader.yml` so the workflow runs on push.
+
+### 4. Audit Configuration (three-way reconciliation)
 Reconcile **upstream docs ↔ `dsmr_reader/config.json` ↔ `dsmr_reader/rootfs/etc/s6-overlay/s6-rc.d/set-hassio-vars/run`** for the **target** release. All three must agree on variable names, applicable run modes, and allowed values.
 
-**3a. Build the upstream reference set**
+**4a. Build the upstream reference set**
 - Fetch https://www.yunta.nl/dsmr-reader-docker-docs/general/configuration/ (the canonical xirixiz/dsmr-reader-docker config reference). If unreachable, fall back to the xirixiz repo's `README` / `docker-compose.yml` for the target tag.
 - Record, for every upstream var: name, default, allowed values (if enum), and which `CONTAINER_RUN_MODE` modes it applies to.
 - Also note rename/removal items from the release changelogs (https://github.com/xirixiz/dsmr-reader-docker/releases and https://github.com/dsmrreader/dsmr-reader/releases) since the docs page only shows the current state.
 
-**3b. Diff against `dsmr_reader/config.json`**
+**Intentional divergences — do not "fix" these:**
+- `DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT`: the upstream docs name this `DSMRREADER_REMOTE_DATALOGGER_SERIAL_DEVICE`, but the image still accepts `_SERIAL_PORT`. `rootfs/etc/s6-overlay/s6-rc.d/init-validate/run` maps it to `_SERIAL_DEVICE` for backward compatibility, and `init-devices/run` reads it to set serial device permissions. The add-on keeps `_SERIAL_PORT` on purpose (an automated rename in 2.1.1 was reverted). Only raise it if the target image drops `_SERIAL_PORT` from both of those scripts.
+- `WEBSERVER`: add-on-only option (`Ingress|Standard|Custom`) with no upstream equivalent.
+
+**4b. Diff against `dsmr_reader/config.json`**
 For each key in `options`/`schema`:
-- **Spelling**: name must match upstream exactly (case-sensitive). A near-match like `_SERIAL_PORT` vs upstream `_SERIAL_DEVICE` is a bug — rename in both files.
+- **Spelling**: name must match upstream exactly (case-sensitive), apart from the intentional divergences above. A near-match of an upstream var (e.g. `DJANGO_DATABASE_HOSTNAME` vs upstream `DJANGO_DATABASE_HOST`) is a bug — rename in both files.
 - **Type / enum**: `schema` enum values (e.g. `list(ERROR|WARNING|DEBUG)`) must contain **every** value upstream accepts. Missing values (e.g. `INFO` absent from a loglevel list) is a bug.
 - **Default**: should match upstream unless intentionally diverged for the Home Assistant context — if diverged, note why in the changelog.
 - **Added upstream, missing here** → add to both `options` (sensible default) and `schema` (correct type: `str`, `str?`, `int`, `bool`, `password`, `list(...)`).
@@ -62,24 +89,24 @@ For each key in `options`/`schema`:
 
 For each upstream var **not** in `config.json`: decide whether to expose it. Skip add-on-managed vars (webserver/ingress wiring, things hard-set by the Dockerfile or run script). Optional `CONTAINER_ENABLE_*` toggles can stay unexposed unless the user requests them — note their absence in the audit report regardless.
 
-**3c. Diff against the s6 init script**
+**4c. Diff against the s6 init script**
 Open `dsmr_reader/rootfs/etc/s6-overlay/s6-rc.d/set-hassio-vars/run` and enumerate every `_set_env '...'` and `_set_env_optional '...'` call inside `_set_env_vars`.
 - **In `config.json` but missing from the script** → the option is collected from the user but never reaches the container. Add a `_set_env` call (or `_set_env_optional` if the schema type is `str?`).
 - **In the script but missing from `config.json`** → the script will fail or export an empty string. Either add the option or remove the call.
-- **Spelling mismatch between script and config.json** → fix both to match upstream.
+- **Spelling mismatch between script and config.json** → fix both to match upstream (respecting the intentional divergences).
 - **Mode-gated vars**: `DSMRREADER_REMOTE_DATALOGGER_API_HOSTS` / `_API_KEYS` must remain inside the `if [[ "$(bashio::config 'CONTAINER_RUN_MODE')" == 'remote_datalogger' ]]` guard. If upstream adds another mode-gated var, add a similar guard.
 
-**3d. Report findings before editing**
+**4d. Report findings before editing**
 Produce a short audit report with sections:
 - ❌ Bugs (must fix): name mismatches, missing enum values, script/config drift.
 - ⚠️ Behaviour changes (default/type changed upstream).
 - ℹ️ Unsurfaced upstream vars (informational, opt-in).
 
-Apply the fixes, then mention each ❌/⚠️ change in the changelog entry under a dedicated bullet (e.g. `- Config: rename \`DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT\` → \`_SERIAL_DEVICE\` to match upstream`).
+Apply the fixes to `config.json` and/or the run script, then mention each ❌/⚠️ change in the changelog entry under a dedicated bullet (e.g. `- Config: add \`INFO\` to \`DSMRREADER_LOGLEVEL\` to match upstream`).
 
-### 4. Update Files
-- `.github/workflows/dsmr-reader.yml`: replace `BASE_IMAGE: ghcr.io/xirixiz/dsmr-reader-docker:{OLD}` with the new tag for **all three** matrix entries (`amd64`, `armv7`, `aarch64`). Use a multi-replace to do them in one pass.
-- `dsmr_reader/config.json`: set `"version"` to the new add-on version. Touch nothing else.
+### 5. Update Files
+- `.github/workflows/dsmr-reader.yml`: replace `BASE_IMAGE: ghcr.io/xirixiz/dsmr-reader-docker:{OLD}` with the new tag for **both** matrix entries (`amd64`, `aarch64`).
+- `dsmr_reader/config.json`: set `"version"` to the new add-on version. Apart from the audit fixes from step 4, touch nothing else.
 - `dsmr_reader/README.md`: in the `[dsmr-shield]:` URL, replace `DSMR%20Reader%20Version-%20{OLD_MAJOR.MINOR}-purple` with the upstream DSMR Reader **Major.Minor** (e.g. `6.1`, not `6.1.0`). Keep the existing URL-encoded space (`%20`) before the version.
 - `dsmr_reader/CHANGELOG.md`: prepend a new section at the top:
   ```
@@ -91,50 +118,45 @@ Apply the fixes, then mention each ❌/⚠️ change in the changelog entry unde
   ```
   Add additional bullets for breaking changes / new config options when the upstream changelog warrants it.
 
-### 5. Branch, Commit, Push
-- Create branch from latest `main`:
+### 6. Commit, Push and Open Pull Request
+Only publish when the user asked for a release or PR in this request (invoking this skill by name counts). If they only asked to check or prepare the update, stop here and summarize the diff.
+- Stage every changed file and commit:
   ```
-  git fetch origin
-  git checkout -b reader-{NEW_ADDON_VERSION} origin/main
-  ```
-  The name matches the `reader-*.*.*` trigger in `.github/workflows/dsmr-reader.yml` so the workflow runs on push.
-- Stage and commit:
-  ```
-  git add .github/workflows/dsmr-reader.yml dsmr_reader/config.json dsmr_reader/README.md dsmr_reader/CHANGELOG.md
+  git add .github/workflows/dsmr-reader.yml dsmr_reader/
+  git status --short   # confirm only intended files are staged
   git commit -m "DSMR Reader {NEW_ADDON_VERSION} (upstream {NEW_IMAGE_VERSION})"
   ```
 - Push: `git push -u origin reader-{NEW_ADDON_VERSION}`
-
-### 6. Open Pull Request
 - Use `gh pr create --base main --head reader-{NEW_ADDON_VERSION}` with title `DSMR Reader {NEW_ADDON_VERSION}` and a body that includes:
   - Base image bump: `OLD → NEW`
   - Add-on version bump: `OLD → NEW`
   - README badge bump: `OLD_MAJOR.MINOR → NEW_MAJOR.MINOR`
+  - Configuration audit results (❌/⚠️/ℹ️)
   - Links: upstream release tag, xirixiz package page, upstream changelog
 
 ## Decision Points
 - **Bump tier mismatch**: if the user passes an explicit add-on version that doesn't match the derived tier, use the user's version but call it out.
 - **Badge style**: keep the badge as `Major.Minor` to match prior style unless the user requests `Major.Minor.Patch`.
 - **Image vs. upstream divergence**: if xirixiz's latest pinned tag does not match the latest upstream DSMR Reader release, prefer the xirixiz tag for the image, and base the README badge on the xirixiz tag's actual upstream (usually the same `Major.Minor`).
+- **Missing platform**: if the target tag is not published for `linux/amd64` or `linux/arm64`, stop and tell the user; do not bump to it.
 - **Breaking changes upstream**: when upstream notes config changes (renamed env vars, schema changes, etc.), reflect them in `dsmr_reader/config.json` `options`/`schema` and call them out in the changelog as `**Breaking:**`.
 - **Env-var audit unreachable**: if https://www.yunta.nl/dsmr-reader-docker-docs/general/configuration/ cannot be fetched, fall back to the xirixiz repo at the target tag; if neither is available, stop and ask the user to confirm whether to skip the audit.
 - **Env-var rename ambiguity**: if it's unclear whether an upstream env var is renamed vs. removed-and-added, stop and ask the user before changing `config.json`.
-- **Config ↔ run-script disagreement**: if `config.json` and the s6 run script disagree on a variable name and upstream docs are unambiguous, fix both to match upstream and call it out as `**Breaking:**` in the changelog (users who set the broken key will lose their value on upgrade).
+- **Config ↔ run-script disagreement**: if `config.json` and the s6 run script disagree on a variable name and upstream docs are unambiguous, fix both to match upstream and call it out as `**Breaking:**` in the changelog (users who set the broken key will lose their value on upgrade). The intentional divergences in step 4a are exempt.
 - **Already on latest**: if current image tag already equals the latest pinned tag, stop and confirm with the user before proceeding.
 
 ## Completion Criteria
-- All three `BASE_IMAGE` entries in `.github/workflows/dsmr-reader.yml` point to the new pinned `Major.Minor.Patch` tag.
+- Both `BASE_IMAGE` entries in `.github/workflows/dsmr-reader.yml` point to the new pinned `Major.Minor.Patch` tag, and that tag is published for `linux/amd64` and `linux/arm64`.
 - `dsmr_reader/config.json` `version` equals the new add-on version.
 - `dsmr_reader/config.json` `options` and `schema` reflect the upstream env-var set for the target release (added, removed, renamed, or retyped keys have been reconciled), and every change is mentioned in the changelog entry.
-- Every user-facing key in `dsmr_reader/config.json` `options`/`schema` matches an upstream env var name exactly (case-sensitive).
-- Every key in `options`/`schema` has a matching `_set_env` or `_set_env_optional` call in `dsmr_reader/rootfs/etc/s6-overlay/s6-rc.d/set-hassio-vars/run`, except for add-on-managed keys (`WEBSERVER`, `DJANGO_FORCE_SCRIPT_NAME`, `DJANGO_STATIC_URL` when handled by the Ingress branch).
+- Every user-facing key in `dsmr_reader/config.json` `options`/`schema` matches an upstream env var name exactly (case-sensitive), except the intentional divergences listed in step 4a.
+- Every key in `options`/`schema` has a matching `_set_env` or `_set_env_optional` call in `dsmr_reader/rootfs/etc/s6-overlay/s6-rc.d/set-hassio-vars/run`, except for add-on-managed keys (`WEBSERVER`, and `DJANGO_FORCE_SCRIPT_NAME` / `DJANGO_STATIC_URL`, which `_configure_webserver` handles).
 - Every `_set_env*` call in the run script either matches a key in `config.json` `options` or is documented as a derived/add-on-managed value.
 - Every `list(...)` schema enum contains all values accepted by upstream for that variable.
 - `dsmr_reader/README.md` `dsmr-shield` badge shows the upstream `Major.Minor`.
 - `dsmr_reader/CHANGELOG.md` has a new top entry naming the new add-on version, the new image tag, the upstream changelog link, and any env-var changes.
-- A single atomic commit covers all changed files.
-- Branch `reader-{NEW_ADDON_VERSION}` exists on `origin` and a PR is open against `main`.
 - `git grep "{OLD_IMAGE_VERSION}" dsmr_reader/ .github/workflows/dsmr-reader.yml` returns only historical CHANGELOG hits.
+- If published: a single atomic commit on branch `reader-{NEW_ADDON_VERSION}` (based on `origin/main`) covers all changed files, the branch exists on `origin`, and a PR is open against `main`.
 
 ## Example Prompt
 ```

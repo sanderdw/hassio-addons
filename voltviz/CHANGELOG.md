@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.30.0] - 2026-09-28
+
+### Added
+- **New audio engine** (0.23.0): one audio pipeline for the whole app, so visualizers react on the beat you hear and use less CPU.
+- **AI Beat Tracking** (Settings, off by default): an on-device AI model that keeps the beat on tricky music. It now also finds the first beat of every bar.
+- **Auto Gain** (Settings, off by default): a quiet microphone reacts as strongly as loud system audio.
+- **Halftone Pulse** visualizer (now the default) and **Raw Audio** visualizer showing everything the engine hears.
+- **Music style** (Settings, Auto by default): tell the beat tracking what kind of music is playing. Link it with `?style=`.
+- **Song changes** are detected, so the beat is searched again for the new song.
+
+
+### Removed
+- The Ghost Rainbow, Neon Hex Tunnel, Festival Stage and ASCII visualizers due too quality reasons.
+
 ## [0.22.3] - 2026-08-31
 
 ### Fixed
