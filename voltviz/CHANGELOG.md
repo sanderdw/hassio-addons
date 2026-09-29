@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.31.0] - 2026-09-29
+
+### Added
+- **Extended Sendspin controls**: progress bar with seeking, album name, a hideable player, and, when opened from the Home Assistant sidebar, Music Assistant's queue, a Start list (playlists, recently played, search) and a favorite button.
+- **Mobile support**: the visualizer now works on phones, including Android.
+
 ## [0.30.0] - 2026-09-28
 
 ### Added
