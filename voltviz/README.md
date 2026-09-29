@@ -56,8 +56,6 @@ This routes all Sendspin traffic (including WebSocket) through HA Ingress, so it
 
 You can also bookmark it by appending `?sendspin=./sendspin-proxy/` to the VoltViz URL — the connection dialog will open automatically with the URL pre-filled.
 
-With `SENDSPIN_URL` pointing at the Music Assistant app (the default) and VoltViz opened from the Home Assistant sidebar, the playback bar also gets Music Assistant's queue, a **Start** list with your playlists, recently played and search for when nothing is queued, and a favorite button.
-
 ### Direct connection
 
 Alternatively, click the Sendspin button and enter the server URL directly (e.g. `http://192.168.1.100:8927`). This requires HTTP access from the browser to the server.
