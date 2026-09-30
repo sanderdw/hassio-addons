@@ -1,7 +1,8 @@
-ARG BUILD_FROM=ghcr.io/sanderdw/voltviz:latest
-FROM $BUILD_FROM
+# The app version mirrors the upstream VoltViz image it wraps
+ARG BUILD_VERSION
+FROM ghcr.io/sanderdw/voltviz:${BUILD_VERSION}
 ARG BUILD_ARCH
-ARG HA_RELEASE
+ARG BUILD_VERSION
 
 # Install jq and bash for reading app config
 RUN apk add --no-cache jq bash
@@ -31,7 +32,7 @@ LABEL \
     io.hass.description="Home Assistant App: VoltViz" \
     io.hass.arch=$BUILD_ARCH \
     io.hass.type="app" \
-    io.hass.version=${HA_RELEASE} \
+    io.hass.version=${BUILD_VERSION} \
     maintainer="Sander de Wildt <sanderdw@gmail.com>" \
     org.opencontainers.image.title="VoltViz" \
     org.opencontainers.image.description="Home Assistant App: VoltViz" \
@@ -40,5 +41,5 @@ LABEL \
     org.opencontainers.image.licenses="MIT" \
     org.opencontainers.image.url="https://github.com/sanderdw/hassio-addons" \
     org.opencontainers.image.source="https://github.com/sanderdw/hassio-addons" \
-    org.opencontainers.image.documentation="https://raw.githubusercontent.com/sanderdw/hassio-addons/main/voltviz/README.md" \
-    org.opencontainers.image.version=${HA_RELEASE}
+    org.opencontainers.image.documentation="https://raw.githubusercontent.com/sanderdw/hassio-addons/main/voltviz/DOCS.md" \
+    org.opencontainers.image.version=${BUILD_VERSION}
