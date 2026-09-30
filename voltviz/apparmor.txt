@@ -1,0 +1,32 @@
+#include <tunables/global>
+
+profile voltviz flags=(attach_disconnected,mediate_deleted) {
+  #include <abstractions/base>
+
+  # The app maps no host folders, so file access stays inside the container
+  file,
+  signal,
+
+  # Update check, Sendspin proxy and the Supervisor API
+  network,
+
+  # The nginx master binds ports 80 and 8099 and runs its workers as the nginx user
+  capability chown,
+  capability dac_override,
+  capability fowner,
+  capability fsetid,
+  capability kill,
+  capability net_bind_service,
+  capability setgid,
+  capability setuid,
+
+  # Entrypoint of the upstream nginx image, then run.sh (bash and bashio), then nginx
+  /docker-entrypoint.sh rix,
+  /docker-entrypoint.d/** rix,
+  /run.sh rix,
+  /bin/** ix,
+  /sbin/** ix,
+  /usr/bin/** ix,
+  /usr/sbin/** ix,
+  /usr/lib/bashio/** ix,
+}

@@ -19,8 +19,11 @@ skills in `.claude/skills/` (for example `voltviz-release-update`).
 - `voltviz/` here only wraps `ghcr.io/sanderdw/voltviz:<version>`. `run.sh` sets up the Sendspin
   proxy (`./sendspin-proxy/`) and writes `ma-config.json` (Music Assistant's ingress entry).
 - Version branches: upstream `X.Y.Z` publishes `ghcr.io/sanderdw/voltviz:X.Y.Z` (workflows "CI" and
-  "Build and Publish Docker Image"). Here `voltviz-X.Y.Z` publishes
-  `ghcr.io/sanderdw/hassio-addons/ha-voltviz-{arch}:X.Y.Z` (workflow "VoltViz").
+  "Build and Publish Docker Image"). Here `voltviz-X.Y.Z` publishes the Cosign-signed
+  `ghcr.io/sanderdw/hassio-addons/ha-voltviz:X.Y.Z` (multi-arch; per-arch `{arch}-ha-voltviz`) with
+  Home Assistant's builder actions (workflow "VoltViz"). The base image is
+  `ghcr.io/sanderdw/voltviz:<config.json version>`. On `main` the workflow skips versions that already
+  exist, so only version branches (re)publish.
 
 ## VoltViz fix-and-verify loop
 

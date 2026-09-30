@@ -5,6 +5,8 @@
 ### Changed
 - **Calm music stays calm.** On music without a steady beat (ballads, piano, soft acoustic songs), beat effects now pulse gently on the hits that stand out, at most about twice a second, instead of flashing at full strength on every note. One-off effects (switching an icon or a look, fireworks) wait for a real beat. Raw Audio shows these accents and their strength.
 - Updated dependencies.
+- The app runs with an AppArmor profile, which raises its security rating.
+- The app image is now a single signed multi-arch image (`ghcr.io/sanderdw/hassio-addons/ha-voltviz`).
 
 ## [0.31.0] - 2026-09-29
 

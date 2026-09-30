@@ -1,0 +1,10 @@
+configuration:
+  SENDSPIN_URL:
+    name: Sendspin URL
+    description: >-
+      Internal address of Music Assistant's Sendspin server, for example
+      http://d5369777-music-assistant:8927. VoltViz proxies it through Ingress at
+      ./sendspin-proxy/, so it also works over HTTPS and away from home. Leave it
+      empty to connect to Sendspin from the browser instead.
+network:
+  80/tcp: Web UI port (direct access, not needed when using Ingress)

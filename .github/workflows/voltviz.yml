@@ -17,70 +17,94 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-jobs:
-  voltviz:
-    name: voltviz (${{ matrix.arch }})
-    runs-on: ${{ matrix.runner }}
-    timeout-minutes: 15
-    permissions:
-      packages: write
-      contents: read
-      attestations: write
-      id-token: write
-    strategy:
-      matrix:
-        include:
-          - arch: amd64
-            runner: ubuntu-24.04
-            platform: linux/amd64
-          - arch: aarch64
-            runner: ubuntu-24.04-arm
-            platform: linux/arm64
+permissions:
+  contents: read
 
+jobs:
+  prepare:
+    name: Prepare
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.info.outputs.version }}
+      architectures: ${{ steps.info.outputs.architectures }}
+      skip_existing: ${{ steps.info.outputs.skip_existing }}
+      matrix: ${{ steps.matrix.outputs.matrix }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
-      # The add-on version mirrors the upstream VoltViz image it wraps
-      - name: Get the version from config.json
-        id: data
+        with:
+          persist-credentials: false
+      # The add-on version mirrors the upstream VoltViz image the Dockerfile builds on.
+      # Version branches always publish, so a rerun picks up a republished upstream image;
+      # main skips versions that already exist, so a merge keeps the image tested on the branch.
+      - name: Get the app info from config.json
+        id: info
+        env:
+          IS_MAIN: ${{ github.ref == 'refs/heads/main' }}
         run: |
           version=$(jq --raw-output '.version' ./voltviz/config.json)
           echo "version=$version" >> "$GITHUB_OUTPUT"
-          echo "base_image=ghcr.io/sanderdw/voltviz:$version" >> "$GITHUB_OUTPUT"
-          echo "VoltViz add-on $version on ghcr.io/sanderdw/voltviz:$version"
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
-      - name: Log in to ghcr.io
-        uses: docker/login-action@v4
+          echo "architectures=$(jq --compact-output '.arch' ./voltviz/config.json)" >> "$GITHUB_OUTPUT"
+          if [[ "$IS_MAIN" == "true" ]]; then
+            echo "skip_existing=$version" >> "$GITHUB_OUTPUT"
+          fi
+          echo "VoltViz app $version on ghcr.io/sanderdw/voltviz:$version"
+      - name: Prepare build matrix
+        id: matrix
+        uses: home-assistant/builder/actions/prepare-multi-arch-matrix@2026.09.0
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Docker meta
-        id: meta
-        uses: docker/metadata-action@v6
+          architectures: ${{ steps.info.outputs.architectures }}
+          image-name: ha-voltviz
+          registry-prefix: ghcr.io/${{ github.repository }}
+
+  build:
+    name: Build ${{ matrix.arch }} image
+    needs: prepare
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
         with:
-          images: |
-            ghcr.io/${{ github.repository }}/ha-voltviz-${{ matrix.arch }}
-          tags: |
-            type=raw,value=${{ steps.data.outputs.version }}
+          persist-credentials: false
       - name: Build and push
-        id: push
-        uses: docker/build-push-action@v7
+        uses: home-assistant/builder/actions/build-image@2026.09.0
         with:
+          arch: ${{ matrix.arch }}
+          container-registry-password: ${{ secrets.GITHUB_TOKEN }}
           context: ./voltviz
-          platforms: ${{ matrix.platform }}
+          image: ${{ matrix.image }}
+          image-tags: |
+            ${{ needs.prepare.outputs.version }}
+            latest
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          build-args: |
-            BUILD_FROM=${{ steps.data.outputs.base_image }}
-            HA_RELEASE=${{ steps.data.outputs.version }}
-            BUILD_ARCH=${{ matrix.arch }}
-      - name: Generate artifact attestation
-        if: github.ref == 'refs/heads/main'
-        uses: actions/attest-build-provenance@v4
+          skip-existing: ${{ needs.prepare.outputs.skip_existing }}
+          version: ${{ needs.prepare.outputs.version }}
+
+  manifest:
+    name: Publish multi-arch manifest
+    needs: [prepare, build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      id-token: write
+      packages: write
+    steps:
+      - name: Publish multi-arch manifest
+        uses: home-assistant/builder/actions/publish-multi-arch-manifest@2026.09.0
         with:
-          subject-name: ghcr.io/${{ github.repository }}/ha-voltviz-${{ matrix.arch }}
-          subject-digest: ${{ steps.push.outputs.digest }}
-          push-to-registry: true
+          architectures: ${{ needs.prepare.outputs.architectures }}
+          container-registry-password: ${{ secrets.GITHUB_TOKEN }}
+          image-name: ha-voltviz
+          image-tags: |
+            ${{ needs.prepare.outputs.version }}
+            latest
+          registry-prefix: ghcr.io/${{ github.repository }}
+          skip-existing: ${{ needs.prepare.outputs.skip_existing }}
