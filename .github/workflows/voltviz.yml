@@ -6,8 +6,6 @@ on:
     branches:
       - 'main'
       - 'voltviz-*.*.*'
-    tags:
-      - '*.*.*'
     paths:
       - 'voltviz/Dockerfile'
       - 'voltviz/rootfs/**'
@@ -15,9 +13,15 @@ on:
       - .github/workflows/voltviz.yml
       - 'voltviz/run.sh'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   voltviz:
-    runs-on: ubuntu-latest
+    name: voltviz (${{ matrix.arch }})
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 15
     permissions:
       packages: write
       contents: read
@@ -26,32 +30,25 @@ jobs:
     strategy:
       matrix:
         include:
-          # AMD64
-          - DOCKER_TAG_SUFFIX: amd64
-            BASE_IMAGE: ghcr.io/sanderdw/voltviz:0.31.1
-            PLATFORMS: linux/amd64
-
-          # ARM64V8
-          - DOCKER_TAG_SUFFIX: aarch64
-            BASE_IMAGE: ghcr.io/sanderdw/voltviz:0.31.1
-            PLATFORMS: linux/arm64/v8
+          - arch: amd64
+            runner: ubuntu-24.04
+            platform: linux/amd64
+          - arch: aarch64
+            runner: ubuntu-24.04-arm
+            platform: linux/arm64
 
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+      # The add-on version mirrors the upstream VoltViz image it wraps
       - name: Get the version from config.json
         id: data
         run: |
           version=$(jq --raw-output '.version' ./voltviz/config.json)
-          echo "HA_RELEASE=$version" >> "$GITHUB_OUTPUT"
-      - name: VoltViz addon release
-        env:
-          HA_RELEASE: ${{ steps.data.outputs.HA_RELEASE }}
-        run: echo "$HA_RELEASE"
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v4
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "base_image=ghcr.io/sanderdw/voltviz:$version" >> "$GITHUB_OUTPUT"
+          echo "VoltViz add-on $version on ghcr.io/sanderdw/voltviz:$version"
       - name: Set up Docker Buildx
-        id: buildx
         uses: docker/setup-buildx-action@v4
       - name: Log in to ghcr.io
         uses: docker/login-action@v4
@@ -64,31 +61,26 @@ jobs:
         uses: docker/metadata-action@v6
         with:
           images: |
-            ghcr.io/${{ github.repository }}/ha-voltviz-${{ matrix.DOCKER_TAG_SUFFIX }}
+            ghcr.io/${{ github.repository }}/ha-voltviz-${{ matrix.arch }}
           tags: |
-            type=schedule
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
-            type=raw,value=${{ steps.data.outputs.HA_RELEASE }}
+            type=raw,value=${{ steps.data.outputs.version }}
       - name: Build and push
         id: push
         uses: docker/build-push-action@v7
         with:
           context: ./voltviz
-          platforms: ${{ matrix.PLATFORMS }}
-          push: ${{ github.event_name != 'pull_request' }}
+          platforms: ${{ matrix.platform }}
+          push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            BUILD_FROM=${{matrix.BASE_IMAGE}}
-            HA_RELEASE=${{ steps.data.outputs.HA_RELEASE }}
-            BUILD_ARCH=${{matrix.DOCKER_TAG_SUFFIX}}
+            BUILD_FROM=${{ steps.data.outputs.base_image }}
+            HA_RELEASE=${{ steps.data.outputs.version }}
+            BUILD_ARCH=${{ matrix.arch }}
       - name: Generate artifact attestation
         if: github.ref == 'refs/heads/main'
         uses: actions/attest-build-provenance@v4
         with:
-          subject-name: ghcr.io/${{ github.repository }}/ha-voltviz-${{ matrix.DOCKER_TAG_SUFFIX }}
+          subject-name: ghcr.io/${{ github.repository }}/ha-voltviz-${{ matrix.arch }}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true

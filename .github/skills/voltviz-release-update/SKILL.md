@@ -1,6 +1,6 @@
 ---
 name: voltviz-release-update
-description: Update the VoltViz add-on to the latest upstream release, including version bumps, changelog, workflow config, and PR creation. Use when releasing new VoltViz versions.
+description: Update the VoltViz add-on to the latest upstream release, including version bump, changelog, and PR creation. Use when releasing new VoltViz versions.
 argument-hint: 'Optional: specific target version. If omitted, uses the latest pinned tag on ghcr.io/sanderdw/voltviz.'
 user-invocable: true
 disable-model-invocation: false
@@ -9,10 +9,9 @@ disable-model-invocation: false
 # VoltViz Release Update
 
 ## What This Skill Produces
-A complete VoltViz add-on release across all configuration and workflow files, including:
+A complete VoltViz add-on release, including:
 - Updated app version in `voltviz/config.json`
 - New release entry in `voltviz/CHANGELOG.md` with upstream changes
-- Updated base image tag in `.github/workflows/voltviz.yml`
 - New git branch `voltviz-{version}` based on `origin/main`
 - When publishing (see step 6): committed changes and a pull request to `main` with changelog summary
 
@@ -66,24 +65,21 @@ Provide:
      - The same section headings upstream uses for those versions (`### Added`, `### Changed`, `### Fixed`, `### Known limitations`, …), in upstream order, omitting empty sections
      - When consolidating several upstream versions, merge their bullets under a single set of headings
      - Keep existing format and style
-   - Update `.github/workflows/voltviz.yml`:
-     - For both `DOCKER_TAG_SUFFIX: amd64` and `DOCKER_TAG_SUFFIX: aarch64` matrix entries
-     - Update `BASE_IMAGE` from `ghcr.io/sanderdw/voltviz:OLD_VERSION` to `ghcr.io/sanderdw/voltviz:NEW_VERSION`
+   - Leave `.github/workflows/voltviz.yml` alone: it builds `FROM ghcr.io/sanderdw/voltviz:<config.json version>`, so the GHCR tag check in step 1 is what keeps the build working.
 
 ### 5. Validate
-   - `voltviz/config.json` version, the changelog heading, and both `BASE_IMAGE` tags all show the target version.
-   - `git status --short` lists only the three files above.
+   - `voltviz/config.json` version and the changelog heading both show the target version.
+   - `git status --short` lists only the two files above.
 
 ### 6. Commit, Push and Open Pull Request
 Only publish when the user asked for a release or PR in this request (invoking this skill by name counts). If they only asked to check or prepare the update, stop after step 5 and summarize the diff.
-   - Stage changes: `git add voltviz/config.json voltviz/CHANGELOG.md .github/workflows/voltviz.yml`
+   - Stage changes: `git add voltviz/config.json voltviz/CHANGELOG.md`
    - Commit with message (subject example: `chore: update voltviz to 0.22.2`):
      ```
      chore: update voltviz to {VERSION}
 
      - Update add-on version from {OLD} to {NEW}
      - Add CHANGELOG entry for {VERSION} release
-     - Update workflow BASE_IMAGE to {VERSION}
      - [List key upstream changes]
 
      Upstream changelog: https://github.com/sanderdw/voltviz/blob/main/CHANGELOG.md
@@ -104,9 +100,9 @@ Only publish when the user asked for a release or PR in this request (invoking t
 ## Completion Criteria
 - `voltviz/config.json` version matches target version.
 - `voltviz/CHANGELOG.md` has new top entry with the target version, today's date, and the upstream changes for every version since the last add-on release.
-- `.github/workflows/voltviz.yml` BASE_IMAGE tags match target version for both architectures, and that tag exists on GHCR for `linux/amd64` and `linux/arm64`.
+- The target version exists as a tag on GHCR for `linux/amd64` and `linux/arm64`.
 - Branch `voltviz-{VERSION}` created from `origin/main`.
-- If published: all three files (config, changelog, workflow) committed together in one atomic commit with subject `chore: update voltviz to {VERSION}`, branch pushed, and PR opened to `main` with descriptive body linking upstream changes.
+- If published: both files (config, changelog) committed together in one atomic commit with subject `chore: update voltviz to {VERSION}`, branch pushed, and PR opened to `main` with descriptive body linking upstream changes.
 
 ## Example Prompt
 ```
