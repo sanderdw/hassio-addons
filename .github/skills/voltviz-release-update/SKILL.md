@@ -23,19 +23,26 @@ Use this skill when:
 
 ## Inputs
 Provide:
-- Optional: Target upstream version (example: `0.18.0`). If omitted, uses the latest pinned tag on `ghcr.io/sanderdw/voltviz`.
+- Optional: Target upstream version (example: `0.18.0`). If omitted, uses the pinned `Major.Minor.Patch` tag that the `latest` tag points to on `ghcr.io/sanderdw/voltviz`.
 
 ## Procedure
 
 ### 1. Discover Current and Target Versions
    - Read `voltviz/config.json` to find current add-on version (it mirrors the upstream version).
-   - The target version is the latest pinned `Major.Minor.Patch` tag on GHCR (or the user-provided version). GHCR is the source of truth because the workflow builds `FROM` that image; the upstream CHANGELOG can list a version before its image is published.
+   - The target version is the pinned `Major.Minor.Patch` tag that the `latest` tag points to on GHCR (or the user-provided version). Do **not** take the highest version number: upstream can publish a newer pinned tag (for example `0.33.0`) that is not yet `latest`, and that one is not released. GHCR is the source of truth because the workflow builds `FROM` that image; the upstream CHANGELOG can list a version before its image is published.
      ```bash
      IMAGE=sanderdw/voltviz
      TOKEN=$(curl -s "https://ghcr.io/token?scope=repository:${IMAGE}:pull" | jq -r .token)
-     curl -s -H "Authorization: Bearer ${TOKEN}" "https://ghcr.io/v2/${IMAGE}/tags/list?n=1000" \
-       | jq -r '.tags[]' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1
+     digest() { curl -sI -H "Authorization: Bearer ${TOKEN}" \
+       -H 'Accept: application/vnd.oci.image.index.v1+json, application/vnd.docker.distribution.manifest.list.v2+json' \
+       "https://ghcr.io/v2/${IMAGE}/manifests/$1" | grep -i '^docker-content-digest' | tr -d '\r'; }
+     LATEST=$(digest latest)
+     for T in $(curl -s -H "Authorization: Bearer ${TOKEN}" "https://ghcr.io/v2/${IMAGE}/tags/list?n=1000" \
+       | jq -r '.tags[]' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V); do
+       [ "$(digest $T)" = "$LATEST" ] && echo "$T"
+     done | tail -1   # the target TAG
      ```
+     If a higher pinned tag exists than the target, mention it to the user instead of using it.
    - Verify the target tag is published for `linux/amd64` and `linux/arm64` (ignore `unknown/unknown` attestation entries):
      ```bash
      curl -s -H "Authorization: Bearer ${TOKEN}" \
@@ -95,7 +102,7 @@ Only publish when the user asked for a release or PR in this request (invoking t
 - If upstream CHANGELOG contains duplicates or formatting issues: clean and consolidate.
 - If the upstream CHANGELOG has no entry for the target version: stop and ask the user for release notes rather than inventing them.
 - If the target tag is not published for `linux/amd64` or `linux/arm64`: stop and tell the user; do not bump to it.
-- If the latest GHCR tag equals the current add-on version: stop and tell the user there is nothing to release.
+- If the `latest` GHCR tag equals the current add-on version: stop and tell the user there is nothing to release.
 
 ## Completion Criteria
 - `voltviz/config.json` version matches target version.
