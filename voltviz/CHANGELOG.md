@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.33.0] - 2026-10-04
+
+### Added
+- **Cast to TV**: a Cast button sends the visualizer picture (not the audio) to a Chromecast or Google TV. Your browser keeps rendering and streams it as video over WebRTC on your local network.
+- **Laser Show**: mirrored laser emitters fan beams and wide smoky beams through a hazy room, with looks that follow the beat, the mids and the highs.
+- **Kaleidoscope**: neon-edged 3D blocks tumble in a mirrored 4-, 8- or 12-fold snowflake that punches out on the beat and changes look every 16 strong beats.
+
+### Changed
+- **Vinyl**, **Glitch Background** and **Background Image** show the cover of the Sendspin track and accept an uploaded image; the separate Sendspin versions are merged into them.
+- Updated dependencies.
+
 ## [0.31.1] - 2026-09-30
 
 ### Changed
