@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.33.0] - 2026-10-11
+
+### Added
+- **Blob Tracker (WebGPU)**: the first WebGPU visualizer.
+- **Daybreak (WebGPU)**: soft light geometry in a two-tone film look.
+
 ## [0.32.0] - 2026-10-04
 
 ### Added
