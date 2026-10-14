@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.34.0] - 2026-10-14
+
+### Added
+- **Oscilloscope (WebGPU)**: an analog CRT scope drawn by a simulated electron beam, with phosphor afterglow.
+
+### Changed
+- Updated dependencies.
+
 ## [0.33.0] - 2026-10-11
 
 ### Added
