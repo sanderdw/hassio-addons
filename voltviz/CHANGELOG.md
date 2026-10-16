@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.35.0] - 2026-10-16
+
+### Added
+- **Pulsar (WebGPU)**: a black-and-white space montage cut to the beat: a pulsar and its magnetosphere, eclipses, a sunrise over a planet, a beam through curtains of gas and a cellular star in front of the Milky Way.
+
+### Changed
+- Updated dependencies.
+
 ## [0.34.0] - 2026-10-14
 
 ### Added
