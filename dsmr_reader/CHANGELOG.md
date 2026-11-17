@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.2.1
+
+- As always, backup database first!
+- Update to [DSMR Reader v6.2](https://dsmr-reader.readthedocs.io/en/v6/reference/changelog/)
+  - Image `xirixiz/dsmr-reader-docker:6.2.2`
+  - Fixes peak power readings on some Belgian Fluvius meters
+  - Fixes gas readings on setups with more than one MBus device (for example a gas and a water meter)
+  - Fixes electricity values in the Trends graphs for setups with two tariffs
+- Docs: the container is now named `app_0826754b_dsmr_reader` (was `addon_0826754b_dsmr_reader`)
+
 ## 2.2.0
 
 - As always, backup database first!
