@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.35.3] - 2026-11-17
+
+### Changed
+- Updated dependencies. `@sendspin/sendspin-js` 6.0.0 speaks the Sendspin 1.0 release-candidate protocol and requires `aiosendspin` 10.x on the server: **Music Assistant 2.10.7 or newer**. Older Music Assistant versions close the connection during the handshake.
+- A Sendspin server URL may also be given as `ws://` or `wss://`.
+- New default artwork for the visualizers that show a picture before a track's cover arrives (Vinyl, Background Image, Blur Image, Glitch Background, Particles Stream).
+- **Vinyl** crops a non-square image to its centre instead of squashing it.
+- The upload and style buttons of a visualizer start hidden behind its eye button, so a fresh app shows only the visualizer.
+
+### Fixed
+- Disconnecting from Sendspin releases the player's audio output instead of keeping it open.
+- Hide UI also hides the upload and style buttons of visualizers.
+- The WebGPU visualizers explain that they need HTTPS or localhost when opened over plain http, instead of suggesting another browser ([#35](https://github.com/sanderdw/voltviz/issues/35)).
+
 ## [0.35.0] - 2026-10-16
 
 ### Added
