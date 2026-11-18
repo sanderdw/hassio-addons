@@ -1,0 +1,43 @@
+configuration:
+  MB_DB_TYPE:
+    name: Databasetype
+    description: >-
+      Waar Metabase zijn eigen gegevens bewaart (vragen, dashboards,
+      gebruikers). h2: een bestand, ingesteld met databasebestand. postgres: een
+      PostgreSQL-database zoals de TimescaleDB-app, ingesteld met de
+      database-opties hieronder.
+  MB_DB_DBNAME:
+    name: Databasenaam
+    description: >-
+      Alleen bij type postgres. Voeg deze naam toe aan databases in de
+      configuratie van de TimescaleDB-app.
+  MB_DB_USER:
+    name: Databasegebruiker
+    description: Alleen bij type postgres.
+  MB_DB_PASS:
+    name: Databasewachtwoord
+    description: Alleen bij type postgres.
+  MB_DB_HOST:
+    name: Databasehost
+    description: >-
+      Alleen bij type postgres. De standaardwaarde is de TimescaleDB-app van
+      Expaso.
+  MB_DB_PORT:
+    name: Databasepoort
+    description: Alleen bij type postgres.
+  MB_DB_FILE:
+    name: Databasebestand
+    description: >-
+      Alleen bij type h2. Waar Metabase zijn bestand opslaat. De standaardwaarde
+      in /backup komt mee in de back-ups van Home Assistant.
+  JAVA_TIMEZONE:
+    name: Tijdzone
+    description: De naam van een tijdzone, zoals Europe/Amsterdam.
+  JAVA_OPTS:
+    name: Java-opties
+    description: >-
+      -Xmx bepaalt hoeveel geheugen Metabase maximaal mag gebruiken,
+      bijvoorbeeld -Xmx2g voor 2 GB. Verlaag het op een apparaat met weinig
+      geheugen.
+network:
+  3000/tcp: Webinterface van Metabase

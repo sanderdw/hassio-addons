@@ -6,7 +6,7 @@ Provide a tool to easily extract, store and visualize data transferred by the DS
 
 Credits to Dennis Siemensma for creating the DSMR Reader software (https://dsmr-reader.readthedocs.io) and Bram van Dartel for creating the underlying container image (https://github.com/xirixiz/dsmr-reader-docker).
 
-[![GitHub Build Status](https://github.com/sanderdw/hassio-addons/workflows/DSMR%20Reader/badge.svg?logo=github)](https://github.com/sanderdw/hassio-addons/actions) ![dsmr-shield] ![addon-shield] ![aarch64-shield] ![amd64-shield] ![armv7-shield]
+[![GitHub Build Status](https://github.com/sanderdw/hassio-addons/workflows/DSMR%20Reader/badge.svg?logo=github)](https://github.com/sanderdw/hassio-addons/actions) ![dsmr-shield] ![addon-shield] ![aarch64-shield] ![amd64-shield]
 
 ![DSMR Reader](https://github.com/sanderdw/hassio-addons/raw/main/images/dsmr_reader.png)
 
@@ -16,32 +16,67 @@ See config instructions here: https://github.com/sanderdw/hassio-addons
 
 ## Configure the app
 
-1. Install HA Addon [PostgresDB (TimescaleDB) by Expaso.](https://community.home-assistant.io/t/home-assistant-app-postgresql-timescaledb/198176)
-2. Add the ```dsmrreader``` db as an exta database entry in the Configuration tab (of the TimescaleDB addon). No need to set it under timescale_enabled as well.
-3. Start TimescaleDB addon to initialize.
-4. Install this addon.
-5. Configure the HA addon settings in the ```Configuration``` tab. Note: if you use the addon as a remote receiver/use the standard webserver or a custom one (like a reverse proxy) you need to open up the port by selecting ```Show disabled ports``` and put the desired port number there.
-6. Start DSMR Reader addon.
-7. In the DSMR Reader UI go to ```Configuratie``` page (wait untill app is initialized)
-8. Login with admin/admin.
-9. Go to ```Datalogger -> Dataloggerconfiguratie``` and specify the correct serial USB port or configure a remote network socket input method (using ser2net).
-10. Go to ```Back-up -> Geavanceerd/Advanced``` and use 1 of below options:
-    1. Local backups: ```/backup/dsmrreader``` as the backup folder (notice the first forward slash). This wil make sure backups are created in the HA "backup" folder just like the HA backup functionality.
-    2. Remote backups:
-       1. First configure Home Assistant [network storage](https://www.home-assistant.io/common-tasks/os/#network-storage) (usage type must be: ```Share```), remember the folder name.
-       2. ```/share/yourfoldername``` as the backup folder (notice the first forward slash).
-11. Choose ```Opslaan/Save``` and you should see telegrams coming in.
-12. _Optional:_ Install the [Home Assistant integration](https://www.home-assistant.io/integrations/dsmr_reader) to get the data also in HA and use it in the new [Energy dashboard.](https://community.home-assistant.io/t/dsmr-reader-app-for-home-assistant/279087/131?u=sanderdw)
+1. Install the [TimescaleDB](https://community.home-assistant.io/t/home-assistant-app-postgresql-timescaledb/198176) app by Expaso: DSMR Reader stores its data there.
+2. In the ```Configuration``` tab of TimescaleDB, add ```dsmrreader``` to ```databases```. It does not need to be in ```timescale_enabled```.
+3. Start TimescaleDB.
+4. Install this app and open its ```Configuration``` tab:
+   - Change **Admin password** (default ```admin```) and **Secret key** (default ```dsmrreader```). The app's log warns while they have their defaults.
+   - The database options match the defaults of TimescaleDB. Change them only when you changed TimescaleDB.
+   - Not using Ingress (**Web access** is ```Standard``` or ```Custom```), or receiving telegrams from a remote datalogger? Open a port for DSMR Reader under ```Network``` (select ```Show disabled ports```).
+5. Start the app. Open DSMR Reader with ```Open web UI```, or switch on ```Show in sidebar```. The first start sets up the database and takes longer.
+6. In DSMR Reader, open ```Configuratie/Configuration```. Through Ingress, Home Assistant admins are logged in already (see [Ingress auto-login](#ingress-auto-login)). Otherwise, log in with the **Admin username** and **Admin password**. The app sets this password at every start.
+7. Go to ```Datalogger -> Dataloggerconfiguratie/Datalogger configuration```. The defaults read a DSMR 4 or 5 meter on serial port ```/dev/ttyUSB0```, so with one USB P1 cable there is often nothing to change. Otherwise:
+   - Another serial port: Home Assistant lists the ports under Settings -> System -> Hardware. A ```/dev/serial/by-id/...``` path stays the same when you plug in other USB devices.
+   - A P1 cable on another device in your network (for example with ser2net): choose the network socket input method.
+
+   Choose ```Opslaan/Save```. The readings then appear on the dashboard.
+8. Go to ```Back-up -> Geavanceerd/Advanced``` and use one of these backup folders:
+   1. Local backups: ```/backup/dsmrreader``` (notice the first forward slash). The backups then end up in Home Assistant's backup folder, next to Home Assistant's own backups.
+   2. Remote backups:
+      1. First configure Home Assistant [network storage](https://www.home-assistant.io/common-tasks/os/#network-storage) (usage type must be ```Share```), and remember the folder name.
+      2. ```/share/yourfoldername``` (notice the first forward slash).
+9. _Optional:_ Get the data in Home Assistant and its [Energy dashboard](https://www.home-assistant.io/docs/energy/) with the DSMR Reader integration: see [Home Assistant integration](#home-assistant-integration) below.
+
+## Ingress auto-login
+
+With **Log in Home Assistant admins automatically** on (the default) and **Web access** set to ```Ingress```, a Home Assistant admin who opens DSMR Reader in Home Assistant is logged in as the **Admin username** without a login page. Home Assistant users who are not admins, and visitors on the app's own port, still get the login page.
+
+- Logging out in DSMR Reader has no effect through Ingress: the next page logs you in again.
+- Switch **Log in Home Assistant admins automatically** off to always log in with the **Admin password**.
+
+## Run modes
+
+**Run mode** decides what the app does:
+
+- ```standalone``` (default): reads the meter, stores the readings and shows the dashboard. It reads the meter as set in step 7; the **Remote datalogger** options are not used.
+- ```server_remote_datalogger```: stores the readings and shows the dashboard, but does not read a meter itself. A datalogger on another device sends the telegrams to DSMR Reader's API. The API is off until you switch it on in DSMR Reader's configuration, where you also find the API key for the datalogger. Open the port from step 4 as well.
+- ```remote_datalogger```: only reads the meter and sends the telegrams to another DSMR Reader, set in **Remote datalogger: DSMR Reader address** and **Remote datalogger: API key**. The other **Remote datalogger** options set how it reads the meter. The [DSMR Datalogger](https://github.com/sanderdw/hassio-addons/tree/main/dsmr_datalogger) app is made for only this.
+
+## Home Assistant integration
+
+The [DSMR Reader integration](https://www.home-assistant.io/integrations/dsmr_reader) reads what DSMR Reader publishes to an MQTT broker. The app can set this up for you:
+
+1. Install and start the [Mosquitto broker](https://my.home-assistant.io/redirect/supervisor_addon/?addon=core_mosquitto) app, and add the MQTT integration that Home Assistant then discovers.
+2. In the ```Configuration``` tab of this app, switch on **Connect to Home Assistant through MQTT** and restart the app.
+3. Home Assistant shows **DSMR Reader** as discovered under Settings -> Devices & services. Select ```Add```.
+
+At every start, with **Connect to Home Assistant through MQTT** on, the app:
+
+- Sets DSMR Reader's MQTT broker to Mosquitto, with the username and password Home Assistant gives the app. A broker you entered in DSMR Reader yourself is kept: the app only sets a broker that nobody set yet, or that it set itself.
+- Switches on the data sources the integration reads: the ```Split topic``` sources for telegrams, day consumption, gas consumption, quarter-hour peak consumption, meter statistics and current month/year totals. It does not change their topics: the integration expects the default ones, and the app's log warns when they were changed.
+
+Another MQTT broker, such as one on a NAS: enter it in DSMR Reader under ```Configuration -> MQTT Broker/connection``` and point Home Assistant's MQTT integration at the same broker. The option then still switches on the data sources.
+
+Switching the option off does not undo what it set up; switch off MQTT in DSMR Reader's configuration if you no longer want it.
 
 Note: Having problems or questions? Please check the community forum first https://community.home-assistant.io/t/dsmr-reader-app-for-home-assistant/279087 before creating an issue in Github.
 
-Note: Need to perform commands on the commandline? After entering the container bash ("```docker exec -it app_0826754b_dsmr_reader bash```") you need to execute this command "```. /cli-helper.sh```" to apply the settings correctly from the addon Configuration tab.
+Note: Need to perform commands on the commandline? After entering the container bash ("```docker exec -it app_0826754b_dsmr_reader bash```") you need to execute this command "```. /cli-helper.sh```" to apply the settings correctly from the app's Configuration tab.
 
 [dsmr-shield]: https://img.shields.io/badge/DSMR%20Reader%20Version-%206.2-purple.svg?style=flat-square
 [addon-shield]: https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fgithub.com%2Fsanderdw%2Fhassio-addons%2Fraw%2Frefs%2Fheads%2Fmain%2Fdsmr_reader%2Fconfig.json&query=version&style=flat-square&label=Addon%20Version
 
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg?style=flat-square
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg?style=flat-square
-[armv7-shield]: https://img.shields.io/badge/armv7-yes-green.svg?style=flat-square
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=for-the-badge
 [forum]: https://community.home-assistant.io/t/dsmr-reader-app-for-home-assistant/279087

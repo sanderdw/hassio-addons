@@ -83,6 +83,7 @@ from `p1Address()` in [lib/vm.mjs](lib/vm.mjs).
 | File | What it covers |
 | --- | --- |
 | [tests/dsmr-reader.test.mjs](tests/dsmr-reader.test.mjs) | The P1 cable on the host, the start, readings in TimescaleDB that equal what the meter sent, pulling the cable out and plugging it back in, and the dashboard through ingress. |
+| [tests/dsmr-reader-mqtt.test.mjs](tests/dsmr-reader-mqtt.test.mjs) | DSMR Reader's `MQTT_HOME_ASSISTANT` option: nothing changes with it off; without Mosquitto only the data sources are switched on; with Mosquitto the broker is set, Home Assistant discovers DSMR Reader and its sensors show what the meter sent; a broker entered by hand is kept. |
 | [tests/dsmr-datalogger.test.mjs](tests/dsmr-datalogger.test.mjs) | Telegrams from the P1 cable and from a network socket, sent to the API of DSMR Reader and stored value for value; pulling the cable out and plugging it back in. |
 | [tests/metabase.test.mjs](tests/metabase.test.mjs) | The start with H2 and with PostgreSQL as the application database, the first-time setup, a question answered from a database in TimescaleDB, and the H2 file surviving a restart. |
 | [tests/voltviz.test.mjs](tests/voltviz.test.mjs) | The page on its own port and through ingress, the Sendspin proxy to Music Assistant, and an empty Sendspin URL. The visualizer itself runs in a browser and is not covered. |
@@ -107,7 +108,8 @@ is the shortest example to copy. The helpers:
 | [lib/timescaledb.mjs](lib/timescaledb.mjs) | `ensureTimescaleDb()`, `psql()`, `recreateDatabase()` |
 | [lib/dsmr-reader.mjs](lib/dsmr-reader.mjs) | DSMR Reader as a server for a datalogger, and comparing its stored readings with the meter |
 | [lib/music-assistant.mjs](lib/music-assistant.mjs) | `ensureMusicAssistant()` |
-| [lib/homeassistant.mjs](lib/homeassistant.mjs) | `openIngress()` to fetch an add-on's pages through ingress, `callWS()` for the WebSocket API |
+| [lib/homeassistant.mjs](lib/homeassistant.mjs) | `openIngress()` to fetch an add-on's pages through ingress, `callWS()` for the WebSocket API, `haApi()` for the REST API, `addDiscoveredIntegration()` and `removeIntegration()` |
+| [lib/mosquitto.mjs](lib/mosquitto.mjs) | `ensureMosquitto()` with Home Assistant's MQTT integration, `removeMosquitto()` |
 
 Test files run one after another, because they share the VM.
 

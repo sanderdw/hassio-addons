@@ -9,15 +9,26 @@ skills in `.claude/skills/` (for example `voltviz-release-update`).
   below, ask once per round ("push and redeploy?") and then run the whole deploy.
 - Create branches with `git switch --no-track -c <branch> origin/main`. A branch created from
   `origin/main` with tracking pushes to `main` on a plain `git push`.
-- Instance details (Home Assistant URL, add-on slugs) are in `CLAUDE.local.md`, which is not in
-  git. Never write a Home Assistant token to a file.
+- For the user's real Home Assistant instance (its URL, the add-on slugs), read `CLAUDE.local.md`
+  when it exists, or ask the user. That file is not in git; save those details there when the user
+  agrees. Never write a Home Assistant token to a file.
+- After changing a workflow in `.github/workflows/`, run `actionlint` (without arguments it checks
+  them all). It also checks the shell in `run:` steps when `shellcheck` is installed. Install both
+  with `brew install actionlint shellcheck` if they are missing.
+- The DSMR Reader, DSMR Datalogger and Metabase workflows build each architecture on its own
+  runner (aarch64 on `ubuntu-24.04-arm`, no QEMU) and push to ghcr.io only. A version branch
+  publishes `<version>`. On `main` a version that already exists is tagged `latest` without a
+  rebuild; a new version is built with both tags. To republish an existing version, rerun the
+  workflow on its version branch.
+- Add-ons support `aarch64` and `amd64` only. The Supervisor logs a warning for `armhf`, `armv7`
+  and `i386` in `config.json`, because Home Assistant no longer supports 32-bit systems.
 
 ## End-to-end tests (local Home Assistant OS)
 
 `e2e/` runs Home Assistant OS in a VM (Docker with KVM) with an emulated smart meter on a USB P1
 cable (`/dev/ttyUSB0`) and builds add-ons from the working tree. Read `e2e/README.md` first.
 
-The VM is separate from the user's real instance in `CLAUDE.local.md`; use it freely. It needs
+The VM is separate from the user's real instance; use it freely. It needs
 Docker with `/dev/kvm` and Node 22 or newer, and nothing else.
 
 ### Test an add-on
@@ -38,10 +49,48 @@ does not need and leaves its own running.
 
 | Add-on | Test file | What it needs in the VM |
 | --- | --- | --- |
-| `dsmr_reader` | `dsmr-reader.test.mjs` | TimescaleDB. |
+| `dsmr_reader` | `dsmr-reader.test.mjs`, and `dsmr-reader-mqtt.test.mjs` for the `MQTT_HOME_ASSISTANT` option | TimescaleDB. The MQTT test removes and installs the Mosquitto broker app and Home Assistant's MQTT integration. |
 | `dsmr_datalogger` | `dsmr-datalogger.test.mjs` | DSMR Reader as its API server (`startDsmrReaderAsServer()` in `e2e/lib/dsmr-reader.mjs`). |
 | `metabase` | `metabase.test.mjs` | TimescaleDB. Its default host port 7778 answers on http://127.0.0.1:17778. It uses 1.3 GB of the VM's 4 GB. |
 | `voltviz` | `voltviz.test.mjs` | Music Assistant (`ensureMusicAssistant()`). The tests give it host port 7777, because its default 8099 is not forwarded. The visualizer in the browser is not covered. |
+
+### Before a release
+
+The release skills run the add-on's test files on the release branch:
+
+- If a test fails, stop: report the failing test and the add-on's log, and do not publish.
+- Read the add-on's and the Supervisor's log (see Read the logs) and report every warning that is
+  not listed there. A new upstream version can add one.
+- If the VM cannot run (no Docker or `/dev/kvm`), say so and ask the user before publishing
+  untested.
+- Put the results in the PR body.
+
+### Read the logs
+
+- An add-on: `./e2e/haos.mjs ha apps logs local_<slug> --lines 2000` (`logs <slug>` follows it).
+- The Supervisor: `./e2e/haos.mjs ha supervisor logs --lines 5000`. It logs add-on problems that
+  the add-on's own log does not show: deprecated `config.json` values, exit codes after a stop,
+  start timeouts.
+- The logs span every test run since the VM started. Compare timestamps with the last
+  `Build local/amd64-addon-<slug>:<version> done` line in the Supervisor log before you blame the
+  current build.
+- Warnings that the tests cause on purpose, or that come from outside this repository:
+  - `No valid ingress session`: the test "refuses a visitor without an ingress session".
+  - `Home Assistant has no MQTT service` from DSMR Reader: the MQTT test starts it without Mosquitto.
+  - `could not open port /dev/ttyUSB0` and DSMR Datalogger exit code 1: the cable was unplugged.
+  - `TimescaleDB did not handle SIGTERM (exit code 143)`: a test stopped the store add-on, which
+    then shows "error".
+  - `No API token provided for /core`: Music Assistant starting.
+  - `Can't update PulseAudio data`: the VM has no sound.
+- Warnings in DSMR Reader's own log that need no fix, from its base image:
+  - `Could not chmod /dev/ttyUSB0 to 666`: the Supervisor mounts `/dev` read-only. The add-on
+    runs as root, so it reads the cable anyway.
+  - `defining user bundles in /etc/s6-overlay/s6-rc.d is deprecated`
+  - `DJANGO_ALLOWED_HOSTS not set, defaulting to '*'`: Ingress needs `*`.
+  - `Default DSMRREADER_ADMIN_PASSWORD detected` and `Default DJANGO_SECRET_KEY detected`: the
+    add-on's default options.
+- To read a base image's own scripts: `docker create --name base <image>`, then
+  `docker cp base:/etc/s6-overlay <dir>` and `docker rm base`.
 
 ### Write a test file
 
@@ -66,8 +115,8 @@ and no packages. The order that works:
    container exits with another code than 0 (Java: 143) or is killed after the stop timeout (137).
 
 The helpers are in `e2e/lib/`: `vm.mjs` (`ssh`, `supervisor`, `waitFor`, `addonUrl`, the P1 cable),
-`addons.mjs`, `homeassistant.mjs` (`openIngress`, `callWS`), `timescaledb.mjs`, `dsmr-reader.mjs`
-and `music-assistant.mjs`.
+`addons.mjs`, `homeassistant.mjs` (`openIngress`, `callWS`, `haApi`, adding a discovered
+integration), `timescaledb.mjs`, `dsmr-reader.mjs`, `music-assistant.mjs` and `mosquitto.mjs`.
 
 ### The smart meter and faults
 

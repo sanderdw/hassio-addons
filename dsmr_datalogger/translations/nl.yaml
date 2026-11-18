@@ -1,0 +1,58 @@
+configuration:
+  DATALOGGER_INPUT_METHOD:
+    name: Invoer
+    description: >-
+      serial: een P1-kabel aan dit apparaat. ipv4: een P1-kabel aan een ander
+      apparaat in je netwerk (bijvoorbeeld met ser2net), ingesteld met
+      netwerkhost en -poort.
+  DATALOGGER_API_HOSTS:
+    name: Adres DSMR Reader
+    description: >-
+      De DSMR Reader die de telegrammen ontvangt, bijvoorbeeld
+      http://192.168.1.10:7777. Zet eerst daar de API aan. Scheid meerdere
+      adressen met komma's.
+  DATALOGGER_API_KEYS:
+    name: API-sleutel
+    description: >-
+      De API-sleutel uit de configuratie van de ontvangende DSMR Reader. Scheid
+      meerdere sleutels met komma's, in dezelfde volgorde als de adressen.
+  DATALOGGER_SERIAL_PORT:
+    name: Seriële poort
+    description: >-
+      Alleen bij invoer serial. Home Assistant toont de poorten onder
+      Instellingen -> Systeem -> Hardware. Een pad /dev/serial/by-id/... blijft
+      hetzelfde als je andere USB-apparaten aansluit.
+  DATALOGGER_SERIAL_BAUDRATE:
+    name: Baudrate
+    description: 115200 voor DSMR 4- en 5-meters, 9600 voor DSMR 2 en 3.
+  DATALOGGER_SERIAL_BYTESIZE:
+    name: Bytegrootte
+    description: 8 voor DSMR 4- en 5-meters, 7 voor DSMR 2 en 3.
+  DATALOGGER_SERIAL_PARITY:
+    name: Pariteit
+    description: N (geen) voor DSMR 4- en 5-meters, E (even) voor DSMR 2 en 3.
+  DATALOGGER_SLEEP:
+    name: Seconden tussen telegrammen
+    description: >-
+      Hoe lang de datalogger na het versturen van een telegram wacht voordat hij
+      het volgende leest.
+  DATALOGGER_NETWORK_HOST:
+    name: Netwerkhost
+    description: Alleen bij invoer ipv4. Het adres van het apparaat met de P1-kabel.
+  DATALOGGER_NETWORK_PORT:
+    name: Netwerkpoort
+    description: Alleen bij invoer ipv4. De poort waarop dat apparaat de telegrammen verstuurt.
+  DATALOGGER_DEBUG_LOGGING:
+    name: Uitgebreid loggen
+    description: Logt elk telegram en elk antwoord van DSMR Reader.
+  DATALOGGER_MIN_SLEEP_FOR_RECONNECT:
+    name: Opnieuw verbinden vanaf (seconden)
+    description: >-
+      Als de seconden tussen telegrammen dit aantal of meer zijn, maakt de
+      datalogger voor elk telegram opnieuw verbinding met de meter, in plaats
+      van de verbinding open te houden.
+  DATALOGGER_TIMEOUT:
+    name: Time-out (seconden)
+    description: >-
+      Hoe lang de datalogger wacht op een telegram van de meter, en op het
+      antwoord van DSMR Reader.

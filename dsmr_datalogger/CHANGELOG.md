@@ -2,6 +2,8 @@
 
 ## 1.2.2
 
+- The Configuration tab shows readable names and explanations for every option, in English and Dutch. Your settings stay as they are.
+- Drop support for 32-bit systems (`armhf`, `armv7`, `i386`): Home Assistant no longer supports them. The app runs on 64-bit systems (`aarch64`, `amd64`) only.
 - Fix the datalogger not starting when the update check server does not answer: it waited about two minutes and then stopped. The check now gives up after 10 seconds and the datalogger starts anyway.
 - The datalogger now starts again by itself after a failure, such as the P1 cable being pulled out or the meter not sending for a while. Before, the app stopped and stayed stopped. It tries again every 10 seconds; the reason is in the log.
 

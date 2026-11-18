@@ -1,9 +1,9 @@
 {
   "name": "DSMR Reader",
-  "version": "2.2.2",
+  "version": "2.3.0",
   "slug": "dsmr_reader",
   "description": "Used for reading the smart meter DSMR P1 port (https://dsmr-reader.readthedocs.io)",
-  "arch": ["armv7", "aarch64", "amd64"],
+  "arch": ["aarch64", "amd64"],
   "image": "ghcr.io/sanderdw/hassio-addons/ha-dsmr-reader-{arch}",
   "url": "https://github.com/sanderdw/hassio-addons",
   "startup": "application",
@@ -14,6 +14,7 @@
   "watchdog": "http://[HOST]:[PORT:80]/healthcheck",
   "panel_icon": "mdi:leaf-circle-outline",
   "hassio_api": true,
+  "services": ["mqtt:want"],
   "init": false,
   "map": [
     {
@@ -32,7 +33,9 @@
     "80/tcp": "The API and/or UI port (UI only when Ingress is disabled)"
   },
   "options": {
+    "MQTT_HOME_ASSISTANT": false,
     "WEBSERVER": "Ingress",
+    "INGRESS_AUTO_LOGIN": true,
     "DSMRREADER_ADMIN_USER": "admin",
     "DSMRREADER_ADMIN_PASSWORD": "admin",
     "DJANGO_DATABASE_NAME": "dsmrreader",
@@ -58,7 +61,9 @@
     "DJANGO_CSRF_TRUSTED_ORIGINS": "https://my-home-assistant-url.duckdns.org"
   },
   "schema": {
+    "MQTT_HOME_ASSISTANT": "bool",
     "WEBSERVER": "list(Ingress|Standard|Custom)",
+    "INGRESS_AUTO_LOGIN": "bool",
     "DSMRREADER_ADMIN_USER": "str",
     "DSMRREADER_ADMIN_PASSWORD": "password",
     "DJANGO_DATABASE_NAME": "str",

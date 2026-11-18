@@ -99,6 +99,19 @@ function _require_port {
   fi
 }
 
+# Logs Home Assistant admins in to DSMR Reader as DSMRREADER_ADMIN_USER when they open it through Ingress.
+# Only the Ingress server of nginx sends the token, so the X-Remote-User-* headers count only there.
+function _configure_ingress_auto_login {
+  local token=''
+  if bashio::config.true 'INGRESS_AUTO_LOGIN'; then
+    token="$(od -An -N32 -tx1 /dev/urandom | tr -d ' \n')"
+    printf '%s' "${token}" > /run/s6/container_environment/DSMRREADER_ADDON_INGRESS_TOKEN
+    printf '%s' 'dsmrreader.config.addon' > /run/s6/container_environment/DJANGO_SETTINGS_MODULE
+    bashio::log.blue "Home Assistant DSMR Reader App - Ingress auto-login enabled for Home Assistant admins"
+  fi
+  sed -i "s#%%ingress_token%%#${token}#g" /etc/nginx/conf.d/ingress.conf
+}
+
 function _configure_webserver {
   local ip_address
   ip_address="$(bashio::network.ipv4_address)"
@@ -119,6 +132,8 @@ function _configure_webserver {
       printf '%s' "${ingress_entry}/static/" > /run/s6/container_environment/DJANGO_STATIC_URL
       printf '%s' "${ingress_entry}/" > /run/s6/container_environment/DJANGO_FORCE_SCRIPT_NAME
       printf '%s' 'True' > /run/s6/container_environment/DJANGO_USE_X_FORWARDED_HOST
+
+      _configure_ingress_auto_login
 
       # Patch resolver to match DNS
       local dns_host

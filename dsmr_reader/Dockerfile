@@ -19,7 +19,13 @@ RUN \
 
 # HOMEASSISTANT app OVERRIDES
 COPY rootfs /
-RUN chmod a+x /etc/s6-overlay/s6-rc.d/set-hassio-vars/run
+RUN chmod a+x /etc/s6-overlay/s6-rc.d/set-hassio-vars/run /etc/s6-overlay/s6-rc.d/init-mqtt-home-assistant/run
+
+# The backend publishes to MQTT, so it starts after init-mqtt-home-assistant has set MQTT up.
+# The base image's file has no newline at its end.
+RUN dependencies=/etc/s6-overlay/s6-rc.d/svc-dsmr-backend/dependencies \
+    && test -f "${dependencies}" \
+    && printf '\n%s\n' init-mqtt-home-assistant >> "${dependencies}"
 
 ENV DUID=0
 ENV DGID=0

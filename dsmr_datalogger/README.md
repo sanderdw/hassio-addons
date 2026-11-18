@@ -4,14 +4,11 @@
 
 The datalogger only option of DSMR (https://dsmr-reader.readthedocs.io). This will install a datalogger that will forward telegrams to another fully installed instance of DSMR-reader, using its API.
 
-[![GitHub Build Status](https://github.com/sanderdw/hassio-addons/workflows/DSMR%20Datalogger/badge.svg?logo=github)](https://github.com/sanderdw/hassio-addons/actions) ![addon-shield] ![Supports aarch64 Architecture][aarch64-shield] ![Supports amd64 Architecture][amd64-shield] ![Supports armhf Architecture][armhf-shield] ![Supports armv7 Architecture][armv7-shield] ![Supports i386 Architecture][i386-shield]
+[![GitHub Build Status](https://github.com/sanderdw/hassio-addons/workflows/DSMR%20Datalogger/badge.svg?logo=github)](https://github.com/sanderdw/hassio-addons/actions) ![addon-shield] ![Supports aarch64 Architecture][aarch64-shield] ![Supports amd64 Architecture][amd64-shield]
 
 [addon-shield]: https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fgithub.com%2Fsanderdw%2Fhassio-addons%2Fraw%2Frefs%2Fheads%2Fmain%2Fdsmr_datalogger%2Fconfig.json&query=version&style=flat-square&label=Addon%20Version
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg?style=flat-square
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg?style=flat-square
-[armhf-shield]: https://img.shields.io/badge/armhf-yes-green.svg?style=flat-square
-[armv7-shield]: https://img.shields.io/badge/armv7-yes-green.svg?style=flat-square
-[i386-shield]: https://img.shields.io/badge/i386-yes-green.svg?style=flat-square
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=for-the-badge
 [forum]: https://community.home-assistant.io/t/dsmr-datalogger-add-on-for-home-assistant/181123
 
@@ -31,14 +28,17 @@ If you're using Home Assistant you may find the correct value for this on the
 `Supervisor -> System -> Host system -> Hardware` page.
 
 1. When updated, please reset configuration to it's default first ("RESET TO DEFAULTS" on the Configuration tab after installing/updating).
-2. Replace `/dev/ttyUSBX` in the `DATALOGGER_SERIAL_PORT` option in the app configuration and specify
+2. Replace `/dev/ttyUSBX` in the **Serial port** option in the app configuration and specify
    the device name.
-3. Specifiy the correct `http(s)://<YOUR_DSMR_HOST>:<PORT>` url in the `DATALOGGER_API_HOSTS` option in the app configuration.
-4. Replace `<YOUR_API_KEY>` in the `DATALOGGER_API_KEYS` option to your API key (see https://dsmr-reader.readthedocs.io/en/v4/api.html for help).
+3. Specifiy the correct `http(s)://<YOUR_DSMR_HOST>:<PORT>` url in the **DSMR Reader address** option in the app configuration.
+4. Replace `<YOUR_API_KEY>` in the **API key** option to your API key (see https://dsmr-reader.readthedocs.io/en/v4/api.html for help).
 5. Click on "SAVE" to save the app configuration.
 6. Start the app.
 
 ### Note for DSMR v2/3 try to use this configuration:
+
+Set **Baud rate** to 9600, **Byte size** to 7 and **Parity** to E. In YAML mode:
+
 ```
 DATALOGGER_SERIAL_BAUDRATE: '9600'
 DATALOGGER_SERIAL_BYTESIZE: '7'

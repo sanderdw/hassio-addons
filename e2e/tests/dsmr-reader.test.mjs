@@ -32,6 +32,7 @@ import {
   REPO_DIR,
   plugP1Cable,
   requireVm,
+  addonUrl,
   sleep,
   ssh,
   supervisor,
@@ -219,6 +220,69 @@ describe('DSMR Reader add-on', () => {
     });
   });
 
+  describe('Ingress auto-login', () => {
+    let info;
+    let ingress;
+    /** Requests a page of the web interface inside the container, as nginx's Ingress server does. */
+    const fromInside = async (pathname, headers) => {
+      const args = Object.entries(headers).map(([name, value]) => `-H '${name}: ${value}'`).join(' ');
+      const { stdout } = await addonExec(
+        SLUG,
+        `token="$(cat /run/s6/container_environment/DSMRREADER_ADDON_INGRESS_TOKEN)"; ` +
+          `curl -s -o /dev/null -w '%{http_code}' --unix-socket /run/gunicorn/dsmr_webinterface.socket ` +
+          `-H "X-Dsmr-Addon-Ingress-Token: \${token}" ${args} 'http://localhost${pathname}'`,
+      );
+      return Number(stdout.trim());
+    };
+    const sessionCookie = (response) => response.headers.getSetCookie().find((cookie) => cookie.startsWith('sessionid='));
+
+    before(async () => {
+      info = await addonInfo(SLUG);
+      ingress = await openIngress(info.ingress_url);
+    });
+
+    it('logs a Home Assistant admin in to the configuration', async () => {
+      const response = await ingress('admin/', { redirect: 'manual' });
+      assert.equal(
+        response.status,
+        200,
+        `expected the admin page, got ${response.status} ${response.headers.get('location') ?? ''}\n\n` +
+          `Add-on log:\n${await addonLogs(SLUG)}`,
+      );
+      assert.match(await response.text(), /logout/i);
+    });
+
+    it('keeps the login in a session', async () => {
+      const first = await ingress('admin/', { redirect: 'manual' });
+      const cookie = sessionCookie(first);
+      assert.ok(cookie, 'the first page sets a session cookie');
+      const second = await ingress('admin/', { redirect: 'manual', headers: { Cookie: cookie.split(';')[0] } });
+      assert.equal(second.status, 200);
+      assert.equal(sessionCookie(second), undefined, 'the second page keeps the session');
+    });
+
+    it("shows the login page on the app's own port, even with Home Assistant's user headers", async () => {
+      const response = await fetch(`${addonUrl(HOST_PORT)}/admin/`, {
+        redirect: 'manual',
+        headers: {
+          'X-Remote-User-Id': 'abc',
+          'X-Remote-User-Name': 'e2e',
+          'X-Remote-User-Groups': 'system-admin',
+          'X-Dsmr-Addon-Ingress-Token': '',
+        },
+      });
+      assert.equal(response.status, 302);
+      assert.match(response.headers.get('location'), /\/admin\/login\//);
+    });
+
+    it('logs in only Home Assistant admins', async () => {
+      const user = { 'X-Remote-User-Id': 'abc', 'X-Remote-User-Name': 'someone' };
+      assert.equal(await fromInside('/admin/', { ...user, 'X-Remote-User-Groups': 'system-admin' }), 200);
+      assert.equal(await fromInside('/admin/', { ...user, 'X-Remote-User-Groups': 'system-users' }), 302);
+      assert.equal(await fromInside('/admin/', user), 302);
+    });
+  });
+
   it('stops without an error', async () => {
     assert.equal(await stateAfterStop(SLUG), 'stopped');
   });
@@ -243,6 +307,20 @@ describe('DSMR Reader add-on', () => {
       const seconds = Math.round((Date.now() - answeredAt) / 1000);
       await start;
       assert.ok(seconds <= 15, `the Supervisor reported the add-on as started ${seconds} seconds after it answered`);
+    });
+  });
+
+  describe('with INGRESS_AUTO_LOGIN off', () => {
+    after(() => configureAddon(SLUG, { options: config.options }));
+
+    it('shows the login page through Ingress', async () => {
+      await configureAddon(SLUG, { options: { ...config.options, INGRESS_AUTO_LOGIN: false } });
+      await secondsToStart(SLUG, dsmrReaderIsHealthy, { timeout: 600 });
+      const info = await addonInfo(SLUG);
+      const ingress = await openIngress(info.ingress_url);
+      const response = await ingress('admin/', { redirect: 'manual' });
+      assert.equal(response.status, 302);
+      assert.match(response.headers.get('location'), /\/admin\/login\//);
     });
   });
 

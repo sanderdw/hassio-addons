@@ -1,0 +1,40 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+#
+# With MQTT_HOME_ASSISTANT on, sets up DSMR Reader's MQTT for Home Assistant's DSMR Reader
+# integration: the broker from Home Assistant's MQTT service (the Mosquitto broker app) and the
+# split-topic data sources the integration reads. It runs after the database is migrated and
+# before the backend, which publishes to MQTT. See mqtt-home-assistant.py for what it changes.
+
+name='init-mqtt-home-assistant'
+
+# The base image keeps the container's environment (S6_KEEP_ENV), so with-contenv does not load
+# the settings that set-hassio-vars wrote. The base image's own services load them like this.
+# shellcheck source=/dev/null
+. /usr/local/lib/s6-functions.sh
+_load_s6_vars
+
+if ! bashio::config.true 'MQTT_HOME_ASSISTANT'; then
+  exit 0
+fi
+
+if [[ "$(bashio::config 'CONTAINER_RUN_MODE')" == 'remote_datalogger' ]]; then
+  echo "[ INFO ] ${name} | Skipped: a remote datalogger does not publish to MQTT"
+  exit 0
+fi
+
+# Without the service, bashio logs an API error; the script below explains it instead.
+if bashio::services.available 'mqtt' 2>/dev/null; then
+  MQTT_HOST="$(bashio::services 'mqtt' 'host')"
+  MQTT_PORT="$(bashio::services 'mqtt' 'port')"
+  MQTT_USERNAME="$(bashio::services 'mqtt' 'username')"
+  MQTT_PASSWORD="$(bashio::services 'mqtt' 'password')"
+  MQTT_SSL="$(bashio::services 'mqtt' 'ssl')"
+  export MQTT_HOST MQTT_PORT MQTT_USERNAME MQTT_PASSWORD MQTT_SSL
+fi
+
+# DSMR Reader starts without MQTT rather than not at all.
+if ! (cd /app && /opt/venv/bin/python manage.py shell --verbosity 0 --command "$(cat /usr/local/lib/mqtt-home-assistant.py)"); then
+  echo "[ WARN ] ${name} | Could not set up MQTT for Home Assistant, see the error above"
+fi
+exit 0

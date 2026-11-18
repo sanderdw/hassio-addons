@@ -3,7 +3,7 @@
   "version": "1.2.2",
   "slug": "dsmr_datalogger",
   "description": "The datalogger only option of DSMR (https://dsmr-reader.readthedocs.io)",
-  "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
+  "arch": ["aarch64", "amd64"],
   "image": "ghcr.io/sanderdw/hassio-addons/ha-dsmr-datalogger-{arch}",
   "url": "https://github.com/sanderdw/hassio-addons",
   "startup": "application",
