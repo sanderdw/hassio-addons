@@ -1,0 +1,38 @@
+// Served on Home Assistant ingress only (see ingress.conf.template). run.sh fills in %%ingress_entry%%.
+//
+// Metabase loads almost everything relative to <base href>, but two things start at "/" instead:
+// its Lato fonts (from the path of its Site URL setting) and the tiles of pin maps. Below ingress
+// "/" is Home Assistant, so point those two below the ingress path. Nothing else is changed.
+(function () {
+  'use strict';
+  var root = '%%ingress_entry%%/';
+  var rootRelative = /^\/(app\/fonts|api\/tiles)\//;
+  var fix = function (url) {
+    return typeof url === 'string' && rootRelative.test(url) ? root + url.slice(1) : url;
+  };
+
+  // The fonts' @font-face rules (Emotion inserts them with insertRule).
+  var insertRule = CSSStyleSheet.prototype.insertRule;
+  CSSStyleSheet.prototype.insertRule = function (rule, index) {
+    if (typeof rule === 'string') {
+      rule = rule.replace(/url\((["']?)\/app\/fonts\//g, 'url($1' + root + 'app/fonts/');
+    }
+    return insertRule.call(this, rule, index);
+  };
+
+  // The pin map's tiles (Leaflet sets img.src).
+  var src = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
+  Object.defineProperty(HTMLImageElement.prototype, 'src', {
+    configurable: true,
+    enumerable: src.enumerable,
+    get: src.get,
+    set: function (value) {
+      src.set.call(this, fix(value));
+    },
+  });
+  var setAttribute = Element.prototype.setAttribute;
+  Element.prototype.setAttribute = function (name, value) {
+    if (this instanceof HTMLImageElement && String(name).toLowerCase() === 'src') value = fix(value);
+    return setAttribute.call(this, name, value);
+  };
+})();

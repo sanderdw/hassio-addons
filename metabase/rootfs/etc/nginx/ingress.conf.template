@@ -1,0 +1,53 @@
+# run.sh writes this to /etc/nginx/conf.d/ingress.conf with %%ingress_entry%% filled in:
+# the path below which Home Assistant serves the app, such as /api/hassio_ingress/<token>.
+server {
+    listen 8099;
+    allow  172.30.32.2;
+    deny   all;
+
+    # Uploads of CSV files, and long questions and exports.
+    client_max_body_size 0;
+    proxy_request_buffering off;
+    proxy_read_timeout 1h;
+    proxy_send_timeout 1h;
+
+    location = /ingress.js {
+        alias /etc/nginx/conf.d/ingress.js;
+        default_type application/javascript;
+        add_header Cache-Control no-cache;
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto;
+
+        # Metabase loads everything relative to <base href>, which is the path of its site URL
+        # ("/" when that has no path). Point it at the ingress path instead, and load ingress.js
+        # first for the two links that do not use <base href>. sub_filter needs the page
+        # uncompressed.
+        proxy_set_header Accept-Encoding "";
+        sub_filter '<base href="/"' '<script src="%%ingress_entry%%/ingress.js"></script><base href="%%ingress_entry%%/"';
+        sub_filter '<meta name="base-href" content="/"' '<meta name="base-href" content="%%ingress_entry%%/"';
+
+        # In a frame, Metabase's frontend says it is embedded, and Metabase then gives it a session
+        # for frames on other sites: one that needs an anti-CSRF header on every request. Images
+        # cannot send that header, so the tiles of pin maps failed. Home Assistant's frame has the
+        # same origin, so use the normal session (SameSite=Lax), as on Metabase's own port.
+        proxy_set_header X-Metabase-Embedded "";
+
+        # Redirects and the session cookie stay below the ingress path.
+        proxy_redirect / %%ingress_entry%%/;
+        proxy_cookie_path / %%ingress_entry%%/;
+
+        # Allow Home Assistant's frame (see the map in nginx.conf).
+        proxy_hide_header Content-Security-Policy;
+        proxy_hide_header X-Frame-Options;
+        add_header Content-Security-Policy $content_security_policy always;
+        add_header X-Frame-Options SAMEORIGIN always;
+    }
+}

@@ -1,6 +1,6 @@
 // Metabase, end to end: the add-on built from the working tree, with its own H2 database and
 // with PostgreSQL (the TimescaleDB add-on) as its application database, answering a question
-// from a database in TimescaleDB.
+// from a database in TimescaleDB, on its own port and through Home Assistant ingress.
 //
 // Each run reinstalls the add-on and removes its H2 file and its `metabase` database.
 import assert from 'node:assert/strict';
@@ -21,8 +21,9 @@ import {
   uninstallAddon,
   waitForSupervisor,
 } from '../lib/addons.mjs';
+import { openIngress } from '../lib/homeassistant.mjs';
 import { TIMESCALEDB, ensureTimescaleDb, psql, recreateDatabase } from '../lib/timescaledb.mjs';
-import { REPO_DIR, addonUrl, requireVm, ssh, waitFor, withServerUnreachable } from '../lib/vm.mjs';
+import { HA_URL, REPO_DIR, addonUrl, requireVm, ssh, waitFor, withServerUnreachable } from '../lib/vm.mjs';
 
 const ADDON_DIR = 'metabase';
 const SLUG = 'local_metabase';
@@ -163,6 +164,84 @@ describe('Metabase add-on', () => {
       [1, 1.5],
       [2, 2.25],
     ]);
+  });
+
+  describe('through Home Assistant ingress', () => {
+    let info;
+    let ingress;
+
+    before(async () => {
+      info = await addonInfo(SLUG);
+      ingress = await openIngress(info.ingress_url);
+    });
+
+    it('refuses a visitor without an ingress session', async () => {
+      const response = await fetch(`${HA_URL}${info.ingress_url}`);
+      assert.equal(response.status, 401);
+    });
+
+    it('serves the app with links below the ingress path', async () => {
+      const response = await ingress();
+      assert.equal(response.status, 200, await addonLogs(SLUG));
+      const html = await response.text();
+      assert.ok(html.includes(`<base href="${info.ingress_entry}/"`), 'the page loads everything below the ingress path');
+      assert.ok(html.includes(`<meta name="base-href" content="${info.ingress_entry}/"`));
+
+      const links = [...html.matchAll(/(?:src|href)="(\/[^"]*)"/g)].map((match) => match[1]);
+      const outside = links.filter((link) => !link.startsWith(`${info.ingress_entry}/`));
+      assert.deepEqual(outside, [], 'no link leaves the ingress path');
+
+      // ingress.js points the fonts and the pin map's tiles below the ingress path; it is only
+      // checked here, in a browser it rewrites what Metabase's scripts build at run time.
+      const shim = await ingress('ingress.js');
+      assert.equal(shim.status, 200);
+      assert.match(shim.headers.get('content-type'), /javascript/);
+      assert.ok((await shim.text()).includes(`'${info.ingress_entry}/'`), 'ingress.js knows the ingress path');
+      assert.ok(html.indexOf('ingress.js') < html.indexOf('<base '), 'ingress.js loads before the app');
+
+      const script = html.match(/<script[^>]+src="(app\/[^"]+\.js)"/)?.[1];
+      assert.ok(script, 'the page loads a script');
+      const asset = await ingress(script);
+      assert.equal(asset.status, 200, script);
+      assert.match(asset.headers.get('content-type'), /javascript/);
+    });
+
+    it("lets Home Assistant show it in a frame, and only Home Assistant's origin", async () => {
+      const response = await ingress();
+      const policy = response.headers.get('content-security-policy');
+      assert.match(policy, /frame-ancestors 'self'/);
+      assert.doesNotMatch(policy, /frame-ancestors 'none'/);
+      assert.match(policy, /script-src /, "the rest of Metabase's policy stays");
+      assert.equal(response.headers.get('x-frame-options'), 'SAMEORIGIN');
+    });
+
+    it('logs in with a session cookie for the ingress path only', async (t) => {
+      if (!session) return t.skip('the setup did not complete');
+      // In Home Assistant's frame, Metabase's frontend sends X-Metabase-Embedded. The session
+      // must still be a normal one, which images (the pin map's tiles) can use without the
+      // anti-CSRF header of an embedded session.
+      const login = await ingress('api/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Metabase-Embedded': 'true' },
+        body: JSON.stringify({ username: ADMIN.email, password: ADMIN.password }),
+      });
+      assert.equal(login.status, 200, (await login.text()).slice(0, 300));
+      const cookie = login.headers.getSetCookie().find((c) => c.startsWith('metabase.SESSION='));
+      assert.ok(cookie, 'Metabase sets its normal session cookie, not metabase.EMBEDDED_SESSION');
+      assert.equal(login.headers.get('x-metabase-anti-csrf-token'), null);
+      assert.match(cookie, new RegExp(`Path=${info.ingress_entry}/(;|$)`, 'i'));
+
+      const user = await ingress('api/user/current', { headers: { Cookie: cookie.split(';')[0] } });
+      assert.equal(user.status, 200);
+      assert.equal((await user.json()).email, ADMIN.email);
+    });
+
+    it('leaves its own port as it was', async () => {
+      const response = await fetch(`${METABASE_URL}/`);
+      const html = await response.text();
+      assert.ok(html.includes('<base href="/"'), 'the page on its own port loads from /');
+      assert.match(response.headers.get('content-security-policy'), /frame-ancestors 'none'/);
+    });
   });
 
   it('keeps its H2 database in the backup folder across a restart', async (t) => {

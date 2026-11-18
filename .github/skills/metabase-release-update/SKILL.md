@@ -95,6 +95,10 @@ Provide:
      ./e2e/haos.mjs up
      ./e2e/haos.mjs test e2e/tests/metabase.test.mjs
      ```
+   - The test also checks ingress over HTTP. Then check the fonts and the pin map through ingress
+     in a browser, as described under "Metabase through ingress" in `AGENTS.md`. A new Metabase
+     version can change `index.html` (the `<base href>` that nginx rewrites) or the paths that
+     `metabase/rootfs/etc/nginx/ingress.js.template` corrects.
    - Then follow "Before a release" under End-to-end tests in `AGENTS.md`.
    - For a CI-only update the image does not change: skip the test and say so.
 

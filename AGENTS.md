@@ -51,7 +51,7 @@ does not need and leaves its own running.
 | --- | --- | --- |
 | `dsmr_reader` | `dsmr-reader.test.mjs`, and `dsmr-reader-mqtt.test.mjs` for the `MQTT_HOME_ASSISTANT` option | TimescaleDB. The MQTT test removes and installs the Mosquitto broker app and Home Assistant's MQTT integration. |
 | `dsmr_datalogger` | `dsmr-datalogger.test.mjs` | DSMR Reader as its API server (`startDsmrReaderAsServer()` in `e2e/lib/dsmr-reader.mjs`). |
-| `metabase` | `metabase.test.mjs` | TimescaleDB. Its default host port 7778 answers on http://127.0.0.1:17778. It uses 1.3 GB of the VM's 4 GB. |
+| `metabase` | `metabase.test.mjs` | TimescaleDB. Its default host port 7778 answers on http://127.0.0.1:17778, ingress at http://127.0.0.1:18123/app/local_metabase. It uses 1.3 GB of the VM's 4 GB. The fonts and the pin map through ingress need a browser check (see Metabase below). |
 | `voltviz` | `voltviz.test.mjs` | Music Assistant (`ensureMusicAssistant()`). The tests give it host port 7777, because its default 8099 is not forwarded. The visualizer in the browser is not covered. |
 
 ### Before a release
@@ -158,6 +158,26 @@ integration), `timescaledb.mjs`, `dsmr-reader.mjs`, `music-assistant.mjs` and `m
   back. Set it to an empty string instead (VoltViz's `SENDSPIN_URL`).
 - `newestReadingAge()` and other database checks need the add-on's tables: wait for the add-on to
   be ready before the first query.
+
+## Metabase through ingress
+
+`metabase/rootfs/etc/nginx/` serves Metabase on ingress port 8099; Metabase's own port 3000 is
+not changed. nginx rewrites `<base href>`, allows Home Assistant's frame, keeps the session
+cookie below the ingress path and drops `X-Metabase-Embedded`: in a frame Metabase otherwise
+makes a session for frames on other sites, which refuses requests without an anti-CSRF header,
+such as the `<img>` tiles of pin maps. `ingress.js` points the two links that ignore
+`<base href>` below the ingress path: the Lato fonts (`/app/fonts/`) and the pin-map tiles
+(`/api/tiles/`). Do not set `MB_SITE_URL`: its path would apply to port 3000 as well.
+
+After a new Metabase version, check in the chrome-devtools browser: open Metabase in Home
+Assistant (http://127.0.0.1:18123/app/local_metabase, Metabase login `e2e@example.com`,
+`e2e-Password-1` after the test), open the x-ray "A look at Accounts" of the sample database and
+check that the Lato fonts and the pin map "By coordinates" load, and that no request leaves the
+ingress path. The `onerror` Content-Security-Policy errors in the console come from Metabase
+itself; they appear on port 7778 too.
+
+Browsers keep cookies per host, not per port: a login on http://127.0.0.1:17778 is also sent to
+ingress on port 18123. Use a separate browser context for each, or the result is mixed.
 
 ## VoltViz: where things live
 

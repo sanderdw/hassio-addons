@@ -30,7 +30,23 @@ function _hass {
   export JAVA_TIMEZONE=$(bashio::config 'JAVA_TIMEZONE')
   export JAVA_OPTS=$(bashio::config 'JAVA_OPTS')
   export MB_CHECK_FOR_UPDATES="false"
+  _ingress
   _info "Metabase started"
+}
+
+# Serves Metabase below Home Assistant's ingress path on port 8099 (nginx, rootfs/etc/nginx).
+# Port 3000 stays Metabase itself. MB_SITE_URL must stay unset: its path would apply to port 3000 too.
+function _ingress {
+  local ingress_entry
+  ingress_entry=$(bashio::addon.ingress_entry)
+  mkdir -p /etc/nginx/conf.d
+  sed "s#%%ingress_entry%%#${ingress_entry}#g" /etc/nginx/ingress.conf.template > /etc/nginx/conf.d/ingress.conf
+  sed "s#%%ingress_entry%%#${ingress_entry}#g" /etc/nginx/ingress.js.template > /etc/nginx/conf.d/ingress.js
+  if nginx; then
+    _info "Ingress ready at ${ingress_entry}"
+  else
+    bashio::log.red "Home Assistant Metabase Add-on - Ingress could not start, use port 3000 instead"
+  fi
 }
 
 #---------------------------------------------------------------------------------------------------------------------------

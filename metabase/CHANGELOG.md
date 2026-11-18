@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.6.0
+
+- Open Metabase in Home Assistant: the app now supports ingress. Turn on "Show in sidebar" on the app's Info tab to open Metabase from the sidebar. Port 7778 keeps working as before.
+- You log in to Metabase once in Home Assistant, separately from port 7778. Metabase cannot use your Home Assistant login.
+- The README is rewritten: installing, the two kinds of application database, opening Metabase, adding Home Assistant's and DSMR Reader's data, and every option.
+
 ## 1.5.1
 
 - The Configuration tab shows readable names and explanations for every option, in English and Dutch. Your settings stay as they are.

@@ -40,4 +40,4 @@ configuration:
       bijvoorbeeld -Xmx2g voor 2 GB. Verlaag het op een apparaat met weinig
       geheugen.
 network:
-  3000/tcp: Webinterface van Metabase
+  3000/tcp: Webinterface van Metabase, zonder Home Assistant
