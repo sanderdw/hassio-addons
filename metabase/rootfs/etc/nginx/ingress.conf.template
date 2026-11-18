@@ -11,6 +11,16 @@ server {
     proxy_read_timeout 1h;
     proxy_send_timeout 1h;
 
+    # Until Metabase answers (Java takes a minute or more), show a page that reloads itself
+    # instead of nginx's "502 Bad Gateway".
+    error_page 502 504 =503 /starting.html;
+    location = /starting.html {
+        internal;
+        root /etc/nginx;
+        add_header Cache-Control no-store always;
+        add_header Retry-After 5 always;
+    }
+
     location = /ingress.js {
         alias /etc/nginx/conf.d/ingress.js;
         default_type application/javascript;

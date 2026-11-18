@@ -169,6 +169,12 @@ such as the `<img>` tiles of pin maps. `ingress.js` points the two links that ig
 `<base href>` below the ingress path: the Lato fonts (`/app/fonts/`) and the pin-map tiles
 (`/api/tiles/`). Do not set `MB_SITE_URL`: its path would apply to port 3000 as well.
 
+A Docker health check on `/api/health` keeps the app in state `startup` until Metabase answers,
+so Home Assistant shows "Open web UI" only then (it needs state `started`). The Supervisor's
+start request waits for that check, so time the add-on's own script from Docker's log
+timestamps, not from the start request. Until port 3000 answers, nginx shows
+`starting.html` (status 503, reloads itself) instead of "502 Bad Gateway".
+
 After a new Metabase version, check in the chrome-devtools browser: open Metabase in Home
 Assistant (http://127.0.0.1:18123/app/local_metabase, Metabase login `e2e@example.com`,
 `e2e-Password-1` after the test), open the x-ray "A look at Accounts" of the sample database and

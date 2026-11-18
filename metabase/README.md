@@ -34,10 +34,10 @@ Metabase stores its questions, dashboards and users in an application database. 
 
 ## Open Metabase
 
-1. Start the app. The first start takes a few minutes, longer on a Raspberry Pi. The app's Log
-   tab shows when Metabase is ready.
-2. Click **Open web UI** on the app's Info tab. Turn on **Show in sidebar** there to open Metabase
-   from Home Assistant's sidebar.
+1. Start the app. The first start takes a few minutes, longer on a Raspberry Pi. Home Assistant
+   shows the app as starting until Metabase is ready.
+2. Click **Open web UI** on the app's Info tab; it appears once Metabase is ready. Turn on
+   **Show in sidebar** there to open Metabase from Home Assistant's sidebar.
 3. Walk through Metabase's setup, which creates your administrator account.
 
 Metabase also answers on port 7778 (http://homeassistant.local:7778), without Home Assistant.
@@ -72,6 +72,7 @@ In Metabase, go to Admin settings, Databases, and add a database:
 | Database name, user, password, host, port | Type `postgres` only. The defaults are those of the TimescaleDB app. |
 | Time zone | The time zone Metabase works in, such as `Europe/Amsterdam`. |
 | Java options | `-Xmx` sets the most memory Metabase may use; the default `-Xmx2g` allows 2 GB. Lower it on a device with little memory. |
+| AI features | Metabot and Metabase's other AI features (on by default). They need an AI provider, which you set up in Metabase's admin settings; without one, Metabase logs warnings about a missing LLM provider. Turn this off to switch AI off completely. |
 
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg?style=flat-square
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg?style=flat-square

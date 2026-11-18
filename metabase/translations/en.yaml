@@ -36,5 +36,10 @@ configuration:
     description: >-
       -Xmx sets the most memory Metabase may use, for example -Xmx2g for 2 GB.
       Lower it on a device with little memory.
+  MB_AI_FEATURES_ENABLED:
+    name: AI features
+    description: >-
+      Metabot and Metabase's other AI features. They need an AI provider, which
+      you set up in Metabase's admin settings. Turn this off to switch them off.
 network:
   3000/tcp: Metabase web UI, without Home Assistant
