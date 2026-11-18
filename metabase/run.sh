@@ -11,6 +11,8 @@ function _info() { printf "\\r[ \\033[00;34mINFO\\033[0m ] %s\\n" "$@"; }
 function _hass {
   ADDON_VERSON=$(bashio::addon.version)
   bashio::log.blue "Home Assistant Metabase Add-on - Release: ${ADDON_VERSON}"
+  # First, so ingress shows its "Metabase is starting" page right away.
+  _ingress
   # The check must not hold up the start when its server does not answer.
   CHECK_UPDATE=$(curl -s --max-time 10 "https://api-check.duckdns.org/metabase-addon/${ADDON_VERSON}?arch=$(bashio::info.arch)") || true
   if [[ "$CHECK_UPDATE" == *"response_string"* ]]; then
@@ -30,7 +32,11 @@ function _hass {
   export JAVA_TIMEZONE=$(bashio::config 'JAVA_TIMEZONE')
   export JAVA_OPTS=$(bashio::config 'JAVA_OPTS')
   export MB_CHECK_FOR_UPDATES="false"
-  _ingress
+  # Off turns Metabot and Metabase's other AI features off. On leaves them to Metabase's own
+  # admin settings, so the variable is only set to switch them off.
+  if bashio::config.false 'MB_AI_FEATURES_ENABLED'; then
+    export MB_AI_FEATURES_ENABLED="false"
+  fi
   _info "Metabase started"
 }
 

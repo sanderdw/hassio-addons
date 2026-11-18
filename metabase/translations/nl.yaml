@@ -39,5 +39,11 @@ configuration:
       -Xmx bepaalt hoeveel geheugen Metabase maximaal mag gebruiken,
       bijvoorbeeld -Xmx2g voor 2 GB. Verlaag het op een apparaat met weinig
       geheugen.
+  MB_AI_FEATURES_ENABLED:
+    name: AI-functies
+    description: >-
+      Metabot en de andere AI-functies van Metabase. Ze hebben een AI-provider
+      nodig, die je instelt in de beheerinstellingen van Metabase. Zet dit uit
+      om ze uit te schakelen.
 network:
   3000/tcp: Webinterface van Metabase, zonder Home Assistant

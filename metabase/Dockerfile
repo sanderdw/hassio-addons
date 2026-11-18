@@ -20,6 +20,12 @@ RUN \
 COPY rootfs /
 COPY run.sh /
 RUN chmod a+x /run.sh
+
+# Home Assistant shows the app as starting, without "Open web UI", until Metabase answers. Java
+# needs a minute or more to start, longer on a Raspberry Pi or during a migration: check every
+# 5 seconds for the first 15 minutes, then every minute.
+HEALTHCHECK --interval=60s --timeout=5s --start-period=900s --start-interval=5s --retries=3 \
+    CMD curl -fsS -o /dev/null http://127.0.0.1:3000/api/health || exit 1
 ENTRYPOINT ["/run.sh"]
 
 # Labels

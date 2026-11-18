@@ -14,6 +14,7 @@ import {
   addonLogs,
   baseImageFromWorkflow,
   configureAddon,
+  containerName,
   installLocalAddon,
   secondsToStart,
   stateAfterStop,
@@ -23,7 +24,16 @@ import {
 } from '../lib/addons.mjs';
 import { openIngress } from '../lib/homeassistant.mjs';
 import { TIMESCALEDB, ensureTimescaleDb, psql, recreateDatabase } from '../lib/timescaledb.mjs';
-import { HA_URL, REPO_DIR, addonUrl, requireVm, ssh, waitFor, withServerUnreachable } from '../lib/vm.mjs';
+import {
+  HA_URL,
+  REPO_DIR,
+  addonUrl,
+  requireVm,
+  ssh,
+  supervisor,
+  waitFor,
+  withServerUnreachable,
+} from '../lib/vm.mjs';
 
 const ADDON_DIR = 'metabase';
 const SLUG = 'local_metabase';
@@ -102,12 +112,50 @@ describe('Metabase add-on', () => {
     assert.equal(info.state, 'stopped');
   });
 
-  it('starts with its default options and answers its health check', async () => {
+  it('starts with its default options, and is "started" only once Metabase answers', async () => {
     // Manual boot: the tests start the add-on themselves.
     await configureAddon(SLUG, { boot: 'manual' });
     assert.equal(config.options.MB_DB_TYPE, 'h2', 'the default application database is H2');
-    await secondsToStart(SLUG, isHealthy, { timeout: 600 });
-    assert.equal((await addonInfo(SLUG)).state, 'started');
+
+    // Home Assistant shows "Open web UI" when the state is "started". The Docker health check
+    // keeps it at "startup" until Metabase answers; meanwhile ingress shows a page that reloads
+    // itself instead of "502 Bad Gateway".
+    const ingress = await openIngress((await addonInfo(SLUG)).ingress_url);
+    const states = new Set();
+    const startedTooEarly = [];
+    const ingressAnswers = [];
+    const start = supervisor('post', `/addons/${SLUG}/start`, undefined, { timeout: 900 });
+    start.catch(() => {});
+    await waitFor(
+      'Metabase to answer and the app to be started',
+      async () => {
+        // The state first: "started" means the health check passed before Metabase was asked.
+        const { state } = await addonInfo(SLUG);
+        if (state === 'error') throw Object.assign(new Error(`${SLUG} stopped with an error`), { fatal: true });
+        const healthy = await isHealthy().catch(() => false);
+        states.add(state);
+        if (state === 'started' && !healthy) startedTooEarly.push(new Date().toISOString());
+        if (!healthy) {
+          const response = await ingress().catch(() => undefined);
+          if (response) {
+            const text = await response.text();
+            ingressAnswers.push(text.includes('Metabase is starting') ? 'starting page' : String(response.status));
+          }
+        }
+        return state === 'started' && healthy;
+      },
+      { timeout: 600, interval: 1 },
+    );
+    await start;
+
+    assert.deepEqual(startedTooEarly, [], 'the app was "started" before Metabase answered');
+    assert.ok(states.has('startup'), `the app showed "startup" while Metabase started (${[...states]})`);
+    const firstPage = ingressAnswers.indexOf('starting page');
+    assert.ok(firstPage >= 0, `ingress showed the starting page (it answered ${ingressAnswers})`);
+    assert.ok(
+      !ingressAnswers.slice(firstPage).includes('502'),
+      `ingress answered 502 after nginx was up (${ingressAnswers})`,
+    );
   });
 
   it('runs the Metabase version of its base image', async () => {
@@ -263,12 +311,49 @@ describe('Metabase add-on', () => {
   describe('when the update server does not answer', () => {
     it('starts Metabase without waiting for it', async () => {
       // "Metabase started" is the last line of the add-on's own script, before Java starts.
+      // The Supervisor's start waits for the health check, so time the script with Docker's
+      // timestamps: from the container's start to that line.
       const scriptIsDone = async () => (await addonLogs(SLUG, 5000)).includes('Metabase started');
-      const seconds = await withServerUnreachable(UPDATE_SERVER, () =>
-        secondsToStart(SLUG, scriptIsDone, { timeout: 240 }),
-      );
+      await withServerUnreachable(UPDATE_SERVER, () => secondsToStart(SLUG, scriptIsDone, { timeout: 240 }));
       await waitFor('the health check to answer', isHealthy, { timeout: 600 });
+      const container = await containerName(SLUG);
+      const { stdout: startedAt } = await ssh(`docker inspect -f '{{.State.StartedAt}}' ${container}`);
+      const { stdout: log } = await ssh(`docker logs -t ${container} 2>&1`);
+      const line = log.split('\n').find((logLine) => logLine.includes('Metabase started'));
+      const time = (timestamp) => Date.parse(timestamp.trim().replace(/(\.\d{3})\d*/, '$1'));
+      const seconds = Math.round((time(line.split(' ')[0]) - time(startedAt)) / 1000);
       assert.ok(seconds <= 30, `the add-on's script needed ${seconds} seconds before it started Metabase`);
+    });
+  });
+
+  describe('the AI features option', () => {
+    /** Metabase's value of the setting, and whether it comes from MB_AI_FEATURES_ENABLED. */
+    const aiFeatures = async () => {
+      const login = await api('POST', '/api/session', {
+        body: { username: ADMIN.email, password: ADMIN.password },
+      });
+      const session = login.json.id;
+      const { json: properties } = await api('GET', '/api/session/properties', { session });
+      const { json: settings } = await api('GET', '/api/setting', { session });
+      const setting = settings.find((candidate) => candidate.key === 'ai-features-enabled?');
+      return { enabled: properties['ai-features-enabled?'], fromVariable: setting.is_env_setting };
+    };
+
+    it("leaves AI to Metabase's own setting when on (the default)", async () => {
+      assert.equal(config.options.MB_AI_FEATURES_ENABLED, true);
+      // Not set by the add-on, so an administrator can still switch AI off in Metabase.
+      assert.deepEqual(await aiFeatures(), { enabled: true, fromVariable: false });
+    });
+
+    it('switches AI off when off', async () => {
+      const { options } = await addonInfo(SLUG);
+      await configureAddon(SLUG, { options: { ...options, MB_AI_FEATURES_ENABLED: false } });
+      try {
+        await secondsToStart(SLUG, isHealthy, { timeout: 600 });
+        assert.deepEqual(await aiFeatures(), { enabled: false, fromVariable: true });
+      } finally {
+        await configureAddon(SLUG, { options });
+      }
     });
   });
 

@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.6.1
+
+- Fix "502 Bad Gateway" when you open Metabase while it is still starting. Home Assistant now shows the app as starting until Metabase is ready, and only then offers "Open web UI".
+- New option **AI features**: turn it off to switch off Metabot and Metabase's other AI features. It is on by default, so nothing changes until you turn it off.
+
 ## 1.6.0
 
 - Open Metabase in Home Assistant: the app now supports ingress. Turn on "Show in sidebar" on the app's Info tab to open Metabase from the sidebar. Port 7778 keeps working as before.

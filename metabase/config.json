@@ -1,6 +1,6 @@
 {
   "name": "Metabase",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "slug": "metabase",
   "description": "Meet the easy, open source way for everyone to ask questions and learn from data.",
   "url": "https://github.com/sanderdw/hassio-addons/blob/main/metabase/README.md",
@@ -31,7 +31,8 @@
     "MB_DB_PORT": "5432",
     "MB_DB_FILE": "/backup/metabase.db",
     "JAVA_TIMEZONE": "Europe/Amsterdam",
-    "JAVA_OPTS": "-Xmx2g"
+    "JAVA_OPTS": "-Xmx2g",
+    "MB_AI_FEATURES_ENABLED": true
   },
   "schema": {
     "MB_DB_TYPE": "str",
@@ -42,7 +43,8 @@
     "MB_DB_PORT": "str",
     "MB_DB_FILE": "str",
     "JAVA_TIMEZONE": "str",
-    "JAVA_OPTS": "str"
+    "JAVA_OPTS": "str",
+    "MB_AI_FEATURES_ENABLED": "bool"
   },
   "image": "ghcr.io/sanderdw/hassio-addons/ha-metabase-{arch}"
 }
