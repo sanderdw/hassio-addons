@@ -1,0 +1,7 @@
+#!/bin/sh
+# Sends one command to the QEMU monitor and prints the reply, for example: qemu-monitor info usb
+printf '%s\n' "$*" \
+  | socat -t 2 - UNIX-CONNECT:/run/qemu-monitor.sock \
+  | tr -d '\r' \
+  | grep -v -e '^QEMU .* monitor' -e '^(qemu)'
+exit 0

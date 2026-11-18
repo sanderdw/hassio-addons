@@ -32,8 +32,9 @@ function _check_update {
   addon_version="$(bashio::addon.version)"
   bashio::log.blue "Home Assistant DSMR Reader App - Release: ${addon_version}"
 
+  # The check must not hold up the start: the Supervisor waits 120 seconds for the add-on.
   local check_update
-  check_update=$(curl -s "https://api-check.duckdns.org/dsmr-reader-addon/${addon_version}?webserv=$(bashio::config 'WEBSERVER')&arch=$(bashio::info.arch)") || true
+  check_update=$(curl -s --max-time 10 "https://api-check.duckdns.org/dsmr-reader-addon/${addon_version}?webserv=$(bashio::config 'WEBSERVER')&arch=$(bashio::info.arch)") || true
   if [[ "${check_update}" == *"response_string"* ]]; then
     bashio::log.blue "$(echo "${check_update}" | jq --raw-output .response_string)"
   else

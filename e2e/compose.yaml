@@ -1,0 +1,53 @@
+# Home Assistant OS in a VM, with an emulated P1 smart meter on its USB port.
+# Use ./e2e/haos.mjs instead of calling docker compose directly; see e2e/README.md.
+name: haos-e2e
+
+services:
+  # The smart meter: serves DSMR 5 telegrams over TCP.
+  p1:
+    image: node:24-alpine
+    command: ["node", "/p1/p1-emulator.mjs"]
+    init: true
+    restart: unless-stopped
+    environment:
+      P1_PORT: "2001"
+      P1_INTERVAL_MS: ${P1_INTERVAL_MS:-1000}
+    volumes:
+      - ./p1:/p1:ro
+
+  # Home Assistant OS in QEMU. The P1 telegrams arrive on an emulated FTDI cable (/dev/ttyUSB0).
+  haos:
+    build: ./haos
+    init: true
+    depends_on:
+      - p1
+    devices:
+      - /dev/kvm
+    environment:
+      # The stable version of the "ova" board in https://version.home-assistant.io/stable.json.
+      # The newest GitHub release can be a Raspberry Pi only release without this image.
+      HAOS_VERSION: ${HAOS_VERSION:-18.4}
+      HAOS_CPUS: ${HAOS_CPUS:-2}
+      HAOS_MEMORY: ${HAOS_MEMORY:-4096}
+      HAOS_DISK_SIZE: ${HAOS_DISK_SIZE:-32G}
+      # The port Home Assistant Core listens on inside the VM. New installations use port 80
+      # and only redirect from 8123; `haos.mjs up` checks this against what Core reports.
+      HAOS_HA_PORT: ${HAOS_HA_PORT:-80}
+      HAOS_FORWARD_PORTS: "8123:${HAOS_HA_PORT:-80} 4357 7777 7778 7779"
+      P1_HOST: p1
+      P1_PORT: "2001"
+    ports:
+      # Home Assistant and the Supervisor observer
+      - "127.0.0.1:${E2E_HA_PORT:-18123}:8123"
+      - "127.0.0.1:${E2E_OBSERVER_PORT:-14357}:4357"
+      # Three spare ports for add-ons: give an add-on host port 7777 and reach it on 17777
+      - "127.0.0.1:17777-17779:7777-7779"
+    volumes:
+      - cache:/cache
+      - state:/state
+    # A clean HAOS shutdown takes a while; the entrypoint waits up to 90 seconds for it.
+    stop_grace_period: 2m
+
+volumes:
+  cache:
+  state:

@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.2.2
+
+- Fix a slow start (2 to 5 minutes, with a start timeout in the Supervisor log) when the update check server does not answer. The check now gives up after 10 seconds.
+- Fix Home Assistant showing "Error" after the app is stopped. The app did not stop by itself and was killed after 10 seconds; it now stops in about 5 seconds.
+- Fix Home Assistant showing the app as starting for up to 2 minutes after it was ready, when the start took longer than a minute (a database migration, a slow machine, the database starting late).
+
 ## 2.2.1
 
 - As always, backup database first!

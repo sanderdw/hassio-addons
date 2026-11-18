@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.2
+
+- Fix the datalogger not starting when the update check server does not answer: it waited about two minutes and then stopped. The check now gives up after 10 seconds and the datalogger starts anyway.
+- The datalogger now starts again by itself after a failure, such as the P1 cable being pulled out or the meter not sending for a while. Before, the app stopped and stayed stopped. It tries again every 10 seconds; the reason is in the log.
+
 ## 1.2.1
 
 - Technical: Update GitHub Actions workflow to the latest action versions
