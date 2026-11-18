@@ -23,8 +23,8 @@ See config instructions here: https://github.com/sanderdw/hassio-addons
 4. Start TimescaleDB addon to initialize.
 5. Install this addon.
 6. Configure settings in the "Configuration" tab if defaults are changed by you.
-   1. For H2 use `MB_DB_TYPE=h2` in the configuration tab
-   2. For Postgres/TimescaleDB use `MB_DB_TYPE=postgres` in the configuration tab
+   1. For H2 set **Database type** to `h2` in the configuration tab
+   2. For Postgres/TimescaleDB set **Database type** to `postgres` in the configuration tab
 7. Start Metabase addon.
 8. Go to http://yourhomeassistant:7778 (wait untill add-on is initialized) - Note: Ingress not supported.
 9. Walkthrough the Metabase setup.

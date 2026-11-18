@@ -1,15 +1,16 @@
 #!/usr/bin/env bashio
 # ==============================================================================
-# Take down the S6 supervision tree when datalogger fails
+# Runs when the datalogger exits. s6 starts it again (see the run script), so a
+# failure that passes does not stop the add-on: the P1 cable pulled out, or
+# DSMR Reader not answering for a while.
 # s6-overlay docs: https://github.com/just-containers/s6-overlay
 # ==============================================================================
 
 declare APP_EXIT_CODE=${1}
 
+# 256 means the datalogger was stopped by a signal, as when the add-on stops.
 if [[ "${APP_EXIT_CODE}" -ne 0 ]] && [[ "${APP_EXIT_CODE}" -ne 256 ]]; then
-  bashio::log.warning "Halt add-on with exit code ${APP_EXIT_CODE}"
-  echo "${APP_EXIT_CODE}" > /run/s6-linux-init-container-results/exitcode
-  exec /run/s6/basedir/bin/halt
+  bashio::log.warning "Datalogger stopped with exit code ${APP_EXIT_CODE}, starting it again"
+else
+  bashio::log.info "Service restart after closing"
 fi
-
-bashio::log.info "Service restart after closing"

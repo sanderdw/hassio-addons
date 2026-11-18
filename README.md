@@ -16,9 +16,6 @@ See the VoltViz Github (https://github.com/sanderdw/voltviz) for more background
 
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg?style=flat-square
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg?style=flat-square
-[armhf-shield]: https://img.shields.io/badge/armhf-yes-green.svg?style=flat-square
-[armv7-shield]: https://img.shields.io/badge/armv7-yes-green.svg?style=flat-square
-[i386-shield]: https://img.shields.io/badge/i386-yes-green.svg?style=flat-square
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=for-the-badge
 [forum]: https://community.home-assistant.io/search?q=%40sanderdw%20%23home-assistant-os
 

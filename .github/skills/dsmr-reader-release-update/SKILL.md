@@ -1,6 +1,6 @@
 ---
 name: dsmr-reader-release-update
-description: Update the DSMR Reader add-on to a new upstream release, including base image bump, add-on version bump, README badge, changelog, branch, and PR. Use when releasing new DSMR Reader versions.
+description: Update the DSMR Reader add-on to a new upstream release, including base image bump, add-on version bump, README badge, changelog, e2e tests, branch, and PR. Use when releasing new DSMR Reader versions.
 argument-hint: 'Optional: specific target xirixiz/dsmr-reader-docker version. If omitted, fetches the latest pinned Major.Minor.Patch tag from upstream.'
 user-invocable: true
 disable-model-invocation: false
@@ -16,7 +16,8 @@ A complete DSMR Reader add-on release across config, docs and CI, including:
 - New release entry at the top of `dsmr_reader/CHANGELOG.md`
 - Updated `dsmr-shield` badge in `dsmr_reader/README.md` to reflect the upstream DSMR Reader Major.Minor version
 - New git branch `reader-{addon_version}` based on `origin/main`
-- When publishing (see step 6): one atomic commit and a PR to `main`
+- Passing e2e tests for DSMR Reader (including its MQTT setup) and DSMR Datalogger against the new image
+- When publishing (see step 7): one atomic commit and a PR to `main`
 
 ## When to Use
 Use this skill when:
@@ -63,7 +64,7 @@ Branch from the latest `main` **before** editing anything, so the release never 
 ```
 git status --porcelain   # must be empty; if not, stop and ask the user
 git fetch origin
-git checkout -b reader-{NEW_ADDON_VERSION} origin/main
+git switch --no-track -c reader-{NEW_ADDON_VERSION} origin/main
 ```
 The name matches the `reader-*.*.*` trigger in `.github/workflows/dsmr-reader.yml` so the workflow runs on push.
 
@@ -78,6 +79,7 @@ Reconcile **upstream docs ↔ `dsmr_reader/config.json` ↔ `dsmr_reader/rootfs/
 **Intentional divergences — do not "fix" these:**
 - `DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT`: the upstream docs name this `DSMRREADER_REMOTE_DATALOGGER_SERIAL_DEVICE`, but the image still accepts `_SERIAL_PORT`. `rootfs/etc/s6-overlay/s6-rc.d/init-validate/run` maps it to `_SERIAL_DEVICE` for backward compatibility, and `init-devices/run` reads it to set serial device permissions. The add-on keeps `_SERIAL_PORT` on purpose (an automated rename in 2.1.1 was reverted). Only raise it if the target image drops `_SERIAL_PORT` from both of those scripts.
 - `WEBSERVER`: add-on-only option (`Ingress|Standard|Custom`) with no upstream equivalent.
+- `MQTT_HOME_ASSISTANT`: add-on-only option with no upstream equivalent. `init-mqtt-home-assistant/run` reads it, not `set-hassio-vars/run`.
 
 **4b. Diff against `dsmr_reader/config.json`**
 For each key in `options`/`schema`:
@@ -118,8 +120,18 @@ Apply the fixes to `config.json` and/or the run script, then mention each ❌/�
   ```
   Add additional bullets for breaking changes / new config options when the upstream changelog warrants it.
 
-### 6. Commit, Push and Open Pull Request
-Only publish when the user asked for a release or PR in this request (invoking this skill by name counts). If they only asked to check or prepare the update, stop here and summarize the diff.
+### 6. Test in the e2e VM
+The DSMR Reader test builds the add-on from the new `BASE_IMAGE` in the working tree. The datalogger test then sends telegrams to that DSMR Reader's API, and reuses it when it is installed, so run the DSMR Reader test first:
+```
+./e2e/haos.mjs up
+./e2e/haos.mjs test e2e/tests/dsmr-reader.test.mjs e2e/tests/dsmr-datalogger.test.mjs e2e/tests/dsmr-reader-mqtt.test.mjs
+```
+- The tests start the add-ons with the defaults from `config.json`, so options changed in step 4 are tested as they are.
+- The MQTT test checks `MQTT_HOME_ASSISTANT` against the new image: `dsmr_reader/rootfs/usr/local/lib/mqtt-home-assistant.py` uses DSMR Reader's MQTT settings models, which an upstream release can rename or change.
+- Then follow "Before a release" under End-to-end tests in `AGENTS.md`.
+
+### 7. Commit, Push and Open Pull Request
+Only publish when the user asked for a release or PR in this request (invoking this skill by name counts). If they only asked to check or prepare the update, stop after step 6 and summarize the diff and the test results.
 - Stage every changed file and commit:
   ```
   git add .github/workflows/dsmr-reader.yml dsmr_reader/
@@ -150,12 +162,13 @@ Only publish when the user asked for a release or PR in this request (invoking t
 - `dsmr_reader/config.json` `version` equals the new add-on version.
 - `dsmr_reader/config.json` `options` and `schema` reflect the upstream env-var set for the target release (added, removed, renamed, or retyped keys have been reconciled), and every change is mentioned in the changelog entry.
 - Every user-facing key in `dsmr_reader/config.json` `options`/`schema` matches an upstream env var name exactly (case-sensitive), except the intentional divergences listed in step 4a.
-- Every key in `options`/`schema` has a matching `_set_env` or `_set_env_optional` call in `dsmr_reader/rootfs/etc/s6-overlay/s6-rc.d/set-hassio-vars/run`, except for add-on-managed keys (`WEBSERVER`, and `DJANGO_FORCE_SCRIPT_NAME` / `DJANGO_STATIC_URL`, which `_configure_webserver` handles).
+- Every key in `options`/`schema` has a matching `_set_env` or `_set_env_optional` call in `dsmr_reader/rootfs/etc/s6-overlay/s6-rc.d/set-hassio-vars/run`, except for add-on-managed keys (`WEBSERVER`, `MQTT_HOME_ASSISTANT`, and `DJANGO_FORCE_SCRIPT_NAME` / `DJANGO_STATIC_URL`, which `_configure_webserver` handles).
 - Every `_set_env*` call in the run script either matches a key in `config.json` `options` or is documented as a derived/add-on-managed value.
 - Every `list(...)` schema enum contains all values accepted by upstream for that variable.
 - `dsmr_reader/README.md` `dsmr-shield` badge shows the upstream `Major.Minor`.
 - `dsmr_reader/CHANGELOG.md` has a new top entry naming the new add-on version, the new image tag, the upstream changelog link, and any env-var changes.
 - `git grep "{OLD_IMAGE_VERSION}" dsmr_reader/ .github/workflows/dsmr-reader.yml` returns only historical CHANGELOG hits.
+- `e2e/tests/dsmr-reader.test.mjs`, `e2e/tests/dsmr-datalogger.test.mjs` and `e2e/tests/dsmr-reader-mqtt.test.mjs` pass, or the user agreed to publish without them.
 - If published: a single atomic commit on branch `reader-{NEW_ADDON_VERSION}` (based on `origin/main`) covers all changed files, the branch exists on `origin`, and a PR is open against `main`.
 
 ## Example Prompt

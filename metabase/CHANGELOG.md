@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.5.1
+
+- The Configuration tab shows readable names and explanations for every option, in English and Dutch. Your settings stay as they are.
+- Fix a start that took two minutes longer when the update check server does not answer. The check now gives up after 10 seconds.
+- Fix Home Assistant showing "Error" after the app is stopped. Metabase shut down cleanly, but its exit code said otherwise.
+
 ## 1.5.0
 
 - Update to Metabase 0.65.5.1

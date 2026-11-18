@@ -1,0 +1,10 @@
+#!/bin/sh
+# Root shell on the Home Assistant OS host (the debug SSH port 22222).
+exec ssh \
+  -i /state/ssh/id_ed25519 \
+  -p 22222 \
+  -o StrictHostKeyChecking=no \
+  -o UserKnownHostsFile=/dev/null \
+  -o LogLevel=ERROR \
+  -o ConnectTimeout=5 \
+  root@127.0.0.1 "$@"

@@ -1,0 +1,117 @@
+configuration:
+  MQTT_HOME_ASSISTANT:
+    name: Connect to Home Assistant through MQTT
+    description: >-
+      At every start, sets DSMR Reader's MQTT broker to the Mosquitto app and
+      switches on what the DSMR Reader integration reads. Switching it off does
+      not undo this.
+  WEBSERVER:
+    name: Web access
+    description: >-
+      How you open DSMR Reader. Ingress: inside Home Assistant (Open web UI or
+      the sidebar). Standard: on the port under Network. Custom: behind your own
+      reverse proxy, with the URL prefix options below.
+  INGRESS_AUTO_LOGIN:
+    name: Log in Home Assistant admins automatically
+    description: >-
+      Through Ingress, Home Assistant admins are logged in as the admin user
+      without a login page. Other users still get the login page.
+  DSMRREADER_ADMIN_USER:
+    name: Admin username
+    description: The DSMR Reader account that the app sets up at every start.
+  DSMRREADER_ADMIN_PASSWORD:
+    name: Admin password
+    description: >-
+      Set at every start. Change the default (admin); the log warns while it is
+      unchanged.
+  DJANGO_DATABASE_NAME:
+    name: Database name
+    description: Add this name to databases in the TimescaleDB app's configuration.
+  DJANGO_DATABASE_USER:
+    name: Database user
+  DJANGO_DATABASE_PASSWORD:
+    name: Database password
+  DJANGO_DATABASE_HOST:
+    name: Database host
+    description: >-
+      The default is the TimescaleDB app by Expaso. Change the database options
+      only when you changed TimescaleDB.
+  DJANGO_DATABASE_PORT:
+    name: Database port
+  CONTAINER_RUN_MODE:
+    name: Run mode
+    description: >-
+      standalone: reads the meter, stores the readings and shows the dashboard.
+      server_remote_datalogger: stores and shows readings that a datalogger on
+      another device sends to DSMR Reader's API. remote_datalogger: only reads
+      the meter and sends the telegrams to another DSMR Reader (the Remote
+      datalogger options below).
+  DSMRREADER_REMOTE_DATALOGGER_API_HOSTS:
+    name: "Remote datalogger: DSMR Reader address"
+    description: >-
+      Run mode remote_datalogger only. The DSMR Reader that receives the
+      telegrams, for example http://192.168.1.10:7777. Separate several with
+      commas.
+  DSMRREADER_REMOTE_DATALOGGER_API_KEYS:
+    name: "Remote datalogger: API key"
+    description: >-
+      Run mode remote_datalogger only. The API key from the receiving DSMR
+      Reader's configuration. Separate several with commas, in the same order as
+      the addresses.
+  DSMRREADER_REMOTE_DATALOGGER_INPUT_METHOD:
+    name: "Remote datalogger: input"
+    description: >-
+      Run mode remote_datalogger only. serial: a P1 cable on this device. ipv4:
+      a P1 cable on another device in your network (for example ser2net), set
+      with network host and port.
+  DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT:
+    name: "Remote datalogger: serial port"
+    description: >-
+      Run mode remote_datalogger only. In standalone mode, set the port in DSMR
+      Reader's datalogger configuration instead.
+  DSMRREADER_REMOTE_DATALOGGER_SERIAL_BAUDRATE:
+    name: "Remote datalogger: baud rate"
+    description: 115200 for DSMR 4 and 5 meters, 9600 for DSMR 2.2.
+  DSMRREADER_REMOTE_DATALOGGER_SERIAL_BYTESIZE:
+    name: "Remote datalogger: byte size"
+    description: 8 for DSMR 4 and 5 meters, 7 for DSMR 2.2.
+  DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST:
+    name: "Remote datalogger: network host"
+    description: Input ipv4 only. The address of the device with the P1 cable.
+  DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT:
+    name: "Remote datalogger: network port"
+    description: Input ipv4 only. The port that device sends the telegrams on.
+  DSMRREADER_LOGLEVEL:
+    name: Log level
+  DJANGO_TIME_ZONE:
+    name: Time zone
+    description: A time zone name, such as Europe/Amsterdam.
+  DJANGO_SECRET_KEY:
+    name: Secret key
+    description: >-
+      Protects logins and forms. Change the default (dsmrreader) to a long
+      random text; the log warns while it is unchanged.
+  DJANGO_FORCE_SCRIPT_NAME:
+    name: URL prefix
+    description: >-
+      Web access Custom only. The path your reverse proxy serves DSMR Reader
+      on, for example /dsmr/.
+  DJANGO_STATIC_URL:
+    name: Static files URL
+    description: >-
+      Web access Custom only. The path of DSMR Reader's static files, for
+      example /dsmr/static/.
+  DJANGO_X_FRAME_OPTIONS:
+    name: Show in frames
+    description: >-
+      Whether other pages may show DSMR Reader in a frame, such as a Home
+      Assistant webpage card. ALLOWALL: any page. SAMEORIGIN: only pages on
+      the same address. DENY: none.
+  DJANGO_CSRF_TRUSTED_ORIGINS:
+    name: Trusted addresses
+    description: >-
+      Without Ingress: the address you open DSMR Reader on, such as
+      https://dsmr.example.com, so that it accepts saved forms. Separate several
+      with commas.
+network:
+  80/tcp: Web UI and API port (web UI only when Web access is not Ingress)

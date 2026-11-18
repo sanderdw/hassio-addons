@@ -1,0 +1,119 @@
+configuration:
+  MQTT_HOME_ASSISTANT:
+    name: Verbinden met Home Assistant via MQTT
+    description: >-
+      Stelt bij elke start de MQTT-broker van DSMR Reader in op de Mosquitto-app
+      en zet aan wat de DSMR Reader-integratie uitleest. Uitzetten maakt dit niet
+      ongedaan.
+  WEBSERVER:
+    name: Toegang via web
+    description: >-
+      Hoe je DSMR Reader opent. Ingress: binnen Home Assistant (Open
+      webinterface of Toon in zijbalk). Standard: via de poort onder Netwerk. Custom: achter
+      je eigen reverse proxy, met de URL-voorvoegselopties hieronder.
+  INGRESS_AUTO_LOGIN:
+    name: Home Assistant-beheerders automatisch inloggen
+    description: >-
+      Via Ingress worden Home Assistant-beheerders zonder inlogpagina ingelogd
+      als de beheerder. Andere gebruikers krijgen nog steeds de inlogpagina.
+  DSMRREADER_ADMIN_USER:
+    name: Gebruikersnaam beheerder
+    description: Het DSMR Reader-account dat de app bij elke start instelt.
+  DSMRREADER_ADMIN_PASSWORD:
+    name: Wachtwoord beheerder
+    description: >-
+      Wordt bij elke start ingesteld. Wijzig de standaardwaarde (admin); het
+      logboek waarschuwt zolang die niet gewijzigd is.
+  DJANGO_DATABASE_NAME:
+    name: Databasenaam
+    description: Voeg deze naam toe aan databases in de configuratie van de TimescaleDB-app.
+  DJANGO_DATABASE_USER:
+    name: Databasegebruiker
+  DJANGO_DATABASE_PASSWORD:
+    name: Databasewachtwoord
+  DJANGO_DATABASE_HOST:
+    name: Databasehost
+    description: >-
+      De standaardwaarde is de TimescaleDB-app van Expaso. Wijzig de
+      database-opties alleen als je TimescaleDB hebt aangepast.
+  DJANGO_DATABASE_PORT:
+    name: Databasepoort
+  CONTAINER_RUN_MODE:
+    name: Werkwijze
+    description: >-
+      standalone: leest de meter uit, slaat de metingen op en toont het
+      dashboard. server_remote_datalogger: ontvangt de metingen van een
+      datalogger op een ander apparaat via de API van DSMR Reader, slaat ze op
+      en toont ze.
+      remote_datalogger: leest alleen de meter uit en stuurt de telegrammen naar
+      een andere DSMR Reader (de opties Externe datalogger hieronder).
+  DSMRREADER_REMOTE_DATALOGGER_API_HOSTS:
+    name: "Externe datalogger: adres DSMR Reader"
+    description: >-
+      Alleen bij werkwijze remote_datalogger. De DSMR Reader die de telegrammen
+      ontvangt, bijvoorbeeld http://192.168.1.10:7777. Scheid meerdere adressen
+      met komma's.
+  DSMRREADER_REMOTE_DATALOGGER_API_KEYS:
+    name: "Externe datalogger: API-sleutel"
+    description: >-
+      Alleen bij werkwijze remote_datalogger. De API-sleutel uit de configuratie
+      van de ontvangende DSMR Reader. Scheid meerdere sleutels met komma's, in
+      dezelfde volgorde als de adressen.
+  DSMRREADER_REMOTE_DATALOGGER_INPUT_METHOD:
+    name: "Externe datalogger: invoer"
+    description: >-
+      Alleen bij werkwijze remote_datalogger. serial: een P1-kabel aan dit
+      apparaat. ipv4: een P1-kabel aan een ander apparaat in je netwerk
+      (bijvoorbeeld met ser2net), ingesteld met netwerkhost en -poort.
+  DSMRREADER_REMOTE_DATALOGGER_SERIAL_PORT:
+    name: "Externe datalogger: seriële poort"
+    description: >-
+      Alleen bij werkwijze remote_datalogger. Bij standalone stel je de poort in
+      bij de dataloggerconfiguratie van DSMR Reader.
+  DSMRREADER_REMOTE_DATALOGGER_SERIAL_BAUDRATE:
+    name: "Externe datalogger: baudrate"
+    description: 115200 voor DSMR 4- en 5-meters, 9600 voor DSMR 2.2.
+  DSMRREADER_REMOTE_DATALOGGER_SERIAL_BYTESIZE:
+    name: "Externe datalogger: bytegrootte"
+    description: 8 voor DSMR 4- en 5-meters, 7 voor DSMR 2.2.
+  DSMRREADER_REMOTE_DATALOGGER_NETWORK_HOST:
+    name: "Externe datalogger: netwerkhost"
+    description: Alleen bij invoer ipv4. Het adres van het apparaat met de P1-kabel.
+  DSMRREADER_REMOTE_DATALOGGER_NETWORK_PORT:
+    name: "Externe datalogger: netwerkpoort"
+    description: Alleen bij invoer ipv4. De poort waarop dat apparaat de telegrammen verstuurt.
+  DSMRREADER_LOGLEVEL:
+    name: Logniveau
+  DJANGO_TIME_ZONE:
+    name: Tijdzone
+    description: De naam van een tijdzone, zoals Europe/Amsterdam.
+  DJANGO_SECRET_KEY:
+    name: Geheime sleutel
+    description: >-
+      Beveiligt het inloggen en formulieren. Vervang de standaardwaarde
+      (dsmrreader) door een lange willekeurige tekst; het logboek waarschuwt
+      zolang die niet gewijzigd is.
+  DJANGO_FORCE_SCRIPT_NAME:
+    name: URL-voorvoegsel
+    description: >-
+      Alleen bij toegang Custom. Het pad waarop je reverse proxy DSMR Reader
+      aanbiedt, bijvoorbeeld /dsmr/.
+  DJANGO_STATIC_URL:
+    name: URL statische bestanden
+    description: >-
+      Alleen bij toegang Custom. Het pad van de statische bestanden van DSMR
+      Reader, bijvoorbeeld /dsmr/static/.
+  DJANGO_X_FRAME_OPTIONS:
+    name: Tonen in frames
+    description: >-
+      Of andere pagina's DSMR Reader in een frame mogen tonen, zoals een
+      webpagina-kaart in Home Assistant. ALLOWALL: elke pagina. SAMEORIGIN:
+      alleen pagina's op hetzelfde adres. DENY: geen.
+  DJANGO_CSRF_TRUSTED_ORIGINS:
+    name: Vertrouwde adressen
+    description: >-
+      Zonder Ingress: het adres waarop je DSMR Reader opent, zoals
+      https://dsmr.example.com, zodat formulieren opgeslagen kunnen worden.
+      Scheid meerdere adressen met komma's.
+network:
+  80/tcp: Poort voor webinterface en API (webinterface alleen als de toegang niet Ingress is)

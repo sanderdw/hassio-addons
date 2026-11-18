@@ -1,6 +1,6 @@
 ---
 name: metabase-release-update
-description: 'Update the Metabase app release files consistently. Use when bumping Metabase version, refreshing workflow actions, aligning workflow triggers, and updating changelog/config metadata.'
+description: 'Update the Metabase app release files consistently and test them in the e2e VM. Use when bumping Metabase version, refreshing workflow actions, aligning workflow triggers, and updating changelog/config metadata.'
 argument-hint: 'Target Metabase version, add-on version, and release scope (for example: 0.61.3 + 1.4.0 + workflow action upgrades)'
 user-invocable: true
 disable-model-invocation: false
@@ -16,6 +16,7 @@ A consistent Metabase release update across workflow automation, app metadata, a
 - New release entry at the top of `metabase/CHANGELOG.md`
 - Updated `metabase-shield` badge in `metabase/README.md` to reflect the new Metabase version
 - Release branch `metabase-{addon_version}` based on `origin/main`
+- Passing e2e test against the new image
 - Commit, push, and pull request creation when requested
 
 ## When to Use
@@ -59,7 +60,7 @@ Provide:
      ```
      git status --porcelain   # must be empty; if not, stop and ask the user
      git fetch origin
-     git checkout -b metabase-{addon_version} origin/main
+     git switch --no-track -c metabase-{addon_version} origin/main
      ```
    - The branch name must match the `metabase-*.*.*` trigger in `.github/workflows/metabase.yml`, otherwise the workflow does not run on push.
 
@@ -88,8 +89,17 @@ Provide:
      - `metabase-shield` badge version and the changelog's upstream version
    - Ensure only intended files changed (`git status --short`).
 
-7. Publish the release when requested.
-   - Only publish when the user asked for a release or PR in this request (invoking this skill by name counts). Otherwise stop after step 6 and summarize the diff.
+7. Test in the e2e VM.
+   - The test builds the add-on from the `BASE_IMAGE` in the working tree and checks that Metabase reports that version:
+     ```
+     ./e2e/haos.mjs up
+     ./e2e/haos.mjs test e2e/tests/metabase.test.mjs
+     ```
+   - Then follow "Before a release" under End-to-end tests in `AGENTS.md`.
+   - For a CI-only update the image does not change: skip the test and say so.
+
+8. Publish the release when requested.
+   - Only publish when the user asked for a release or PR in this request (invoking this skill by name counts). Otherwise stop after step 7 and summarize the diff and the test results.
    - Commit the release update as a single atomic commit, e.g. `Metabase {addon_version} (upstream {metabase_version})`.
    - Push the branch (`git push -u origin metabase-{addon_version}`) and open a pull request against `main` titled `Metabase {addon_version}`.
 
@@ -110,6 +120,7 @@ Provide:
 - `.github/workflows/metabase.yml` action versions and build inputs match requested scope.
 - Selected Metabase image tag is pinned, published for `linux/amd64` and `linux/arm64`, and matches Docker Hub latest stable policy.
 - No unrelated files or formatting-only churn.
+- `e2e/tests/metabase.test.mjs` passes for a new image, or the user agreed to publish without it.
 - If publish mode was requested, the release branch `metabase-{addon_version}` (based on `origin/main`) exists on the remote and a PR against `main` is open.
 
 ## Example Prompt

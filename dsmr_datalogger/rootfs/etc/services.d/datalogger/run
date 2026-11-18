@@ -8,16 +8,20 @@ function _info() { printf "\\r[ \\033[00;34mINFO\\033[0m ] %s\\n" "$@"; }
 # HOMEASSISTANT Add-On OVERRIDES
 #---------------------------------------------------------------------------------------------------------------------------
 
-function _hass {
+function _check_update {
   ADDON_VERSON=$(jq --raw-output '.version' /app/ha_addon_version.json)
   _info "Home Assistant Add-on release: ${ADDON_VERSON}"
-  CHECK_UPDATE=$(curl -s "https://api-check.duckdns.org/dsmr-datalogger-addon/${ADDON_VERSON}")
+  # The check must not stop or hold up the datalogger when its server does not answer.
+  CHECK_UPDATE=$(curl -s --max-time 10 "https://api-check.duckdns.org/dsmr-datalogger-addon/${ADDON_VERSON}") || true
   if [[ "$CHECK_UPDATE" == *"response_string"* ]]; then
     OUTPUT=$(echo $CHECK_UPDATE | jq --raw-output .response_string)
     _info "$OUTPUT"
   else
     _info "Home Assistant Add-on: Update check failed"
   fi
+}
+
+function _hass {
   CONFIG_PATH=/data/options.json
   export DSMRREADER_REMOTE_DATALOGGER_DEBUG_LOGGING=$(bashio::config 'DATALOGGER_DEBUG_LOGGING')
   export DSMRREADER_REMOTE_DATALOGGER_TIMEOUT=$(bashio::config 'DATALOGGER_TIMEOUT')
@@ -38,6 +42,19 @@ function _hass {
 #---------------------------------------------------------------------------------------------------------------------------
 # MAIN
 #---------------------------------------------------------------------------------------------------------------------------
+
+# s6 runs this script again when the datalogger has stopped, for example because the P1 cable
+# was pulled out. Wait before the next try, so a failure that stays does not flood the log.
+RESTART_DELAY=10
+STARTED_BEFORE=/run/datalogger-started-before
+
+if [[ -f "${STARTED_BEFORE}" ]]; then
+  _info "Starting the datalogger again in ${RESTART_DELAY} seconds"
+  sleep "${RESTART_DELAY}"
+else
+  touch "${STARTED_BEFORE}"
+  _check_update
+fi
 
 _hass
 

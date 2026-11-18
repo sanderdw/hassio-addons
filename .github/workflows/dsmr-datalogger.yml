@@ -15,9 +15,14 @@ on:
       - '.github/workflows/dsmr-datalogger.yml'
       - 'dsmr_datalogger/config.json'
 
+# A newer push to the same branch cancels the run that is still building.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   dsmr-datalogger:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.RUNNER }}
     permissions:
       packages: write
       contents: read
@@ -31,76 +36,60 @@ jobs:
             S6_ARCH: amd64
             BASE_IMAGE: ghcr.io/home-assistant/amd64-base-python:3.13-alpine3.21
             PLATFORMS: linux/amd64
-            QEMU_ARCH: x86_64
+            RUNNER: ubuntu-latest
 
-          # ARM32V6
-          - DOCKER_TAG_SUFFIX: armhf
-            S6_ARCH: armhf
-            BASE_IMAGE: ghcr.io/home-assistant/armhf-base-python:3.13-alpine3.21
-            PLATFORMS: linux/arm/v6
-            QEMU_ARCH: arm
-
-          # ARM32V7
-          - DOCKER_TAG_SUFFIX: armv7
-            S6_ARCH: armv7
-            BASE_IMAGE: ghcr.io/home-assistant/armv7-base-python:3.13-alpine3.21
-            PLATFORMS: linux/arm/v7
-            QEMU_ARCH: arm
-
-          # ARM64V8
+          # ARM64V8, built on a native ARM runner instead of under QEMU
           - DOCKER_TAG_SUFFIX: aarch64
             S6_ARCH: aarch64
             BASE_IMAGE: ghcr.io/home-assistant/aarch64-base-python:3.13-alpine3.21
             PLATFORMS: linux/arm64
-            QEMU_ARCH: aarch64
+            RUNNER: ubuntu-24.04-arm
 
-          # i386
-          - DOCKER_TAG_SUFFIX: i386
-            S6_ARCH: i386
-            BASE_IMAGE: ghcr.io/home-assistant/i386-base-python:3.13-alpine3.21
-            PLATFORMS: linux/i386
-            QEMU_ARCH: i386
+    env:
+      IMAGE: ghcr.io/${{ github.repository }}/ha-dsmr-datalogger-${{ matrix.DOCKER_TAG_SUFFIX }}
 
     steps:
       # Get the repository's code
       - name: Checkout
         uses: actions/checkout@v7
-      # https://github.com/docker/setup-qemu-action
       - name: Get the version from config.json
         id: data
         run: |
           version=$(jq --raw-output '.version' ./dsmr_datalogger/config.json)
           echo "HA_RELEASE=$version" >> "$GITHUB_OUTPUT"
-      - name: DSMR addon release
-        env:
-          HA_RELEASE: ${{ steps.data.outputs.HA_RELEASE }}
-        run: echo "$HA_RELEASE"
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v4
-      # https://github.com/docker/setup-buildx-action
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v4
-      - name: Log in to Docker Hub
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@v4
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          echo "DSMR Datalogger add-on $version"
       - name: Log in to ghcr.io
         uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      # The version branch builds and tests the image. A merge to main tags that same image
+      # latest instead of rebuilding it, and builds only a version that does not exist yet.
+      - name: Check whether this version is already published
+        id: existing
+        if: github.ref == 'refs/heads/main'
+        env:
+          HA_RELEASE: ${{ steps.data.outputs.HA_RELEASE }}
+        run: |
+          if docker manifest inspect "$IMAGE:$HA_RELEASE" > /dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "$IMAGE:$HA_RELEASE already exists, tagging it latest without a rebuild"
+          fi
+      # https://github.com/docker/setup-buildx-action
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+      - name: Tag the published version latest
+        if: steps.existing.outputs.exists == 'true'
+        env:
+          HA_RELEASE: ${{ steps.data.outputs.HA_RELEASE }}
+        run: docker buildx imagetools create --tag "$IMAGE:latest" "$IMAGE:$HA_RELEASE"
       - name: Docker meta
-        id: meta # you'll use this in the next step
+        id: meta
+        if: steps.existing.outputs.exists != 'true'
         uses: docker/metadata-action@v6
         with:
-          # list of Docker images to use as base name for tags
-          images: |
-            sanderdw/ha-dsmr-datalogger-${{ matrix.DOCKER_TAG_SUFFIX }}
-            ghcr.io/${{ github.repository }}/ha-dsmr-datalogger-${{ matrix.DOCKER_TAG_SUFFIX }}
+          images: ${{ env.IMAGE }}
           # Docker tags based on the following events/attributes
           tags: |
             type=schedule
@@ -109,8 +98,10 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
             type=raw,value=${{ steps.data.outputs.HA_RELEASE }}
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
       - name: Build and push
         id: push
+        if: steps.existing.outputs.exists != 'true'
         uses: docker/build-push-action@v7
         with:
           context: ./dsmr_datalogger
@@ -119,12 +110,13 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            BUILD_FROM=${{matrix.BASE_IMAGE}}
+            BUILD_FROM=${{ matrix.BASE_IMAGE }}
             HA_RELEASE=${{ steps.data.outputs.HA_RELEASE }}
-            BUILD_ARCH=${{matrix.S6_ARCH}}
+            BUILD_ARCH=${{ matrix.S6_ARCH }}
       - name: Generate artifact attestation
+        if: steps.existing.outputs.exists != 'true'
         uses: actions/attest-build-provenance@v4
         with:
-          subject-name: ghcr.io/${{ github.repository }}/ha-dsmr-datalogger-${{ matrix.DOCKER_TAG_SUFFIX }}
+          subject-name: ${{ env.IMAGE }}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true

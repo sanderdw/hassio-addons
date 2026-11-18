@@ -1,0 +1,40 @@
+configuration:
+  MB_DB_TYPE:
+    name: Database type
+    description: >-
+      Where Metabase keeps its own data (questions, dashboards, users). h2: a
+      file, set with database file. postgres: a PostgreSQL database such as the
+      TimescaleDB app, set with the database options below.
+  MB_DB_DBNAME:
+    name: Database name
+    description: >-
+      Type postgres only. Add this name to databases in the TimescaleDB app's
+      configuration.
+  MB_DB_USER:
+    name: Database user
+    description: Type postgres only.
+  MB_DB_PASS:
+    name: Database password
+    description: Type postgres only.
+  MB_DB_HOST:
+    name: Database host
+    description: >-
+      Type postgres only. The default is the TimescaleDB app by Expaso.
+  MB_DB_PORT:
+    name: Database port
+    description: Type postgres only.
+  MB_DB_FILE:
+    name: Database file
+    description: >-
+      Type h2 only. Where Metabase stores its file. The default in /backup is
+      included in Home Assistant's backups.
+  JAVA_TIMEZONE:
+    name: Time zone
+    description: A time zone name, such as Europe/Amsterdam.
+  JAVA_OPTS:
+    name: Java options
+    description: >-
+      -Xmx sets the most memory Metabase may use, for example -Xmx2g for 2 GB.
+      Lower it on a device with little memory.
+network:
+  3000/tcp: Metabase web UI

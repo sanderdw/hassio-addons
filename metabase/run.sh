@@ -11,7 +11,8 @@ function _info() { printf "\\r[ \\033[00;34mINFO\\033[0m ] %s\\n" "$@"; }
 function _hass {
   ADDON_VERSON=$(bashio::addon.version)
   bashio::log.blue "Home Assistant Metabase Add-on - Release: ${ADDON_VERSON}"
-  CHECK_UPDATE=$(curl -s "https://api-check.duckdns.org/metabase-addon/${ADDON_VERSON}?arch=$(bashio::info.arch)") || true
+  # The check must not hold up the start when its server does not answer.
+  CHECK_UPDATE=$(curl -s --max-time 10 "https://api-check.duckdns.org/metabase-addon/${ADDON_VERSON}?arch=$(bashio::info.arch)") || true
   if [[ "$CHECK_UPDATE" == *"response_string"* ]]; then
     OUTPUT=$(echo $CHECK_UPDATE | jq --raw-output .response_string)
     bashio::log.blue "$OUTPUT"
@@ -37,4 +38,23 @@ function _hass {
 #---------------------------------------------------------------------------------------------------------------------------
 
 _hass
-exec /app/run_metabase.sh
+
+# Java ends with exit code 143 when it is told to stop, also after a clean shutdown, and Home
+# Assistant shows that as an error. So run Metabase as a child, pass the stop signal on, wait
+# until it has shut down and report a clean stop.
+STOPPING=false
+/app/run_metabase.sh &
+METABASE_PID=$!
+trap 'STOPPING=true; kill -TERM "${METABASE_PID}" 2>/dev/null' TERM INT
+
+EXIT_CODE=0
+wait "${METABASE_PID}" || EXIT_CODE=$?
+if [[ "${STOPPING}" == true ]]; then
+  # The first wait ended because of the signal; this one waits for Metabase itself.
+  EXIT_CODE=0
+  wait "${METABASE_PID}" || EXIT_CODE=$?
+  if [[ "${EXIT_CODE}" -eq 143 ]]; then
+    EXIT_CODE=0
+  fi
+fi
+exit "${EXIT_CODE}"

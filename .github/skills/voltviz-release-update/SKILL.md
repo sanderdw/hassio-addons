@@ -1,6 +1,6 @@
 ---
 name: voltviz-release-update
-description: Update the VoltViz add-on to the latest upstream release, including version bump, changelog, and PR creation. Use when releasing new VoltViz versions.
+description: Update the VoltViz add-on to the latest upstream release, including version bump, changelog, e2e test, and PR creation. Use when releasing new VoltViz versions.
 argument-hint: 'Optional: specific target version. If omitted, uses the latest pinned tag on ghcr.io/sanderdw/voltviz.'
 user-invocable: true
 disable-model-invocation: false
@@ -13,7 +13,8 @@ A complete VoltViz add-on release, including:
 - Updated app version in `voltviz/config.json`
 - New release entry in `voltviz/CHANGELOG.md` with upstream changes
 - New git branch `voltviz-{version}` based on `origin/main`
-- When publishing (see step 6): committed changes and a pull request to `main` with changelog summary
+- Passing e2e test against the new upstream image
+- When publishing (see step 7): committed changes and a pull request to `main` with changelog summary
 
 ## When to Use
 Use this skill when:
@@ -61,7 +62,7 @@ Provide:
      ```
      git status --porcelain   # must be empty; if not, stop and ask the user
      git fetch origin
-     git checkout -b voltviz-{VERSION} origin/main
+     git switch --no-track -c voltviz-{VERSION} origin/main
      ```
    - The name matches the `voltviz-*.*.*` trigger in `.github/workflows/voltviz.yml` so the workflow runs on push.
 
@@ -72,14 +73,22 @@ Provide:
      - The same section headings upstream uses for those versions (`### Added`, `### Changed`, `### Fixed`, `### Known limitations`, …), in upstream order, omitting empty sections
      - When consolidating several upstream versions, merge their bullets under a single set of headings
      - Keep existing format and style
-   - Leave `.github/workflows/voltviz.yml` alone: it builds `FROM ghcr.io/sanderdw/voltviz:<config.json version>`, so the GHCR tag check in step 1 is what keeps the build working.
+   - Leave `.github/workflows/voltviz.yml` alone: the base image follows the `config.json` version (see `AGENTS.md`), so the GHCR tag check in step 1 is what keeps the build working.
 
 ### 5. Validate
    - `voltviz/config.json` version and the changelog heading both show the target version.
    - `git status --short` lists only the two files above.
 
-### 6. Commit, Push and Open Pull Request
-Only publish when the user asked for a release or PR in this request (invoking this skill by name counts). If they only asked to check or prepare the update, stop after step 5 and summarize the diff.
+### 6. Test in the e2e VM
+The test builds the add-on from the working tree, so it runs the new upstream image with Music Assistant:
+```
+./e2e/haos.mjs up
+./e2e/haos.mjs test e2e/tests/voltviz.test.mjs
+```
+   - Then follow "Before a release" under End-to-end tests in `AGENTS.md`.
+
+### 7. Commit, Push and Open Pull Request
+Only publish when the user asked for a release or PR in this request (invoking this skill by name counts). If they only asked to check or prepare the update, stop after step 6 and summarize the diff and the test results.
    - Stage changes: `git add voltviz/config.json voltviz/CHANGELOG.md`
    - Commit with message (subject example: `chore: update voltviz to 0.22.2`):
      ```
@@ -109,6 +118,7 @@ Only publish when the user asked for a release or PR in this request (invoking t
 - `voltviz/CHANGELOG.md` has new top entry with the target version, today's date, and the upstream changes for every version since the last add-on release.
 - The target version exists as a tag on GHCR for `linux/amd64` and `linux/arm64`.
 - Branch `voltviz-{VERSION}` created from `origin/main`.
+- `e2e/tests/voltviz.test.mjs` passes, or the user agreed to publish without it.
 - If published: both files (config, changelog) committed together in one atomic commit with subject `chore: update voltviz to {VERSION}`, branch pushed, and PR opened to `main` with descriptive body linking upstream changes.
 
 ## Example Prompt

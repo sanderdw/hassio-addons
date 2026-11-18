@@ -1,0 +1,57 @@
+configuration:
+  DATALOGGER_INPUT_METHOD:
+    name: Input
+    description: >-
+      serial: a P1 cable on this device. ipv4: a P1 cable on another device in
+      your network (for example ser2net), set with network host and port.
+  DATALOGGER_API_HOSTS:
+    name: DSMR Reader address
+    description: >-
+      The DSMR Reader that receives the telegrams, for example
+      http://192.168.1.10:7777. Switch on its API first. Separate several with
+      commas.
+  DATALOGGER_API_KEYS:
+    name: API key
+    description: >-
+      The API key from the receiving DSMR Reader's configuration. Separate
+      several with commas, in the same order as the addresses.
+  DATALOGGER_SERIAL_PORT:
+    name: Serial port
+    description: >-
+      Input serial only. Home Assistant lists the ports under Settings ->
+      System -> Hardware. A /dev/serial/by-id/... path stays the same when you
+      plug in other USB devices.
+  DATALOGGER_SERIAL_BAUDRATE:
+    name: Baud rate
+    description: 115200 for DSMR 4 and 5 meters, 9600 for DSMR 2 and 3.
+  DATALOGGER_SERIAL_BYTESIZE:
+    name: Byte size
+    description: 8 for DSMR 4 and 5 meters, 7 for DSMR 2 and 3.
+  DATALOGGER_SERIAL_PARITY:
+    name: Parity
+    description: N (none) for DSMR 4 and 5 meters, E (even) for DSMR 2 and 3.
+  DATALOGGER_SLEEP:
+    name: Seconds between telegrams
+    description: >-
+      How long the datalogger waits after sending a telegram before it reads
+      the next one.
+  DATALOGGER_NETWORK_HOST:
+    name: Network host
+    description: Input ipv4 only. The address of the device with the P1 cable.
+  DATALOGGER_NETWORK_PORT:
+    name: Network port
+    description: Input ipv4 only. The port that device sends the telegrams on.
+  DATALOGGER_DEBUG_LOGGING:
+    name: Debug logging
+    description: Log every telegram and every answer from DSMR Reader.
+  DATALOGGER_MIN_SLEEP_FOR_RECONNECT:
+    name: Reconnect from (seconds)
+    description: >-
+      When the seconds between telegrams are this or more, the datalogger opens
+      the connection to the meter again for every telegram, instead of keeping
+      it open.
+  DATALOGGER_TIMEOUT:
+    name: Timeout (seconds)
+    description: >-
+      How long the datalogger waits for a telegram from the meter, and for
+      DSMR Reader's answer.
