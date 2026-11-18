@@ -235,6 +235,44 @@ describe('DSMR Reader add-on', () => {
       return Number(stdout.trim());
     };
     const sessionCookie = (response) => response.headers.getSetCookie().find((cookie) => cookie.startsWith('sessionid='));
+    /**
+     * Requests pages inside the container one after another in one browser session (a cookie
+     * jar) and returns their status codes. A step comes through Ingress (with nginx's token)
+     * unless `ingress: false`, the app's own port. `{ passwordLogin: true }` logs in on the login
+     * form with the add-on's admin user.
+     */
+    const sessionFromInside = async (steps) => {
+      const curl = `curl -s -b "$jar" -c "$jar" --unix-socket /run/gunicorn/dsmr_webinterface.socket`;
+      const commands = steps.map(({ headers = {}, ingress = true, passwordLogin = false }) => {
+        if (passwordLogin) {
+          return (
+            `csrf="$(${curl} http://localhost/admin/login/ | grep -o 'name="csrfmiddlewaretoken" value="[^"]*"' ` +
+            `| head -n 1 | sed 's/.*value="//; s/"$//')"; ` +
+            `${curl} -o /dev/null -w '%{http_code}\\n' --data-urlencode "csrfmiddlewaretoken=\${csrf}" ` +
+            `--data-urlencode 'username=${config.options.DSMRREADER_ADMIN_USER}' ` +
+            `--data-urlencode 'password=${config.options.DSMRREADER_ADMIN_PASSWORD}' ` +
+            `--data-urlencode 'next=/admin/' http://localhost/admin/login/`
+          );
+        }
+        const token = ingress ? '-H "X-Dsmr-Addon-Ingress-Token: ${token}"' : '';
+        const args = Object.entries(headers).map(([name, value]) => `-H '${name}: ${value}'`).join(' ');
+        return `${curl} -o /dev/null -w '%{http_code}\\n' ${token} ${args} http://localhost/admin/`;
+      });
+      const { stdout } = await addonExec(
+        SLUG,
+        [
+          'jar="$(mktemp)"',
+          'token="$(cat /run/s6/container_environment/DSMRREADER_ADDON_INGRESS_TOKEN)"',
+          ...commands,
+          'rm -f "$jar"',
+        ].join('; '),
+      );
+      return stdout.trim().split('\n').map(Number);
+    };
+    const admin = { 'X-Remote-User-Id': 'admin-1', 'X-Remote-User-Name': 'admin', 'X-Remote-User-Groups': 'system-admin' };
+    const otherAdmin = { ...admin, 'X-Remote-User-Id': 'admin-2', 'X-Remote-User-Name': 'other admin' };
+    const nonAdmin = { 'X-Remote-User-Id': 'user-1', 'X-Remote-User-Name': 'user', 'X-Remote-User-Groups': 'system-users' };
+    const demotedAdmin = { ...admin, 'X-Remote-User-Groups': 'system-users' };
 
     before(async () => {
       info = await addonInfo(SLUG);
@@ -280,6 +318,31 @@ describe('DSMR Reader add-on', () => {
       assert.equal(await fromInside('/admin/', { ...user, 'X-Remote-User-Groups': 'system-admin' }), 200);
       assert.equal(await fromInside('/admin/', { ...user, 'X-Remote-User-Groups': 'system-users' }), 302);
       assert.equal(await fromInside('/admin/', user), 302);
+    });
+
+    it('logs the session out when another Home Assistant user opens it in the same browser', async () => {
+      assert.deepEqual(await sessionFromInside([{ headers: admin }, { headers: nonAdmin }]), [200, 302]);
+      assert.deepEqual(
+        await sessionFromInside([{ headers: admin }, { headers: otherAdmin }]),
+        [200, 200],
+        'another admin is logged in again',
+      );
+    });
+
+    it('logs the session out when the Home Assistant user is no longer an admin', async () => {
+      assert.deepEqual(await sessionFromInside([{ headers: admin }, { headers: demotedAdmin }]), [200, 302]);
+    });
+
+    it("does not accept the session on the app's own port", async () => {
+      assert.deepEqual(await sessionFromInside([{ headers: admin }, { ingress: false }]), [200, 302]);
+    });
+
+    it('keeps a session logged in with a password', async () => {
+      assert.deepEqual(
+        await sessionFromInside([{ passwordLogin: true }, { headers: nonAdmin }, { ingress: false }]),
+        [302, 200, 200],
+        `the login form redirects to the admin page, and the session stays logged in\n\nAdd-on log:\n${await addonLogs(SLUG)}`,
+      );
     });
   });
 

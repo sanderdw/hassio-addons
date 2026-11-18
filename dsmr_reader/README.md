@@ -39,7 +39,7 @@ See config instructions here: https://github.com/sanderdw/hassio-addons
 
 ## Ingress auto-login
 
-With **Log in Home Assistant admins automatically** on (the default) and **Web access** set to ```Ingress```, a Home Assistant admin who opens DSMR Reader in Home Assistant is logged in as the **Admin username** without a login page. Home Assistant users who are not admins, and visitors on the app's own port, still get the login page.
+With **Log in Home Assistant admins automatically** on (the default) and **Web access** set to ```Ingress```, a Home Assistant admin who opens DSMR Reader in Home Assistant is logged in as the **Admin username** without a login page. Home Assistant users who are not admins, and visitors on the app's own port, still get the login page. Such a login lasts only while that admin uses DSMR Reader through Home Assistant: another Home Assistant user in the same browser, losing the admin role, or opening the app's own port logs it out. A login with the password is not affected.
 
 - Logging out in DSMR Reader has no effect through Ingress: the next page logs you in again.
 - Switch **Log in Home Assistant admins automatically** off to always log in with the **Admin password**.
