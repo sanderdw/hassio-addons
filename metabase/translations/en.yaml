@@ -37,4 +37,4 @@ configuration:
       -Xmx sets the most memory Metabase may use, for example -Xmx2g for 2 GB.
       Lower it on a device with little memory.
 network:
-  3000/tcp: Metabase web UI
+  3000/tcp: Metabase web UI, without Home Assistant

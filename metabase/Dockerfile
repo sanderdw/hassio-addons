@@ -5,7 +5,8 @@ ARG HA_RELEASE
 
 RUN echo "This is ${BUILD_ARCH}"
 
-RUN apk add --no-cache jq
+# nginx serves Metabase to Home Assistant ingress (rootfs/etc/nginx).
+RUN apk add --no-cache jq nginx
 
 RUN \
     mkdir -p /usr/src/bashio \
@@ -16,6 +17,7 @@ RUN \
     \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /usr/src/*
+COPY rootfs /
 COPY run.sh /
 RUN chmod a+x /run.sh
 ENTRYPOINT ["/run.sh"]
