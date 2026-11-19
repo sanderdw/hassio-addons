@@ -20,10 +20,12 @@ Meet the easy, open source way for everyone to ask questions and learn from data
 Metabase stores its questions, dashboards and users in an application database. Set it with
 **Database type** on the app's Configuration tab.
 
-- **`h2` (the default):** a file, `/config/metabase.db`. It needs nothing else. `/config` is the
-  app's own folder: with the Samba app, it is the folder ending in `_metabase` in the
-  `app_configs` share (`addon_configs` in older versions). The file is in the app's backups.
-  When you uninstall the app and choose to delete its data, the file is deleted too. Metabase [recommends PostgreSQL](https://www.metabase.com/docs/latest/installation-and-operation/migrating-from-h2)
+- **`h2` (the default):** a file in the app's own folder. It needs nothing else. In Home Assistant
+  that folder is `app_configs/<id>_metabase` (`addon_configs` in older versions), for example in
+  the Samba app's `app_configs` share. Inside the app it is `/config`, so the **Database file**
+  option says `/config/metabase.db`. The file is in the app's backups. When you uninstall the app
+  and choose to delete its data, the file is deleted too. Metabase
+  [recommends PostgreSQL](https://www.metabase.com/docs/latest/installation-and-operation/migrating-from-h2)
   for long-term use.
 
   Up to version 1.6.1 the default was `/backup/metabase.db`, which is in no backup and stays

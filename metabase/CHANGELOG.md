@@ -2,7 +2,7 @@
 
 ## 1.6.2
 
-- The H2 database (the default **Database type**) is now in the app's backups. It moves from `/backup/metabase.db` to the app's own folder, `/config/metabase.db`, at the first start. Before, no Home Assistant backup contained it, and it stayed behind when you uninstalled the app with its data. The **Database file** option changes with it. A database file you set yourself stays where it is.
+- The H2 database (the default **Database type**) is now in the app's backups. It moves from `/backup/metabase.db` to the app's own folder at the first start: `app_configs/<id>_metabase` in Home Assistant, `/config/metabase.db` in the **Database file** option. Before, no Home Assistant backup contained it, and it stayed behind when you uninstalled the app with its data. The **Database file** option changes with it. A database file you set yourself stays where it is.
 
 ## 1.6.1
 
