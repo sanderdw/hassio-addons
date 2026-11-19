@@ -27,6 +27,19 @@ server {
         add_header Cache-Control no-cache;
     }
 
+    # In any frame, Metabase hides its gear menu (Admin settings, account settings, help), search
+    # and "New": it takes the frame for an embedding on another site. Home Assistant's frame shows
+    # the whole app, so in the main bundle isWithinIframe() answers false. The bundle has its own
+    # path here: Metabase's ETag stays the same, so browsers would keep a copy without the change.
+    location /ingress/app-main. {
+        proxy_pass http://127.0.0.1:3000/app/dist/app-main.;
+        proxy_http_version 1.1;
+        proxy_set_header Host $http_host;
+        proxy_set_header Accept-Encoding "";
+        sub_filter_types text/javascript application/javascript;
+        sub_filter 'return window.self!==window.top' 'return false';
+    }
+
     location / {
         proxy_pass http://127.0.0.1:3000;
         proxy_http_version 1.1;
@@ -43,6 +56,9 @@ server {
         proxy_set_header Accept-Encoding "";
         sub_filter '<base href="/"' '<script src="%%ingress_entry%%/ingress.js"></script><base href="%%ingress_entry%%/"';
         sub_filter '<meta name="base-href" content="/"' '<meta name="base-href" content="%%ingress_entry%%/"';
+        # Metabase's main bundle from /ingress/ below, which shows its whole menu in a frame.
+        sub_filter 'preload" href="app/dist/app-main.' 'preload" href="ingress/app-main.';
+        sub_filter 'src="app/dist/app-main.' 'src="ingress/app-main.';
 
         # In a frame, Metabase's frontend says it is embedded, and Metabase then gives it a session
         # for frames on other sites: one that needs an anti-CSRF header on every request. Images

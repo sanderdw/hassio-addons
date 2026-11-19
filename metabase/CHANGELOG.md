@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.6.3
+
+- Fix the missing gear menu (Admin settings, account settings, help), search and **+ New** when you open Metabase in Home Assistant. Metabase hides them in any frame, as it expects to be embedded in another website; the app now shows them in Home Assistant's frame too.
+
 ## 1.6.2
 
 - The H2 database (the default **Database type**) is now in the app's backups. It moves from `/backup/metabase.db` to the app's own folder at the first start: `app_configs/<id>_metabase` in Home Assistant, `/config/metabase.db` in the **Database file** option. Before, no Home Assistant backup contained it, and it stayed behind when you uninstalled the app with its data. The **Database file** option changes with it. A database file you set yourself stays where it is.

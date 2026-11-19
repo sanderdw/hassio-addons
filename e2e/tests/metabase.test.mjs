@@ -267,11 +267,30 @@ describe('Metabase add-on', () => {
       assert.equal(response.headers.get('x-frame-options'), 'SAMEORIGIN');
     });
 
+    it("shows Metabase's whole menu in Home Assistant's frame", async () => {
+      // In a frame, Metabase hides its gear menu (Admin settings), search and "New". Ingress
+      // serves its main bundle from its own path, with that frame check answering false.
+      const html = await (await ingress()).text();
+      const main = html.match(/<script[^>]+src="(ingress\/app-main\.[^"]+\.js)"/)?.[1];
+      assert.ok(main, 'the page loads the main bundle from ingress/');
+      assert.ok(html.includes(`<link rel="preload" href="${main}"`), 'and preloads that one');
+
+      const check = 'return window.self!==window.top';
+      const original = await (await fetch(`${METABASE_URL}/${main.replace('ingress/', 'app/dist/')}`)).text();
+      assert.ok(original.includes(check), `Metabase's own bundle still has the frame check "${check}"`);
+      const response = await ingress(main);
+      assert.equal(response.status, 200, main);
+      assert.match(response.headers.get('content-type'), /javascript/);
+      const patched = await response.text();
+      assert.ok(!patched.includes(check), 'the frame check is gone');
+      assert.equal(patched, original.replace(check, 'return false'), 'and nothing else changed');
+    });
+
     it('logs in with a session cookie for the ingress path only', async (t) => {
       if (!session) return t.skip('the setup did not complete');
-      // In Home Assistant's frame, Metabase's frontend sends X-Metabase-Embedded. The session
-      // must still be a normal one, which images (the pin map's tiles) can use without the
-      // anti-CSRF header of an embedded session.
+      // In a frame, Metabase's frontend sends X-Metabase-Embedded (not the bundle that ingress
+      // serves, but nginx drops the header anyway). The session must be a normal one, which
+      // images (the pin map's tiles) can use without the anti-CSRF header of an embedded session.
       const login = await ingress('api/session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-Metabase-Embedded': 'true' },
