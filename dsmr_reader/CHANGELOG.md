@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.3.1
+
+- The app has its own AppArmor profile, which limits what it may do on your system. Home Assistant raises its security rating from 7 to 8.
+- The documentation moved to the app's **Documentation** tab. The Info tab keeps a short introduction.
+- Technical: one image for both architectures (`ghcr.io/sanderdw/hassio-addons/ha-dsmr-reader`), built with Home Assistant's builder and signed with Cosign. The base image is named in the Dockerfile, so the app also builds where the Supervisor does not pass `BUILD_FROM`.
+- Technical: bashio 0.19.0.
+
 ## 2.3.0
 
 - The Configuration tab shows readable names and explanations for every option, in English and Dutch. The option `MQTT_HOME_ASSISTANT` (Connect to Home Assistant through MQTT) is now at the top. Your settings stay as they are.

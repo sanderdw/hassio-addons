@@ -10,7 +10,7 @@ disable-model-invocation: false
 
 ## What This Skill Produces
 A complete DSMR Reader add-on release across config, docs and CI, including:
-- Updated base image tag in `.github/workflows/dsmr-reader.yml` for both arch matrix entries (`amd64`, `aarch64`)
+- Updated base image tag in the `ARG BUILD_FROM` default of `dsmr_reader/Dockerfile`
 - Updated app version in `dsmr_reader/config.json`, plus any `options`/`schema` fixes from the configuration audit
 - Updated `dsmr_reader/rootfs/etc/s6-overlay/s6-rc.d/set-hassio-vars/run` when the audit requires it
 - New release entry at the top of `dsmr_reader/CHANGELOG.md`
@@ -33,7 +33,7 @@ Provide:
 ## Procedure
 
 ### 1. Discover Current and Target Versions
-- Read `.github/workflows/dsmr-reader.yml` to find the current `BASE_IMAGE: ghcr.io/xirixiz/dsmr-reader-docker:X.Y.Z` (both matrix entries should share the same tag).
+- Read `dsmr_reader/Dockerfile` to find the current `ARG BUILD_FROM=ghcr.io/xirixiz/dsmr-reader-docker:X.Y.Z`.
 - Read `dsmr_reader/config.json` to find current add-on `version`.
 - Read the `dsmr-shield` line in `dsmr_reader/README.md` to find the current badge version.
 - Find the latest **pinned `Major.Minor.Patch`** tag on GHCR. Floating aliases (`latest`, `Major`, `Major.Minor`) and prerelease tags (e.g. `-beta`, `development`) are filtered out; only use them if explicitly requested.
@@ -107,7 +107,8 @@ Produce a short audit report with sections:
 Apply the fixes to `config.json` and/or the run script, then mention each ❌/⚠️ change in the changelog entry under a dedicated bullet (e.g. `- Config: add \`INFO\` to \`DSMRREADER_LOGLEVEL\` to match upstream`).
 
 ### 5. Update Files
-- `.github/workflows/dsmr-reader.yml`: replace `BASE_IMAGE: ghcr.io/xirixiz/dsmr-reader-docker:{OLD}` with the new tag for **both** matrix entries (`amd64`, `aarch64`).
+- `dsmr_reader/Dockerfile`: replace `ARG BUILD_FROM=ghcr.io/xirixiz/dsmr-reader-docker:{OLD}` with the new tag. The workflow builds both architectures from it.
+- `dsmr_reader/apparmor.txt`: no change, unless the tests in step 6 fail on something AppArmor blocks. Then follow the AppArmor item in `AGENTS.md`.
 - `dsmr_reader/config.json`: set `"version"` to the new add-on version. Apart from the audit fixes from step 4, touch nothing else.
 - `dsmr_reader/README.md`: in the `[dsmr-shield]:` URL, replace `DSMR%20Reader%20Version-%20{OLD_MAJOR.MINOR}-purple` with the upstream DSMR Reader **Major.Minor** (e.g. `6.1`, not `6.1.0`). Keep the existing URL-encoded space (`%20`) before the version.
 - `dsmr_reader/CHANGELOG.md`: prepend a new section at the top:
@@ -121,7 +122,7 @@ Apply the fixes to `config.json` and/or the run script, then mention each ❌/�
   Add additional bullets for breaking changes / new config options when the upstream changelog warrants it.
 
 ### 6. Test in the e2e VM
-The DSMR Reader test builds the add-on from the new `BASE_IMAGE` in the working tree. The datalogger test then sends telegrams to that DSMR Reader's API, and reuses it when it is installed, so run the DSMR Reader test first:
+The DSMR Reader test builds the add-on from the new base image in the working tree's Dockerfile. The datalogger test then sends telegrams to that DSMR Reader's API, and reuses it when it is installed, so run the DSMR Reader test first:
 ```
 ./e2e/haos.mjs up
 ./e2e/haos.mjs test e2e/tests/dsmr-reader.test.mjs e2e/tests/dsmr-datalogger.test.mjs e2e/tests/dsmr-reader-mqtt.test.mjs
@@ -134,7 +135,7 @@ The DSMR Reader test builds the add-on from the new `BASE_IMAGE` in the working 
 Only publish when the user asked for a release or PR in this request (invoking this skill by name counts). If they only asked to check or prepare the update, stop after step 6 and summarize the diff and the test results.
 - Stage every changed file and commit:
   ```
-  git add .github/workflows/dsmr-reader.yml dsmr_reader/
+  git add dsmr_reader/
   git status --short   # confirm only intended files are staged
   git commit -m "DSMR Reader {NEW_ADDON_VERSION} (upstream {NEW_IMAGE_VERSION})"
   ```
@@ -158,7 +159,7 @@ Only publish when the user asked for a release or PR in this request (invoking t
 - **Already on latest**: if current image tag already equals the latest pinned tag, stop and confirm with the user before proceeding.
 
 ## Completion Criteria
-- Both `BASE_IMAGE` entries in `.github/workflows/dsmr-reader.yml` point to the new pinned `Major.Minor.Patch` tag, and that tag is published for `linux/amd64` and `linux/arm64`.
+- The `ARG BUILD_FROM` default in `dsmr_reader/Dockerfile` points to the new pinned `Major.Minor.Patch` tag, and that tag is published for `linux/amd64` and `linux/arm64`.
 - `dsmr_reader/config.json` `version` equals the new add-on version.
 - `dsmr_reader/config.json` `options` and `schema` reflect the upstream env-var set for the target release (added, removed, renamed, or retyped keys have been reconciled), and every change is mentioned in the changelog entry.
 - Every user-facing key in `dsmr_reader/config.json` `options`/`schema` matches an upstream env var name exactly (case-sensitive), except the intentional divergences listed in step 4a.
@@ -167,7 +168,7 @@ Only publish when the user asked for a release or PR in this request (invoking t
 - Every `list(...)` schema enum contains all values accepted by upstream for that variable.
 - `dsmr_reader/README.md` `dsmr-shield` badge shows the upstream `Major.Minor`.
 - `dsmr_reader/CHANGELOG.md` has a new top entry naming the new add-on version, the new image tag, the upstream changelog link, and any env-var changes.
-- `git grep "{OLD_IMAGE_VERSION}" dsmr_reader/ .github/workflows/dsmr-reader.yml` returns only historical CHANGELOG hits.
+- `git grep "{OLD_IMAGE_VERSION}" dsmr_reader/` returns only historical CHANGELOG hits.
 - `e2e/tests/dsmr-reader.test.mjs`, `e2e/tests/dsmr-datalogger.test.mjs` and `e2e/tests/dsmr-reader-mqtt.test.mjs` pass, or the user agreed to publish without them.
 - If published: a single atomic commit on branch `reader-{NEW_ADDON_VERSION}` (based on `origin/main`) covers all changed files, the branch exists on `origin`, and a PR is open against `main`.
 

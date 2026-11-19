@@ -1,5 +1,5 @@
-#!/bin/bash bashio
-ADDON_VERSION=$(bashio::addon.version)
+#!/usr/bin/env bashio
+ADDON_VERSION=$(bashio::app.version)
 bashio::log.blue "Home Assistant VoltViz App - Release: ${ADDON_VERSION}"
 # The check must not hold up the start when its server does not answer.
 CHECK_UPDATE=$(curl -s --max-time 10 "https://api-check.duckdns.org/voltviz-app/${ADDON_VERSION}?arch=$(bashio::info.arch)") || true

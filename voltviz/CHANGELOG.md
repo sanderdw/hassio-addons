@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased]
+
+These app changes ship with the next VoltViz version.
+
+### Changed
+- **Breaking:** port 8099 is off by default. Open VoltViz in Home Assistant (**Open web UI** or the sidebar). To keep opening it without Home Assistant, for example on a TV, set a port, such as 8099, on the Configuration tab under **Network** (select **Show disabled ports**).
+- Technical: Docker's init process starts the app, as Home Assistant advises for images without S6 overlay. bashio 0.19.0.
+
 ## [0.35.3] - 2026-11-17
 
 ### Changed

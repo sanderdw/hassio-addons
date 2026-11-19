@@ -1,0 +1,43 @@
+#include <tunables/global>
+
+profile dsmr_reader flags=(attach_disconnected,mediate_deleted) {
+  #include <abstractions/base>
+
+  # Profile built in complain mode with the e2e tests: see "AppArmor" in AGENTS.md
+  file,
+  signal,
+  network,
+
+  # s6 starts services as other users (s6-applyuidgid), the base image's init sets up users and
+  # groups (groupadd, groupmod, usermod, chown), and the nginx master binds port 80 and runs its
+  # workers as the nginx user
+  capability audit_write,
+  capability chown,
+  capability dac_override,
+  capability fowner,
+  capability fsetid,
+  capability kill,
+  capability net_bind_service,
+  capability setgid,
+  capability setuid,
+
+  # S6-Overlay
+  /init ix,
+  /bin/** ix,
+  /sbin/** ix,
+  /usr/bin/** ix,
+  /usr/sbin/** ix,
+  /usr/local/bin/** ix,
+  /run/{s6,s6-rc*,service}/** ix,
+  /package/** ix,
+  /command/** ix,
+  /etc/s6-overlay/** rwix,
+  /run/{,**} rwk,
+  /dev/tty rw,
+
+  # Bashio
+  /usr/lib/bashio/** ix,
+  /tmp/** rwk,
+
+  /data/** rw,
+}

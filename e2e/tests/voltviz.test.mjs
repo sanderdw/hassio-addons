@@ -89,6 +89,16 @@ describe('VoltViz add-on', () => {
     assert.equal(info.state, 'stopped');
   });
 
+  it('has the highest security rating, with its own AppArmor profile', async () => {
+    const info = await addonInfo(SLUG);
+    assert.equal(info.apparmor, 'profile', 'the AppArmor profile from apparmor.txt is loaded');
+    assert.equal(info.rating, 8);
+  });
+
+  it("opens no port by default: Home Assistant's ingress is the way in", async () => {
+    assert.deepEqual((await addonInfo(SLUG)).network, { '80/tcp': null });
+  });
+
   it('starts with its default options', async () => {
     assert.equal(config.options.SENDSPIN_URL, MUSIC_ASSISTANT.sendspinUrl, 'the default points at Music Assistant');
     // Manual boot: the tests start the add-on themselves.

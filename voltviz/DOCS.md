@@ -23,6 +23,13 @@ Youtube Video: [https://youtu.be/ONP__FHpd-M](https://youtu.be/ONP__FHpd-M)
 
 This App uses Home Assistant Ingress for seamless integration. Click "OPEN WEB UI" in the app panel to access VoltViz directly within Home Assistant.
 
+### Without Home Assistant
+
+To open VoltViz in a browser that is not logged in to Home Assistant, such as a TV, give it a port
+on the app's Configuration tab, under **Network** (select **Show disabled ports**), for example
+`8099`. VoltViz then answers on `http://homeassistant.local:8099`, without a login. The port is off
+until you set it.
+
 ## Sendspin / Music Assistant
 
 VoltViz supports [Music Assistant](https://music-assistant.io/) through [Sendspin](https://www.sendspin-audio.com/).

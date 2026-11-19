@@ -1,0 +1,39 @@
+#include <tunables/global>
+
+profile dsmr_datalogger flags=(attach_disconnected,mediate_deleted) {
+  #include <abstractions/base>
+
+  # Profile built in complain mode with the e2e tests: see "AppArmor" in AGENTS.md
+  file,
+  signal,
+  network,
+
+  # S6-Overlay and its init scripts, which run as root. The datalogger itself needs none.
+  capability chown,
+  capability dac_override,
+  capability fowner,
+  capability fsetid,
+  capability kill,
+  capability setgid,
+  capability setuid,
+
+  # S6-Overlay
+  /init ix,
+  /bin/** ix,
+  /sbin/** ix,
+  /usr/bin/** ix,
+  /usr/sbin/** ix,
+  /usr/local/bin/** ix,
+  /run/{s6,s6-rc*,service}/** ix,
+  /package/** ix,
+  /command/** ix,
+  /etc/s6-overlay/** rwix,
+  /run/{,**} rwk,
+  /dev/tty rw,
+
+  # Bashio
+  /usr/lib/bashio/** ix,
+  /tmp/** rwk,
+
+  /data/** rw,
+}

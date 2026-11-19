@@ -29,12 +29,9 @@ browser to look at an add-on yourself.
 | Music Assistant | The [Music Assistant add-on](https://github.com/music-assistant/home-assistant-addon), installed from its repository by the VoltViz tests. Its image is 3 GB. |
 
 The add-on under test is built inside the VM by the Supervisor, from your working tree. The copy
-that goes into the VM differs from the repository in two ways, because the published image must
-not be used:
-
-- `image` is removed from `config.json`, so the Supervisor builds the Dockerfile.
-- `ARG BUILD_FROM` gets the base image that the add-on's GitHub workflow builds with (the
-  `BASE_IMAGE` of its amd64 matrix entry).
+that goes into the VM has no `image` in `config.json`, so the Supervisor builds the Dockerfile
+instead of pulling the published image. The Dockerfile's `ARG BUILD_FROM` default is the base
+image, as in GitHub's workflows: the Supervisor no longer passes `BUILD_FROM`.
 
 The add-on's slug in the VM is `local_<slug>`, for example `local_dsmr_reader`.
 

@@ -1,7 +1,8 @@
-ARG BUILD_FROM
-FROM $BUILD_FROM
+# https://contributors.home-assistant.io/apps/guides/dockerfile/
+ARG BUILD_FROM=ghcr.io/xirixiz/dsmr-reader-docker:6.2.2
+FROM ${BUILD_FROM}
 ARG BUILD_ARCH
-ARG HA_RELEASE
+ARG BUILD_VERSION
 
 ENV LANG=C.UTF-8
 
@@ -9,7 +10,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends jq && rm -rf /v
 
 RUN \
     mkdir -p /usr/src/bashio \
-    && curl -L -f -s "https://github.com/hassio-addons/bashio/archive/refs/tags/v0.17.5.tar.gz" \
+    && curl -L -f -s "https://github.com/hassio-addons/bashio/archive/refs/tags/v0.19.0.tar.gz" \
         | tar -xzf - --strip 1 -C /usr/src/bashio \
     && mv /usr/src/bashio/lib /usr/lib/bashio \
     && ln -s /usr/lib/bashio/bashio /usr/bin/bashio \
@@ -44,6 +45,6 @@ HEALTHCHECK --interval=120s --timeout=5s --start-period=900s --start-interval=5s
 
 # Labels
 LABEL \
-  io.hass.version=$HA_RELEASE \
-  io.hass.type="addon" \
-  io.hass.arch=$BUILD_ARCH
+  io.hass.version=${BUILD_VERSION} \
+  io.hass.type="app" \
+  io.hass.arch=${BUILD_ARCH}

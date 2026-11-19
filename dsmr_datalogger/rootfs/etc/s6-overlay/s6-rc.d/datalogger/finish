@@ -1,14 +1,14 @@
-#!/usr/bin/env bashio
+#!/command/with-contenv bashio
 # ==============================================================================
 # Runs when the datalogger exits. s6 starts it again (see the run script), so a
-# failure that passes does not stop the add-on: the P1 cable pulled out, or
+# failure that passes does not stop the app: the P1 cable pulled out, or
 # DSMR Reader not answering for a while.
 # s6-overlay docs: https://github.com/just-containers/s6-overlay
 # ==============================================================================
 
 declare APP_EXIT_CODE=${1}
 
-# 256 means the datalogger was stopped by a signal, as when the add-on stops.
+# 256 means the datalogger was stopped by a signal, as when the app stops.
 if [[ "${APP_EXIT_CODE}" -ne 0 ]] && [[ "${APP_EXIT_CODE}" -ne 256 ]]; then
   bashio::log.warning "Datalogger stopped with exit code ${APP_EXIT_CODE}, starting it again"
 else

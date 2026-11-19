@@ -15,11 +15,20 @@ skills in `.claude/skills/` (for example `voltviz-release-update`).
 - After changing a workflow in `.github/workflows/`, run `actionlint` (without arguments it checks
   them all). It also checks the shell in `run:` steps when `shellcheck` is installed. Install both
   with `brew install actionlint shellcheck` if they are missing.
-- The DSMR Reader, DSMR Datalogger and Metabase workflows build each architecture on its own
-  runner (aarch64 on `ubuntu-24.04-arm`, no QEMU) and push to ghcr.io only. A version branch
-  publishes `<version>`. On `main` a version that already exists is tagged `latest` without a
-  rebuild; a new version is built with both tags. To republish an existing version, rerun the
-  workflow on its version branch.
+- Every app's workflow uses Home Assistant's builder actions (`prepare-multi-arch-matrix`,
+  `build-image`, `publish-multi-arch-manifest`). Each architecture builds on its own runner
+  (aarch64 on `ubuntu-24.04-arm`, no QEMU), and the Cosign-signed multi-arch image is
+  `ghcr.io/sanderdw/hassio-addons/ha-<app>` (per architecture `<arch>-ha-<app>`). A version
+  branch publishes `<version>` and `latest`; `main` skips a version that already exists, so only
+  version branches (re)publish. A branch with another name publishes nothing: run the workflow
+  on it by hand (`gh workflow run <name> --ref <branch>`) before a merge bumps a version.
+- A Dockerfile names its base image as the default of `ARG BUILD_FROM`. Since Supervisor
+  2026.04.0 the Supervisor does not pass `BUILD_FROM`, and the builder actions do not either.
+- Every app has an AppArmor profile (`apparmor.txt`), worth 1 point of the security rating (8 of
+  8). When a new upstream version needs more access, add `complain` to the profile's flags, run
+  the app's tests, read what AppArmor would have blocked with
+  `./e2e/haos.mjs ssh "journalctl _TRANSPORT=audit -g 'apparmor=\"ALLOWED\"' --no-pager"`, add
+  that to the profile and remove `complain` again.
 - Add-ons support `aarch64` and `amd64` only. The Supervisor logs a warning for `armhf`, `armv7`
   and `i386` in `config.json`, because Home Assistant no longer supports 32-bit systems.
 
@@ -51,8 +60,8 @@ does not need and leaves its own running.
 | --- | --- | --- |
 | `dsmr_reader` | `dsmr-reader.test.mjs`, and `dsmr-reader-mqtt.test.mjs` for the `MQTT_HOME_ASSISTANT` option | TimescaleDB. The MQTT test removes and installs the Mosquitto broker app and Home Assistant's MQTT integration. |
 | `dsmr_datalogger` | `dsmr-datalogger.test.mjs` | DSMR Reader as its API server (`startDsmrReaderAsServer()` in `e2e/lib/dsmr-reader.mjs`). |
-| `metabase` | `metabase.test.mjs` | TimescaleDB. Its default host port 7778 answers on http://127.0.0.1:17778, ingress at http://127.0.0.1:18123/app/local_metabase. It uses 1.3 GB of the VM's 4 GB. The fonts and the pin map through ingress need a browser check (see Metabase below). |
-| `voltviz` | `voltviz.test.mjs` | Music Assistant (`ensureMusicAssistant()`). The tests give it host port 7777, because its default 8099 is not forwarded. The visualizer in the browser is not covered. |
+| `metabase` | `metabase.test.mjs` | TimescaleDB. Its port is off by default; the test opens host port 7778, on http://127.0.0.1:17778, ingress at http://127.0.0.1:18123/app/local_metabase. It uses 1.3 GB of the VM's 4 GB. The fonts and the pin map through ingress need a browser check (see Metabase below). |
+| `voltviz` | `voltviz.test.mjs` | Music Assistant (`ensureMusicAssistant()`). Its port is off by default; the tests give it host port 7777. The visualizer in the browser is not covered. |
 
 ### Before a release
 
@@ -78,6 +87,10 @@ The release skills run the add-on's test files on the release branch:
   - `No valid ingress session`: the test "refuses a visitor without an ingress session".
   - `Home Assistant has no MQTT service` from DSMR Reader: the MQTT test starts it without Mosquitto.
   - `could not open port /dev/ttyUSB0` and DSMR Datalogger exit code 1: the cable was unplugged.
+  - `Connection refused` to `local-dsmr-reader` from DSMR Datalogger: the next test file stopped
+    DSMR Reader before the Datalogger.
+  - `Ingress error: Cannot connect to host …:8099` once, seconds after Metabase starts: the test
+    asks ingress for the starting page before nginx listens.
   - `TimescaleDB did not handle SIGTERM (exit code 143)`: a test stopped the store add-on, which
     then shows "error".
   - `No API token provided for /core`: Music Assistant starting.
@@ -149,9 +162,8 @@ integration), `timescaledb.mjs`, `dsmr-reader.mjs`, `music-assistant.mjs` and `m
   for this: Docker marks a paused container unhealthy.
 - Containers are named `app_<slug>` on the current Supervisor (`addon_<slug>` on older ones). Use
   `containerName(slug)`, `addonExec()` and `addonLogs()` instead of a fixed name.
-- The staged copy differs from the repository in two ways: `image` is removed from `config.json`,
-  and `ARG BUILD_FROM` gets the `BASE_IMAGE` of the amd64 entry in the add-on's GitHub workflow.
-  An add-on whose workflow has no such entry needs `installLocalAddon(dir, { baseImage })`.
+- The staged copy has no `image` in `config.json`, so the Supervisor builds the working tree's
+  Dockerfile instead of pulling the published image.
 - Test files run one after another, because they share the VM. Two add-ons that read the P1
   cable at the same time each get parts of a telegram, so stop the other one first.
 - An option that has a default cannot be removed: leaving it out of `options` brings the default
