@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.6.2
+
+- The H2 database (the default **Database type**) is now in the app's backups. It moves from `/backup/metabase.db` to the app's own folder, `/config/metabase.db`, at the first start. Before, no Home Assistant backup contained it, and it stayed behind when you uninstalled the app with its data. The **Database file** option changes with it. A database file you set yourself stays where it is.
+
 ## 1.6.1
 
 - Fix "502 Bad Gateway" when you open Metabase while it is still starting. Home Assistant now shows the app as starting until Metabase is ready, and only then offers "Open web UI".

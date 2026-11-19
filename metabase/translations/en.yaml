@@ -26,8 +26,9 @@ configuration:
   MB_DB_FILE:
     name: Database file
     description: >-
-      Type h2 only. Where Metabase stores its file. The default in /backup is
-      included in Home Assistant's backups.
+      Type h2 only. Where Metabase stores its file. The default
+      /config/metabase.db is in the app's backups and is deleted when you
+      uninstall the app with its data.
   JAVA_TIMEZONE:
     name: Time zone
     description: A time zone name, such as Europe/Amsterdam.

@@ -29,7 +29,8 @@ configuration:
     name: Databasebestand
     description: >-
       Alleen bij type h2. Waar Metabase zijn bestand opslaat. De standaardwaarde
-      in /backup komt mee in de back-ups van Home Assistant.
+      /config/metabase.db komt mee in de back-ups van de app en wordt verwijderd
+      als je de app met zijn gegevens verwijdert.
   JAVA_TIMEZONE:
     name: Tijdzone
     description: De naam van een tijdzone, zoals Europe/Amsterdam.

@@ -20,9 +20,15 @@ Meet the easy, open source way for everyone to ask questions and learn from data
 Metabase stores its questions, dashboards and users in an application database. Set it with
 **Database type** on the app's Configuration tab.
 
-- **`h2` (the default):** a file, `/backup/metabase.db`. It needs nothing else and is included in
-  Home Assistant's backups. Metabase [recommends PostgreSQL](https://www.metabase.com/docs/latest/installation-and-operation/migrating-from-h2)
+- **`h2` (the default):** a file, `/config/metabase.db`. It needs nothing else. `/config` is the
+  app's own folder: with the Samba app, it is the folder ending in `_metabase` in the
+  `app_configs` share (`addon_configs` in older versions). The file is in the app's backups.
+  When you uninstall the app and choose to delete its data, the file is deleted too. Metabase [recommends PostgreSQL](https://www.metabase.com/docs/latest/installation-and-operation/migrating-from-h2)
   for long-term use.
+
+  Up to version 1.6.1 the default was `/backup/metabase.db`, which is in no backup and stays
+  after an uninstall. The app moves it to `/config/metabase.db` at its first start and changes
+  the **Database file** option. A database file you set yourself stays where it is.
 - **`postgres`:** a PostgreSQL database, such as the
   [TimescaleDB app](https://community.home-assistant.io/t/home-assistant-add-on-postgresql-timescaledb/198176) by Expaso:
   1. Install the TimescaleDB app.
@@ -68,7 +74,7 @@ In Metabase, go to Admin settings, Databases, and add a database:
 | Option | What it does |
 | --- | --- |
 | Database type | `h2` or `postgres`, see above. |
-| Database file | Type `h2` only. Where Metabase keeps its file. The default in `/backup` is included in Home Assistant's backups. |
+| Database file | Type `h2` only. Where Metabase keeps its file, see above. Paths in `/config` are in the app's backups. |
 | Database name, user, password, host, port | Type `postgres` only. The defaults are those of the TimescaleDB app. |
 | Time zone | The time zone Metabase works in, such as `Europe/Amsterdam`. |
 | Java options | `-Xmx` sets the most memory Metabase may use; the default `-Xmx2g` allows 2 GB. Lower it on a device with little memory. |

@@ -24,6 +24,7 @@ function _hass {
   CONFIG_PATH=/data/options.json
   export MB_DB_TYPE=$(bashio::config 'MB_DB_TYPE')
   export MB_DB_FILE=$(bashio::config 'MB_DB_FILE')
+  _move_h2_database
   export MB_DB_DBNAME=$(bashio::config 'MB_DB_DBNAME')
   export MB_DB_USER=$(bashio::config 'MB_DB_USER')
   export MB_DB_PASS=$(bashio::config 'MB_DB_PASS')
@@ -52,6 +53,62 @@ function _ingress {
     _info "Ingress ready at ${ingress_entry}"
   else
     bashio::log.red "Home Assistant Metabase Add-on - Ingress could not start, use port 3000 instead"
+  fi
+}
+
+# Up to 1.6.1 the default H2 database was /backup/metabase.db. Home Assistant leaves /backup out of
+# every backup and keeps it when the app is uninstalled with its data. The app's config folder
+# (/config here, /addon_configs/<slug> in Home Assistant) is in the app's backups and is removed with
+# its data. Move the database there once and point the option at it. A database file set by the
+# user stays where it is.
+H2_OLD_DEFAULT=/backup/metabase.db
+H2_NEW_DEFAULT=/config/metabase.db
+
+# Metabase keeps an H2 database in a folder (metabase.db/metabase.db.mv.db); older versions
+# kept it in files next to that path (metabase.db.mv.db).
+function _h2_files {
+  local path=$1
+  local files=()
+  if [[ -e "${path}" ]]; then
+    files+=("${path}")
+  fi
+  shopt -s nullglob
+  files+=("${path}".*)
+  shopt -u nullglob
+  if [[ ${#files[@]} -gt 0 ]]; then
+    printf '%s\n' "${files[@]}"
+  fi
+}
+
+function _move_h2_database {
+  if [[ "${MB_DB_FILE}" != "${H2_OLD_DEFAULT}" ]]; then
+    return 0
+  fi
+  local old_files=() moving=/config/.metabase.db.moving
+  mapfile -t old_files < <(_h2_files "${H2_OLD_DEFAULT}")
+  if [[ ${#old_files[@]} -gt 0 ]]; then
+    if [[ -n "$(_h2_files "${H2_NEW_DEFAULT}")" ]]; then
+      bashio::log.yellow "Home Assistant Metabase Add-on - Found an H2 database in both /backup and /config. Metabase uses the one in /config; ${H2_OLD_DEFAULT} is left as it is."
+    else
+      _info "Moving the H2 database from ${H2_OLD_DEFAULT} to ${H2_NEW_DEFAULT}"
+      # Copy first and remove /backup's copy only when everything arrived: /backup and /config
+      # are different mounts, so a move is a copy anyway.
+      rm -rf "${moving}"
+      if mkdir "${moving}" && cp -a "${old_files[@]}" "${moving}/" && mv "${moving}"/* /config/ && rmdir "${moving}"; then
+        rm -rf "${old_files[@]}"
+      else
+        rm -rf "${moving}"
+        bashio::log.red "Home Assistant Metabase Add-on - Could not move the H2 database; Metabase keeps using ${H2_OLD_DEFAULT}"
+        return 0
+      fi
+    fi
+  fi
+  export MB_DB_FILE="${H2_NEW_DEFAULT}"
+  # Point the option at the new place too, so the Configuration tab shows where the database is.
+  if bashio::addon.option 'MB_DB_FILE' "${H2_NEW_DEFAULT}"; then
+    _info "Database file option set to ${H2_NEW_DEFAULT}"
+  else
+    bashio::log.yellow "Home Assistant Metabase Add-on - Could not change the database file option; Metabase uses ${H2_NEW_DEFAULT} anyway"
   fi
 }
 

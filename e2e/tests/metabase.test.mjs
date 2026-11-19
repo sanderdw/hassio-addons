@@ -2,7 +2,8 @@
 // with PostgreSQL (the TimescaleDB add-on) as its application database, answering a question
 // from a database in TimescaleDB, on its own port and through Home Assistant ingress.
 //
-// Each run reinstalls the add-on and removes its H2 file and its `metabase` database.
+// Each run reinstalls the add-on and removes its H2 file and its `metabase` database. It ends by
+// uninstalling the add-on with its data, then installs and starts it again.
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -41,8 +42,11 @@ const SLUG = 'local_metabase';
 const APP_DATABASE = 'metabase';
 /** A database with known rows for Metabase to query. */
 const DATA_DATABASE = 'metabase_e2e';
-/** The add-on's H2 file (MB_DB_FILE=/backup/metabase.db) on the Home Assistant OS host. */
-const H2_ON_HOST = '/mnt/data/supervisor/backup/metabase.db';
+/** The add-on's H2 database (MB_DB_FILE=/config/metabase.db) on the Home Assistant OS host. */
+const H2_ON_HOST = `/mnt/data/supervisor/app_configs/${SLUG}/metabase.db`;
+/** Where versions up to 1.6.1 kept it by default (MB_DB_FILE=/backup/metabase.db). */
+const OLD_H2 = '/backup/metabase.db';
+const OLD_H2_ON_HOST = '/mnt/data/supervisor/backup/metabase.db';
 const ADMIN = { first_name: 'E2E', last_name: 'Test', email: 'e2e@example.com', password: 'e2e-Password-1' };
 
 const config = JSON.parse(await fs.readFile(path.join(REPO_DIR, ADDON_DIR, 'config.json'), 'utf8'));
@@ -95,7 +99,7 @@ describe('Metabase add-on', () => {
     // The README has the user add the `metabase` database to TimescaleDB's configuration.
     await ensureTimescaleDb([APP_DATABASE]);
     await uninstallAddon(SLUG);
-    await ssh(`rm -rf ${H2_ON_HOST} ${H2_ON_HOST}.*`);
+    await ssh(`rm -rf ${H2_ON_HOST} ${H2_ON_HOST}.* ${OLD_H2_ON_HOST} ${OLD_H2_ON_HOST}.*`);
     await recreateDatabase(APP_DATABASE);
     await recreateDatabase(DATA_DATABASE);
     await psql(
@@ -292,16 +296,50 @@ describe('Metabase add-on', () => {
     });
   });
 
-  it('keeps its H2 database in the backup folder across a restart', async (t) => {
+  const logIn = () => api('POST', '/api/session', { body: { username: ADMIN.email, password: ADMIN.password } });
+
+  it("keeps its H2 database in the app's config folder across a restart", async (t) => {
     if (!session) return t.skip('the setup did not complete');
     const { stdout } = await ssh(`ls ${H2_ON_HOST}`);
-    assert.match(stdout, /\.mv\.db/, 'the H2 file is in the backup folder of Home Assistant');
+    assert.match(stdout, /\.mv\.db/, "the H2 file is in the app's config folder");
 
     await secondsToStart(SLUG, isHealthy, { timeout: 600 });
-    const login = await api('POST', '/api/session', {
-      body: { username: ADMIN.email, password: ADMIN.password },
-    });
-    assert.equal(login.status, 200, 'the administrator can still log in');
+    assert.equal((await logIn()).status, 200, 'the administrator can still log in');
+  });
+
+  it("puts its H2 database in the app's backup", async (t) => {
+    if (!session) return t.skip('the setup did not complete');
+    const { slug: backup } = await supervisor(
+      'post',
+      '/backups/new/partial',
+      { name: 'e2e metabase', addons: [SLUG] },
+      { timeout: 600 },
+    );
+    try {
+      const { stdout } = await ssh(
+        `tar -xOf /mnt/data/supervisor/backup/${backup}.tar ${SLUG}.tar.gz | tar -tzf -`,
+      );
+      assert.match(stdout, /config\/metabase\.db\/metabase\.db\.mv\.db/, `the backup holds:\n${stdout}`);
+    } finally {
+      await supervisor('delete', `/backups/${backup}`);
+    }
+  });
+
+  it('moves an H2 database from /backup, where versions up to 1.6.1 kept it', async (t) => {
+    if (!session) return t.skip('the setup did not complete');
+    // Make it an install of 1.6.1: the database in /backup and the option pointing there.
+    await supervisor('post', `/addons/${SLUG}/stop`);
+    await ssh(`mv ${H2_ON_HOST} ${OLD_H2_ON_HOST}`);
+    const { options } = await addonInfo(SLUG);
+    await configureAddon(SLUG, { options: { ...options, MB_DB_FILE: OLD_H2 } });
+
+    await secondsToStart(SLUG, isHealthy, { timeout: 600 });
+    const logs = await addonLogs(SLUG, 5000);
+    assert.equal((await logIn()).status, 200, `the administrator can still log in\n${logs}`);
+    assert.match((await ssh(`ls ${H2_ON_HOST}`)).stdout, /\.mv\.db/, "the H2 file is in the app's config folder");
+    const { stdout: left } = await ssh(`ls -d ${OLD_H2_ON_HOST} ${OLD_H2_ON_HOST}.* 2>/dev/null`, { check: false });
+    assert.equal(left.trim(), '', 'nothing is left in /backup');
+    assert.equal((await addonInfo(SLUG)).options.MB_DB_FILE, config.options.MB_DB_FILE, 'the option points to /config');
   });
 
   it('stops without an error', async () => {
@@ -376,5 +414,17 @@ describe('Metabase add-on', () => {
         [ADMIN.email, 't'],
       ]);
     });
+  });
+
+  it('deletes its H2 database when it is uninstalled with its data', async () => {
+    assert.match((await ssh(`ls ${H2_ON_HOST}`)).stdout, /\.mv\.db/, 'the H2 file is there before');
+    await supervisor('post', `/addons/${SLUG}/uninstall`, { remove_config: true }, { timeout: 300 });
+    const { stdout } = await ssh(`ls -d ${H2_ON_HOST} 2>/dev/null`, { check: false });
+    assert.equal(stdout.trim(), '', 'the H2 file is gone');
+
+    // Leave the add-on running, as every test file does.
+    await installLocalAddon(ADDON_DIR);
+    await configureAddon(SLUG, { boot: 'manual' });
+    await secondsToStart(SLUG, isHealthy, { timeout: 900 });
   });
 });

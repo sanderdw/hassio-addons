@@ -1,6 +1,6 @@
 {
   "name": "Metabase",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "slug": "metabase",
   "description": "Meet the easy, open source way for everyone to ask questions and learn from data.",
   "url": "https://github.com/sanderdw/hassio-addons/blob/main/metabase/README.md",
@@ -17,6 +17,10 @@
   "arch": ["aarch64", "amd64"],
   "map": [
     {
+      "type": "app_config",
+      "read_only": false
+    },
+    {
       "type": "backup",
       "read_only": false
     }
@@ -29,7 +33,7 @@
     "MB_DB_PASS": "homeassistant",
     "MB_DB_HOST": "77b2833f-timescaledb",
     "MB_DB_PORT": "5432",
-    "MB_DB_FILE": "/backup/metabase.db",
+    "MB_DB_FILE": "/config/metabase.db",
     "JAVA_TIMEZONE": "Europe/Amsterdam",
     "JAVA_OPTS": "-Xmx2g",
     "MB_AI_FEATURES_ENABLED": true
