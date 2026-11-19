@@ -169,6 +169,12 @@ such as the `<img>` tiles of pin maps. `ingress.js` points the two links that ig
 `<base href>` below the ingress path: the Lato fonts (`/app/fonts/`) and the pin-map tiles
 (`/api/tiles/`). Do not set `MB_SITE_URL`: its path would apply to port 3000 as well.
 
+In a frame, Metabase hides its gear menu (Admin settings), search and "New"
+(`isWithinIframe()`). nginx serves Metabase's main bundle as `ingress/app-main.*.js`, with
+`return window.self!==window.top` replaced by `return false`. The separate path keeps browsers
+from reusing a copy without that change: Metabase's ETag stays the same. The e2e test fails when
+a new Metabase version no longer has that exact check.
+
 A Docker health check on `/api/health` keeps the app in state `startup` until Metabase answers,
 so Home Assistant shows "Open web UI" only then (it needs state `started`). The Supervisor's
 start request waits for that check, so time the add-on's own script from Docker's log
@@ -178,8 +184,8 @@ timestamps, not from the start request. Until port 3000 answers, nginx shows
 After a new Metabase version, check in the chrome-devtools browser: open Metabase in Home
 Assistant (http://127.0.0.1:18123/app/local_metabase, Metabase login `e2e@example.com`,
 `e2e-Password-1` after the test), open the x-ray "A look at Accounts" of the sample database and
-check that the Lato fonts and the pin map "By coordinates" load, and that no request leaves the
-ingress path. The `onerror` Content-Security-Policy errors in the console come from Metabase
+check that the gear menu with Admin settings, search and "+ New" are there, that the Lato fonts
+and the pin map "By coordinates" load, and that no request leaves the ingress path. The `onerror` Content-Security-Policy errors in the console come from Metabase
 itself; they appear on port 7778 too.
 
 Browsers keep cookies per host, not per port: a login on http://127.0.0.1:17778 is also sent to
