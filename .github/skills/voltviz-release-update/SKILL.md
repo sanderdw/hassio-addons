@@ -73,6 +73,7 @@ Provide:
      - The same section headings upstream uses for those versions (`### Added`, `### Changed`, `### Fixed`, `### Known limitations`, …), in upstream order, omitting empty sections
      - When consolidating several upstream versions, merge their bullets under a single set of headings
      - Keep existing format and style
+     - When the changelog starts with an `## [Unreleased]` section (app changes made here since the last release), move its bullets into the new entry, keeping any `**Breaking:**` bullet first, and remove the section
    - Leave `.github/workflows/voltviz.yml` alone: the base image follows the `config.json` version (see `AGENTS.md`), so the GHCR tag check in step 1 is what keeps the build working.
 
 ### 5. Validate

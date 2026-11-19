@@ -77,6 +77,12 @@ describe('DSMR Datalogger add-on', () => {
     assert.equal(info.state, 'stopped');
   });
 
+  it('has the highest security rating, with its own AppArmor profile', async () => {
+    const info = await addonInfo(SLUG);
+    assert.equal(info.apparmor, 'profile', 'the AppArmor profile from apparmor.txt is loaded');
+    assert.equal(info.rating, 8);
+  });
+
   it('starts and sends telegrams to DSMR Reader', async () => {
     assert.equal(await readingCount(), 0, 'DSMR Reader reads no meter itself');
     // Manual boot: the tests start the add-on themselves.

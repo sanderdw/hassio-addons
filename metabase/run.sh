@@ -1,4 +1,4 @@
-#!/bin/bash bashio
+#!/usr/bin/env bashio
 #---------------------------------------------------------------------------------------------------------------------------
 # FUNCTIONS
 #---------------------------------------------------------------------------------------------------------------------------
@@ -9,7 +9,7 @@ function _info() { printf "\\r[ \\033[00;34mINFO\\033[0m ] %s\\n" "$@"; }
 #---------------------------------------------------------------------------------------------------------------------------
 
 function _hass {
-  ADDON_VERSON=$(bashio::addon.version)
+  ADDON_VERSON=$(bashio::app.version)
   bashio::log.blue "Home Assistant Metabase Add-on - Release: ${ADDON_VERSON}"
   # First, so ingress shows its "Metabase is starting" page right away.
   _ingress
@@ -45,7 +45,7 @@ function _hass {
 # Port 3000 stays Metabase itself. MB_SITE_URL must stay unset: its path would apply to port 3000 too.
 function _ingress {
   local ingress_entry
-  ingress_entry=$(bashio::addon.ingress_entry)
+  ingress_entry=$(bashio::app.ingress_entry)
   mkdir -p /etc/nginx/conf.d
   sed "s#%%ingress_entry%%#${ingress_entry}#g" /etc/nginx/ingress.conf.template > /etc/nginx/conf.d/ingress.conf
   sed "s#%%ingress_entry%%#${ingress_entry}#g" /etc/nginx/ingress.js.template > /etc/nginx/conf.d/ingress.js
@@ -105,7 +105,7 @@ function _move_h2_database {
   fi
   export MB_DB_FILE="${H2_NEW_DEFAULT}"
   # Point the option at the new place too, so the Configuration tab shows where the database is.
-  if bashio::addon.option 'MB_DB_FILE' "${H2_NEW_DEFAULT}"; then
+  if bashio::app.option 'MB_DB_FILE' "${H2_NEW_DEFAULT}"; then
     _info "Database file option set to ${H2_NEW_DEFAULT}"
   else
     bashio::log.yellow "Home Assistant Metabase Add-on - Could not change the database file option; Metabase uses ${H2_NEW_DEFAULT} anyway"

@@ -78,6 +78,8 @@ jobs:
         uses: home-assistant/builder/actions/build-image@2026.09.0
         with:
           arch: ${{ matrix.arch }}
+          # The workflows share GitHub's build cache, one scope per image.
+          cache-gha-scope: ha-voltviz
           container-registry-password: ${{ secrets.GITHUB_TOKEN }}
           context: ./voltviz
           image: ${{ matrix.image }}

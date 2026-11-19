@@ -30,7 +30,7 @@ See the DSMR Reader webpage (https://dsmr-reader.readthedocs.io) for more backgr
 ## About Metabase
 Meet the easy, open source way for everyone to ask questions and learn from data, such as your
 Home Assistant history and DSMR Reader's readings. It opens in Home Assistant, and on its own port.
-See the [app's README](metabase/README.md) to set it up, and the Metabase webpage (https://www.metabase.com) for more background information.
+See the [app's documentation](metabase/DOCS.md) to set it up, and the Metabase webpage (https://www.metabase.com) for more background information.
 
 ![Metabase](images/metabase.png)
 

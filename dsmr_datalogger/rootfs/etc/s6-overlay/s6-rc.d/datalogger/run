@@ -1,23 +1,21 @@
-#!/usr/bin/with-contenv bashio
-#---------------------------------------------------------------------------------------------------------------------------
-# FUNCTIONS
-#---------------------------------------------------------------------------------------------------------------------------
+#!/command/with-contenv bashio
+# ==============================================================================
+# Starts the datalogger. s6 runs this script again when the datalogger has
+# stopped (see finish).
+# ==============================================================================
 function _info() { printf "\\r[ \\033[00;34mINFO\\033[0m ] %s\\n" "$@"; }
 
-#---------------------------------------------------------------------------------------------------------------------------
-# HOMEASSISTANT Add-On OVERRIDES
-#---------------------------------------------------------------------------------------------------------------------------
-
 function _check_update {
-  ADDON_VERSON=$(jq --raw-output '.version' /app/ha_addon_version.json)
-  _info "Home Assistant Add-on release: ${ADDON_VERSON}"
+  local app_version
+  app_version="$(bashio::app.version)"
+  _info "Home Assistant App release: ${app_version}"
   # The check must not stop or hold up the datalogger when its server does not answer.
-  CHECK_UPDATE=$(curl -s --max-time 10 "https://api-check.duckdns.org/dsmr-datalogger-addon/${ADDON_VERSON}") || true
+  CHECK_UPDATE=$(curl -s --max-time 10 "https://api-check.duckdns.org/dsmr-datalogger-addon/${app_version}") || true
   if [[ "$CHECK_UPDATE" == *"response_string"* ]]; then
     OUTPUT=$(echo $CHECK_UPDATE | jq --raw-output .response_string)
     _info "$OUTPUT"
   else
-    _info "Home Assistant Add-on: Update check failed"
+    _info "Home Assistant App: Update check failed"
   fi
 }
 

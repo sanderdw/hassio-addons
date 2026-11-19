@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.3.0
+
+- Python 3.14 on Alpine Linux 3.24 (`ghcr.io/home-assistant/base-python:3.14-alpine3.24`). Alpine 3.21 is no longer supported since 1 November 2026.
+- The app has its own AppArmor profile, which limits what it may do on your system. Home Assistant raises its security rating from 7 to 8.
+- The documentation moved to the app's **Documentation** tab. The Info tab keeps a short introduction.
+- Technical: one image for both architectures (`ghcr.io/sanderdw/hassio-addons/ha-dsmr-datalogger`), built with Home Assistant's builder and signed with Cosign.
+- Technical: the datalogger is an s6-rc service, the current S6 overlay layout.
+
 ## 1.2.2
 
 - The Configuration tab shows readable names and explanations for every option, in English and Dutch. Your settings stay as they are.

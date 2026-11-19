@@ -1,16 +1,15 @@
-ARG BUILD_FROM=busybox:dummy
-FROM $BUILD_FROM
+# https://contributors.home-assistant.io/apps/guides/dockerfile/
+ARG BUILD_FROM=metabase/metabase:v0.65.5.1
+FROM ${BUILD_FROM}
 ARG BUILD_ARCH
-ARG HA_RELEASE
-
-RUN echo "This is ${BUILD_ARCH}"
+ARG BUILD_VERSION
 
 # nginx serves Metabase to Home Assistant ingress (rootfs/etc/nginx).
 RUN apk add --no-cache jq nginx
 
 RUN \
     mkdir -p /usr/src/bashio \
-    && curl -L -f -s "https://github.com/hassio-addons/bashio/archive/refs/tags/v0.17.5.tar.gz" \
+    && curl -L -f -s "https://github.com/hassio-addons/bashio/archive/refs/tags/v0.19.0.tar.gz" \
         | tar -xzf - --strip 1 -C /usr/src/bashio \
     && mv /usr/src/bashio/lib /usr/lib/bashio \
     && ln -s /usr/lib/bashio/bashio /usr/bin/bashio \
@@ -31,17 +30,17 @@ ENTRYPOINT ["/run.sh"]
 # Labels
 LABEL \
     io.hass.name="Metabase" \
-    io.hass.description="Home Assistant Add-on: Metabase" \
-    io.hass.arch=$BUILD_ARCH \
-    io.hass.type="addon" \
-    io.hass.version=${HA_RELEASE} \
+    io.hass.description="Home Assistant App: Metabase" \
+    io.hass.arch=${BUILD_ARCH} \
+    io.hass.type="app" \
+    io.hass.version=${BUILD_VERSION} \
     maintainer="Sander de Wildt <sanderdw@gmail.com>" \
     org.opencontainers.image.title="Metabase" \
-    org.opencontainers.image.description="Home Assistant Add-on: Metabase" \
-    org.opencontainers.image.vendor="Sanderdw's add-on repository" \
+    org.opencontainers.image.description="Home Assistant App: Metabase" \
+    org.opencontainers.image.vendor="Sanderdw's app repository" \
     org.opencontainers.image.authors="Sander de Wildt <sanderdw@gmail.com>" \
     org.opencontainers.image.licenses="GNU Affero General Public License (AGPL)" \
     org.opencontainers.image.url="https://github.com/sanderdw/hassio-addons" \
     org.opencontainers.image.source="https://github.com/sanderdw/hassio-addons" \
-    org.opencontainers.image.documentation="https://raw.githubusercontent.com/sanderdw/hassio-addons/main/README.md" \
-    org.opencontainers.image.version=${HA_RELEASE}
+    org.opencontainers.image.documentation="https://raw.githubusercontent.com/sanderdw/hassio-addons/main/metabase/DOCS.md" \
+    org.opencontainers.image.version=${BUILD_VERSION}

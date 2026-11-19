@@ -29,7 +29,7 @@ function _set_env_optional {
 
 function _check_update {
   local addon_version
-  addon_version="$(bashio::addon.version)"
+  addon_version="$(bashio::app.version)"
   bashio::log.blue "Home Assistant DSMR Reader App - Release: ${addon_version}"
 
   # The check must not hold up the start: the Supervisor waits 120 seconds for the add-on.
@@ -93,7 +93,7 @@ function _set_env_vars {
 #---------------------------------------------------------------------------------------------------------------------------
 
 function _require_port {
-  if [[ "$(bashio::addon.port '80/tcp')" == "" ]]; then
+  if [[ "$(bashio::app.port '80/tcp')" == "" ]]; then
     bashio::log.red "Home Assistant DSMR Reader App - No port configured, configure a UI port in the Network options"
     exit 1
   fi
@@ -124,7 +124,7 @@ function _configure_webserver {
     Ingress)
       bashio::log.blue "Home Assistant DSMR Reader App - Ingress enabled"
       local ingress_entry
-      ingress_entry="$(bashio::addon.ingress_entry)"
+      ingress_entry="$(bashio::app.ingress_entry)"
 
       # Patch ingress server to contain the correct paths
       sed -i "s#%%entry%%#${ingress_entry}#g" /etc/nginx/conf.d/ingress.conf
@@ -154,14 +154,14 @@ function _configure_webserver {
 
       rm -f /etc/nginx/conf.d/resolver.conf
       bashio::log.green "Home Assistant DSMR Reader App - Custom reverse proxy enabled (Note: Ingress will not work), DSMR Reader is accessible at:"
-      bashio::log.green "Home Assistant DSMR Reader App - http://${ip_address}:$(bashio::addon.port '80/tcp')/"
+      bashio::log.green "Home Assistant DSMR Reader App - http://${ip_address}:$(bashio::app.port '80/tcp')/"
       ;;
 
     Standard)
       _require_port
       rm -f /etc/nginx/conf.d/resolver.conf
       bashio::log.green "Home Assistant DSMR Reader App - Ingress disabled, when started, DSMR Reader is accessible at:"
-      bashio::log.green "Home Assistant DSMR Reader App - http://${ip_address}:$(bashio::addon.port '80/tcp')/"
+      bashio::log.green "Home Assistant DSMR Reader App - http://${ip_address}:$(bashio::app.port '80/tcp')/"
       ;;
   esac
 }

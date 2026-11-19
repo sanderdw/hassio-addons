@@ -1,121 +1,110 @@
 name: DSMR Reader
 
-# Controls when the workflow will run
 on:
   workflow_dispatch:
   push:
     branches:
       - 'main'
       - 'reader-*.*.*'
-    tags:
-      - '*.*.*'
     paths:
       - 'dsmr_reader/Dockerfile'
       - 'dsmr_reader/rootfs/**'
+      - 'dsmr_reader/config.json'
       - .github/workflows/dsmr-reader.yml
 
-# A newer push to the same branch cancels the run that is still building.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
-  dsmr-reader:
-    runs-on: ${{ matrix.RUNNER }}
-    permissions:
-      packages: write
-      contents: read
-      attestations: write
-      id-token: write
-    strategy:
-      matrix:
-        include:
-          # AMD64
-          - DOCKER_TAG_SUFFIX: amd64
-            S6_ARCH: amd64
-            BASE_IMAGE: ghcr.io/xirixiz/dsmr-reader-docker:6.2.2
-            PLATFORMS: linux/amd64
-            RUNNER: ubuntu-latest
-
-          # ARM64V8, built on a native ARM runner instead of under QEMU
-          - DOCKER_TAG_SUFFIX: aarch64
-            S6_ARCH: aarch64
-            BASE_IMAGE: ghcr.io/xirixiz/dsmr-reader-docker:6.2.2
-            PLATFORMS: linux/arm64/v8
-            RUNNER: ubuntu-24.04-arm
-
-    env:
-      IMAGE: ghcr.io/${{ github.repository }}/ha-dsmr-reader-${{ matrix.DOCKER_TAG_SUFFIX }}
-
+  prepare:
+    name: Prepare
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.info.outputs.version }}
+      architectures: ${{ steps.info.outputs.architectures }}
+      skip_existing: ${{ steps.info.outputs.skip_existing }}
+      matrix: ${{ steps.matrix.outputs.matrix }}
     steps:
-      # Get the repository's code
       - name: Checkout
         uses: actions/checkout@v7
-      - name: Get the version from config.json
-        id: data
+        with:
+          persist-credentials: false
+      # Version branches always publish; main skips versions that already exist, so a merge keeps
+      # the image tested on the branch.
+      - name: Get the app info from config.json
+        id: info
+        env:
+          IS_MAIN: ${{ github.ref == 'refs/heads/main' }}
         run: |
           version=$(jq --raw-output '.version' ./dsmr_reader/config.json)
-          echo "HA_RELEASE=$version" >> "$GITHUB_OUTPUT"
-          echo "DSMR Reader add-on $version"
-      - name: Log in to ghcr.io
-        uses: docker/login-action@v4
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      # The version branch builds and tests the image. A merge to main tags that same image
-      # latest instead of rebuilding it, and builds only a version that does not exist yet.
-      - name: Check whether this version is already published
-        id: existing
-        if: github.ref == 'refs/heads/main'
-        env:
-          HA_RELEASE: ${{ steps.data.outputs.HA_RELEASE }}
-        run: |
-          if docker manifest inspect "$IMAGE:$HA_RELEASE" > /dev/null 2>&1; then
-            echo "exists=true" >> "$GITHUB_OUTPUT"
-            echo "$IMAGE:$HA_RELEASE already exists, tagging it latest without a rebuild"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "architectures=$(jq --compact-output '.arch' ./dsmr_reader/config.json)" >> "$GITHUB_OUTPUT"
+          if [[ "$IS_MAIN" == "true" ]]; then
+            echo "skip_existing=$version" >> "$GITHUB_OUTPUT"
           fi
-      # https://github.com/docker/setup-buildx-action
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
-      - name: Tag the published version latest
-        if: steps.existing.outputs.exists == 'true'
-        env:
-          HA_RELEASE: ${{ steps.data.outputs.HA_RELEASE }}
-        run: docker buildx imagetools create --tag "$IMAGE:latest" "$IMAGE:$HA_RELEASE"
-      - name: Docker meta
-        id: meta
-        if: steps.existing.outputs.exists != 'true'
-        uses: docker/metadata-action@v6
+          echo "DSMR Reader app $version"
+      - name: Prepare build matrix
+        id: matrix
+        uses: home-assistant/builder/actions/prepare-multi-arch-matrix@2026.09.0
         with:
-          images: ${{ env.IMAGE }}
-          # Docker tags based on the following events/attributes
-          tags: |
-            type=schedule
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
-            type=raw,value=${{ steps.data.outputs.HA_RELEASE }}
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+          architectures: ${{ steps.info.outputs.architectures }}
+          image-name: ha-dsmr-reader
+          registry-prefix: ghcr.io/${{ github.repository }}
+
+  build:
+    name: Build ${{ matrix.arch }} image
+    needs: prepare
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: Build and push
-        id: push
-        if: steps.existing.outputs.exists != 'true'
-        uses: docker/build-push-action@v7
+        uses: home-assistant/builder/actions/build-image@2026.09.0
         with:
+          arch: ${{ matrix.arch }}
+          # The workflows share GitHub's build cache, one scope per image.
+          cache-gha-scope: ha-dsmr-reader
+          container-registry-password: ${{ secrets.GITHUB_TOKEN }}
           context: ./dsmr_reader
-          platforms: ${{ matrix.PLATFORMS }}
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          build-args: |
-            BUILD_FROM=${{ matrix.BASE_IMAGE }}
-            HA_RELEASE=${{ steps.data.outputs.HA_RELEASE }}
-            BUILD_ARCH=${{ matrix.S6_ARCH }}
-      - name: Generate artifact attestation
-        if: steps.existing.outputs.exists != 'true'
-        uses: actions/attest-build-provenance@v4
+          image: ${{ matrix.image }}
+          image-tags: |
+            ${{ needs.prepare.outputs.version }}
+            latest
+          push: true
+          skip-existing: ${{ needs.prepare.outputs.skip_existing }}
+          version: ${{ needs.prepare.outputs.version }}
+
+  manifest:
+    name: Publish multi-arch manifest
+    needs: [prepare, build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      id-token: write
+      packages: write
+    steps:
+      - name: Publish multi-arch manifest
+        uses: home-assistant/builder/actions/publish-multi-arch-manifest@2026.09.0
         with:
-          subject-name: ${{ env.IMAGE }}
-          subject-digest: ${{ steps.push.outputs.digest }}
-          push-to-registry: true
+          architectures: ${{ needs.prepare.outputs.architectures }}
+          container-registry-password: ${{ secrets.GITHUB_TOKEN }}
+          image-name: ha-dsmr-reader
+          image-tags: |
+            ${{ needs.prepare.outputs.version }}
+            latest
+          registry-prefix: ghcr.io/${{ github.repository }}
+          skip-existing: ${{ needs.prepare.outputs.skip_existing }}

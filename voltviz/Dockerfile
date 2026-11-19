@@ -9,7 +9,7 @@ RUN apk add --no-cache jq bash
 
 RUN \
     mkdir -p /usr/src/bashio \
-    && curl -L -f -s "https://github.com/hassio-addons/bashio/archive/refs/tags/v0.17.5.tar.gz" \
+    && curl -L -f -s "https://github.com/hassio-addons/bashio/archive/refs/tags/v0.19.0.tar.gz" \
         | tar -xzf - --strip 1 -C /usr/src/bashio \
     && mv /usr/src/bashio/lib /usr/lib/bashio \
     && ln -s /usr/lib/bashio/bashio /usr/bin/bashio \

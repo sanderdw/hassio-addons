@@ -1,0 +1,42 @@
+#include <tunables/global>
+
+profile metabase flags=(attach_disconnected,mediate_deleted) {
+  #include <abstractions/base>
+
+  # Profile built in complain mode with the e2e tests: see "AppArmor" in AGENTS.md
+  file,
+  signal,
+  network,
+
+  # run_metabase.sh adds the metabase user (adduser, chown) and starts Java as that user (su);
+  # run.sh passes the stop signal on to it and moves the H2 database (cp, mv, rm); the nginx
+  # master runs its workers as the nginx user
+  capability audit_write,
+  capability chown,
+  capability dac_override,
+  capability fowner,
+  capability fsetid,
+  capability kill,
+  capability setgid,
+  capability setuid,
+
+  # Programs, run.sh and Metabase's own scripts (the image has no S6 overlay)
+  /init ix,
+  /bin/** ix,
+  /sbin/** ix,
+  /usr/bin/** ix,
+  /usr/sbin/** ix,
+  /usr/local/bin/** ix,
+  /run/{s6,s6-rc*,service}/** ix,
+  /package/** ix,
+  /command/** ix,
+  /etc/s6-overlay/** rwix,
+  /run/{,**} rwk,
+  /dev/tty rw,
+
+  # Bashio
+  /usr/lib/bashio/** ix,
+  /tmp/** rwk,
+
+  /data/** rw,
+}

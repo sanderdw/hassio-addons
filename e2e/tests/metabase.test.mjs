@@ -1,6 +1,7 @@
 // Metabase, end to end: the add-on built from the working tree, with its own H2 database and
 // with PostgreSQL (the TimescaleDB add-on) as its application database, answering a question
-// from a database in TimescaleDB, on its own port and through Home Assistant ingress.
+// from a database in TimescaleDB, on its own port and through Home Assistant ingress. It also
+// checks the app's security rating and its cold backup, and restores that backup.
 //
 // Each run reinstalls the add-on and removes its H2 file and its `metabase` database. It ends by
 // uninstalling the add-on with its data, then installs and starts it again.
@@ -13,7 +14,7 @@ import {
   addonExec,
   addonInfo,
   addonLogs,
-  baseImageFromWorkflow,
+  baseImageOf,
   configureAddon,
   containerName,
   installLocalAddon,
@@ -50,7 +51,11 @@ const OLD_H2_ON_HOST = '/mnt/data/supervisor/backup/metabase.db';
 const ADMIN = { first_name: 'E2E', last_name: 'Test', email: 'e2e@example.com', password: 'e2e-Password-1' };
 
 const config = JSON.parse(await fs.readFile(path.join(REPO_DIR, ADDON_DIR, 'config.json'), 'utf8'));
-const METABASE_URL = addonUrl(config.ports['3000/tcp']);
+/** Metabase's own port is off by default; the tests open it on a forwarded host port. */
+const HOST_PORT = 7778;
+const METABASE_URL = addonUrl(HOST_PORT);
+/** What a user sets under Network to use Metabase without Home Assistant. */
+const NETWORK = { '3000/tcp': HOST_PORT };
 
 /** Calls Metabase's API and returns the status and the parsed body. */
 async function api(method, pathname, { body, session } = {}) {
@@ -116,9 +121,19 @@ describe('Metabase add-on', () => {
     assert.equal(info.state, 'stopped');
   });
 
+  it('has the highest security rating, with its own AppArmor profile', async () => {
+    const info = await addonInfo(SLUG);
+    assert.equal(info.apparmor, 'profile', 'the AppArmor profile from apparmor.txt is loaded');
+    assert.equal(info.rating, 8);
+  });
+
+  it("opens no port by default: Home Assistant's ingress is the way in", async () => {
+    assert.deepEqual((await addonInfo(SLUG)).network, { '3000/tcp': null });
+  });
+
   it('starts with its default options, and is "started" only once Metabase answers', async () => {
     // Manual boot: the tests start the add-on themselves.
-    await configureAddon(SLUG, { boot: 'manual' });
+    await configureAddon(SLUG, { boot: 'manual', network: NETWORK });
     assert.equal(config.options.MB_DB_TYPE, 'h2', 'the default application database is H2');
 
     // Home Assistant shows "Open web UI" when the state is "started". The Docker health check
@@ -163,7 +178,7 @@ describe('Metabase add-on', () => {
   });
 
   it('runs the Metabase version of its base image', async () => {
-    const baseImage = await baseImageFromWorkflow(ADDON_DIR);
+    const baseImage = await baseImageOf(ADDON_DIR);
     const { json: properties } = await api('GET', '/api/session/properties');
     assert.equal(properties.version.tag, baseImage.split(':')[1]);
   });
@@ -326,22 +341,50 @@ describe('Metabase add-on', () => {
     assert.equal((await logIn()).status, 200, 'the administrator can still log in');
   });
 
-  it("puts its H2 database in the app's backup", async (t) => {
-    if (!session) return t.skip('the setup did not complete');
-    const { slug: backup } = await supervisor(
-      'post',
-      '/backups/new/partial',
-      { name: 'e2e metabase', addons: [SLUG] },
-      { timeout: 600 },
-    );
-    try {
-      const { stdout } = await ssh(
-        `tar -xOf /mnt/data/supervisor/backup/${backup}.tar ${SLUG}.tar.gz | tar -tzf -`,
-      );
+  describe('a backup', () => {
+    let backup;
+    let containerStartedAt;
+    const startedAt = async () =>
+      (await ssh(`docker inspect -f '{{.State.StartedAt}}' ${await containerName(SLUG)}`)).stdout.trim();
+
+    before(async () => {
+      if (!session) return;
+      await waitFor('Metabase to answer', isHealthy, { timeout: 600 });
+      containerStartedAt = await startedAt();
+      ({ slug: backup } = await supervisor(
+        'post',
+        '/backups/new/partial',
+        { name: 'e2e metabase', addons: [SLUG] },
+        { timeout: 900 },
+      ));
+    });
+
+    it("holds the H2 database from the app's config folder", async (t) => {
+      if (!backup) return t.skip('the setup did not complete');
+      const { stdout } = await ssh(`tar -xOf /mnt/data/supervisor/backup/${backup}.tar ${SLUG}.tar.gz | tar -tzf -`);
       assert.match(stdout, /config\/metabase\.db\/metabase\.db\.mv\.db/, `the backup holds:\n${stdout}`);
-    } finally {
-      await supervisor('delete', `/backups/${backup}`);
-    }
+    });
+
+    it('is made with Metabase stopped, which then starts again', async (t) => {
+      if (!backup) return t.skip('the setup did not complete');
+      // A cold backup: the H2 file must not change while the Supervisor copies it.
+      assert.equal(config.backup, 'cold');
+      assert.notEqual(await startedAt(), containerStartedAt, 'the container was stopped for the backup');
+      await waitFor('Metabase to answer after the backup', isHealthy, { timeout: 600 });
+      assert.equal((await addonInfo(SLUG)).state, 'started');
+      assert.equal((await logIn()).status, 200, 'the administrator can still log in');
+    });
+
+    it('restores, with the administrator in the restored database', async (t) => {
+      if (!backup) return t.skip('the setup did not complete');
+      try {
+        await supervisor('post', `/backups/${backup}/restore/partial`, { addons: [SLUG] }, { timeout: 900 });
+        await waitFor('Metabase to answer after the restore', isHealthy, { timeout: 900 });
+        assert.equal((await logIn()).status, 200, `the administrator can log in\n${await addonLogs(SLUG)}`);
+      } finally {
+        await supervisor('delete', `/backups/${backup}`);
+      }
+    });
   });
 
   it('moves an H2 database from /backup, where versions up to 1.6.1 kept it', async (t) => {
@@ -443,7 +486,7 @@ describe('Metabase add-on', () => {
 
     // Leave the add-on running, as every test file does.
     await installLocalAddon(ADDON_DIR);
-    await configureAddon(SLUG, { boot: 'manual' });
+    await configureAddon(SLUG, { boot: 'manual', network: NETWORK });
     await secondsToStart(SLUG, isHealthy, { timeout: 900 });
   });
 });

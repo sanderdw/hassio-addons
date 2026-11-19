@@ -11,7 +11,7 @@ disable-model-invocation: false
 ## What This Skill Produces
 A consistent Metabase release update across workflow automation, app metadata, and release publishing, including:
 - Updated GitHub Actions versions in `.github/workflows/metabase.yml`
-- Updated Metabase base image tag in `.github/workflows/metabase.yml` when required
+- Updated Metabase base image tag in the `ARG BUILD_FROM` default of `metabase/Dockerfile` when required
 - Updated app version in `metabase/config.json` when required
 - New release entry at the top of `metabase/CHANGELOG.md`
 - Updated `metabase-shield` badge in `metabase/README.md` to reflect the new Metabase version
@@ -66,7 +66,7 @@ Provide:
 
 3. Update workflow actions and build metadata.
    - In `.github/workflows/metabase.yml`, upgrade `uses:` versions to latest majors already adopted in the repository unless instructed otherwise.
-   - If this release includes an upstream Metabase bump, update both matrix `BASE_IMAGE` tags (`amd64`, `aarch64`), keeping the `v` prefix (e.g. `metabase/metabase:v0.61.3`).
+   - If this release includes an upstream Metabase bump, update `ARG BUILD_FROM` in `metabase/Dockerfile`, keeping the `v` prefix (e.g. `metabase/metabase:v0.61.3`). The workflow builds both architectures from it.
    - Apply branch/path trigger updates only when they are part of the requested release scope.
 
 4. Update app metadata and docs.
@@ -85,12 +85,12 @@ Provide:
    - Verify these align:
      - `metabase/config.json` version
      - New changelog section heading
-     - Workflow build source version (`BASE_IMAGE`) when changed
+     - The base image in `metabase/Dockerfile` (`ARG BUILD_FROM`) when changed
      - `metabase-shield` badge version and the changelog's upstream version
    - Ensure only intended files changed (`git status --short`).
 
 7. Test in the e2e VM.
-   - The test builds the add-on from the `BASE_IMAGE` in the working tree and checks that Metabase reports that version:
+   - The test builds the add-on from the working tree's Dockerfile and checks that Metabase reports the version of its base image. It also checks the AppArmor profile (`metabase/apparmor.txt`); when a new Metabase needs more access, follow the AppArmor item in `AGENTS.md`:
      ```
      ./e2e/haos.mjs up
      ./e2e/haos.mjs test e2e/tests/metabase.test.mjs
@@ -114,7 +114,7 @@ Provide:
 - If Docker Hub newest tags are floating aliases, pick the newest pinned stable tag for reproducible builds.
 - If only prerelease tags exist for a newer line, keep the latest stable pinned tag unless prerelease is requested.
 - If the target tag is not published for `linux/amd64` or `linux/arm64`, stop and tell the user; do not bump to it.
-- If the current `BASE_IMAGE` already equals the latest pinned tag and no CI updates are requested, stop and confirm with the user before proceeding.
+- If the current base image in `metabase/Dockerfile` already equals the latest pinned tag and no CI updates are requested, stop and confirm with the user before proceeding.
 - If release publishing is requested, keep the branch name, commit message, and PR title aligned with the new add-on version.
 
 ## Completion Criteria

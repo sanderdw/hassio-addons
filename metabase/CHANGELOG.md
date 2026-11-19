@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.7.0
+
+- **Breaking:** port 7778 is off by default. Open Metabase in Home Assistant (**Open web UI** or the sidebar). To keep using it without Home Assistant, set a port, such as 7778, on the Configuration tab under **Network** (select **Show disabled ports**).
+- Home Assistant now stops Metabase while it backs up the app, and starts it again afterwards. Before, it copied the H2 database while Metabase was writing to it, so a restored database could be damaged. Metabase is unavailable during the backup.
+- The app has its own AppArmor profile, which limits what it may do on your system. Home Assistant raises its security rating from 7 to 8.
+- The documentation moved to the app's **Documentation** tab. The Info tab keeps a short introduction.
+- The app's icon is square, as Home Assistant expects.
+- Technical: one image for both architectures (`ghcr.io/sanderdw/hassio-addons/ha-metabase`), built with Home Assistant's builder and signed with Cosign. The base image is named in the Dockerfile, so the app also builds where the Supervisor does not pass `BUILD_FROM`.
+- Technical: Docker's init process starts the app, as Home Assistant advises for images without S6 overlay. bashio 0.19.0.
+
 ## 1.6.3
 
 - Fix the missing gear menu (Admin settings, account settings, help), search and **+ New** when you open Metabase in Home Assistant. Metabase hides them in any frame, as it expects to be embedded in another website; the app now shows them in Home Assistant's frame too.

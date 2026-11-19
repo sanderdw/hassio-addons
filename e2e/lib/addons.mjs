@@ -161,29 +161,21 @@ export async function installStoreAddon(slug, repositoryUrl) {
 }
 
 /**
- * The amd64 base image an add-on is built from in CI: the BASE_IMAGE of the amd64 matrix entry
- * in the workflow that builds `./<addonDir>`. Undefined when the Dockerfile names its own base.
+ * The base image an add-on is built from: the default of `ARG BUILD_FROM` in its Dockerfile.
+ * Undefined when the Dockerfile names its base in `FROM` itself.
  */
-export async function baseImageFromWorkflow(addonDir) {
-  const workflows = path.join(REPO_DIR, '.github', 'workflows');
-  for (const file of await fs.readdir(workflows)) {
-    const text = await fs.readFile(path.join(workflows, file), 'utf8');
-    if (!text.includes(`context: ./${addonDir}\n`)) continue;
-    const entries = text.split(/^\s+- (?=[A-Z_]+:)/m);
-    const amd64 = entries.find((entry) => /amd64/.test(entry) && /BASE_IMAGE:/.test(entry));
-    return amd64?.match(/BASE_IMAGE:\s*(\S+)/)?.[1];
-  }
-  return undefined;
+export async function baseImageOf(addonDir) {
+  const text = await fs.readFile(path.join(REPO_DIR, addonDir, 'Dockerfile'), 'utf8');
+  return text.match(/^ARG BUILD_FROM=(\S+)/m)?.[1];
 }
 
 /**
- * Copies an add-on from the working tree into the VM's local add-on folder, changed so the
- * Supervisor builds it there instead of pulling the published image:
- * - `image` is removed from config.json;
- * - the Dockerfile's BUILD_FROM gets the base image CI builds with as its default.
+ * Copies an add-on from the working tree into the VM's local add-on folder, with `image`
+ * removed from config.json, so the Supervisor builds it there instead of pulling the published
+ * image. The Dockerfile names its own base image, as the Supervisor no longer passes BUILD_FROM.
  * @returns {Promise<{ slug: string, version: string }>} the slug is `local_<slug>`
  */
-export async function stageLocalAddon(addonDir, { baseImage } = {}) {
+export async function stageLocalAddon(addonDir) {
   const source = path.join(REPO_DIR, addonDir);
   const staged = await fs.mkdtemp(path.join(os.tmpdir(), 'haos-e2e-'));
   try {
@@ -193,14 +185,6 @@ export async function stageLocalAddon(addonDir, { baseImage } = {}) {
     const config = JSON.parse(await fs.readFile(configFile, 'utf8'));
     delete config.image;
     await fs.writeFile(configFile, `${JSON.stringify(config, null, 2)}\n`);
-
-    const base = baseImage ?? (await baseImageFromWorkflow(addonDir));
-    const dockerfile = path.join(staged, 'Dockerfile');
-    const text = await fs.readFile(dockerfile, 'utf8');
-    if (/^ARG BUILD_FROM\b/m.test(text)) {
-      if (!base) throw new Error(`No base image found for ${addonDir}; pass baseImage`);
-      await fs.writeFile(dockerfile, text.replace(/^ARG BUILD_FROM\b.*$/m, `ARG BUILD_FROM=${base}`));
-    }
 
     await fs.chmod(staged, 0o755);
     const target = `${await localAddonsDir()}/${config.slug}`;
@@ -219,8 +203,8 @@ export async function stageLocalAddon(addonDir, { baseImage } = {}) {
  * Builds and installs an add-on from the working tree. An earlier install is removed first, so
  * the image is always built from the current files (Docker's build cache keeps that fast).
  */
-export async function installLocalAddon(addonDir, options) {
-  const staged = await stageLocalAddon(addonDir, options);
+export async function installLocalAddon(addonDir) {
+  const staged = await stageLocalAddon(addonDir);
   await uninstallAddon(staged.slug);
   await supervisor('post', `/store/addons/${staged.slug}/install`, undefined, { timeout: 3600 });
   return staged;
