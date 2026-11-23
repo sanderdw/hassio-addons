@@ -85,6 +85,8 @@ The release skills run the add-on's test files on the release branch:
   current build.
 - Warnings that the tests cause on purpose, or that come from outside this repository:
   - `No valid ingress session`: the test "refuses a visitor without an ingress session".
+  - `Update check failed` on every start: the VM never reaches `api-check.duckdns.org`, which
+    counts add-on starts as usage (`refuseUpdateServer()` in `e2e/lib/vm.mjs`).
   - `Home Assistant has no MQTT service` from DSMR Reader: the MQTT test starts it without Mosquitto.
   - `could not open port /dev/ttyUSB0` and DSMR Datalogger exit code 1: the cable was unplugged.
   - `App DSMR Datalogger exited with non-zero exit code 1` in the Supervisor log, with
@@ -146,6 +148,9 @@ integration), `timescaledb.mjs`, `dsmr-reader.mjs`, `music-assistant.mjs` and `m
 - Make a server on the internet unreachable for add-ons with `withServerUnreachable(hostname,
   action)`. By hand: `./e2e/haos.mjs ssh 'iptables -I FORWARD 1 -d <ip> -j DROP'`, and remove the
   rule with `-D FORWARD` afterwards.
+- The update server `api-check.duckdns.org` counts every add-on start as usage. The VM refuses
+  it on `up`, `install` and in every test file (`refuseUpdateServer()`); never let a test reach
+  it.
 
 ### Pitfalls
 

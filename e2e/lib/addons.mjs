@@ -36,11 +36,7 @@ export async function isInstalled(slug) {
   return addons.some((addon) => addon.slug === slug);
 }
 
-/**
- * The server every add-on in this repository asks for a newer version when it starts. A start
- * must not depend on it: see `withServerUnreachable()` in vm.mjs.
- */
-export const UPDATE_SERVER = 'api-check.duckdns.org';
+export { UPDATE_SERVER } from './vm.mjs';
 
 const containerNames = new Map();
 

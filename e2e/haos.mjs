@@ -17,6 +17,7 @@ import {
   p1CablePlugged,
   plugP1Cable,
   qemuMonitor,
+  refuseUpdateServer,
   sh,
   ssh,
   supervisor,
@@ -60,6 +61,7 @@ async function up() {
     );
   }
   await accessToken();
+  await refuseUpdateServer();
   await status();
 }
 
@@ -116,6 +118,7 @@ async function main() {
     case 'install': {
       if (!args[0]) throw new Error('Use: install <add-on dir>, for example: install dsmr_reader');
       const addonDir = path.relative(REPO_DIR, path.resolve(args[0]));
+      await refuseUpdateServer();
       const { slug } = await installLocalAddon(addonDir);
       const info = await addonInfo(slug);
       console.log(`Installed ${slug} ${info.version}. Configure and start it in Home Assistant: ${HA_URL}`);

@@ -88,6 +88,54 @@ export const p1Address = async () =>
   (await compose(['exec', '-T', 'haos', 'getent', 'ahostsv4', 'p1'])).stdout.split(/\s+/)[0];
 
 /**
+ * The server every add-on in this repository asks for a newer version when it starts. It also
+ * counts those requests as add-on usage, so the VM never reaches it: see `refuseUpdateServer()`.
+ */
+export const UPDATE_SERVER = 'api-check.duckdns.org';
+
+async function addressesOf(hostname) {
+  if (/^[\d.]+$|:/.test(hostname)) return [hostname];
+  const { stdout } = await compose(['exec', '-T', 'haos', 'getent', 'ahosts', hostname]);
+  const addresses = [...new Set(stdout.split('\n').map((line) => line.split(/\s+/)[0]).filter(Boolean))];
+  if (addresses.length === 0) throw new Error(`Found no address for ${hostname}`);
+  return addresses;
+}
+
+/** Inserts each iptables rule (`%s` = the flag) at the top of FORWARD, unless it is already there. */
+async function insertRules(rules) {
+  // -C first, so a rule left behind by an interrupted run is not added twice.
+  await ssh(rules.map((rule) => `${rule.replace('%s', '-C')} 2>/dev/null || ${rule.replace('%s', '-I')}`).join(' && '));
+}
+
+const iptables = (address) => (address.includes(':') ? 'ip6tables' : 'iptables');
+
+/**
+ * Refuses connections from add-ons to `UPDATE_SERVER` while the VM runs, so test runs never
+ * show up in the add-on usage statistics. The refusal is instant (a TCP reset), so it does not
+ * hold up a start; add-ons log "Update check failed".
+ *
+ * nftables, not iptables: the Home Assistant OS kernel has no iptables REJECT module. Its own
+ * chain runs after iptables' filter chain (priority 10), so a DROP from
+ * `withServerUnreachable()` still makes the server hang, while Docker's ACCEPT rules do not skip
+ * this chain. Runs on `up`, `install` and at the start of every test file (`requireVm()`): the
+ * chain is gone after a reboot of the VM, and the server's address can change.
+ */
+export async function refuseUpdateServer() {
+  const addresses = await addressesOf(UPDATE_SERVER);
+  await ssh(
+    [
+      'nft add table inet e2e',
+      "nft 'add chain inet e2e forward { type filter hook forward priority 10 ; }'",
+      'nft flush chain inet e2e forward',
+      ...addresses.map(
+        (address) =>
+          `nft add rule inet e2e forward ${address.includes(':') ? 'ip6' : 'ip'} daddr ${address} tcp flags syn reject with tcp reset`,
+      ),
+    ].join(' && '),
+  );
+}
+
+/**
  * Runs `action` while add-ons cannot reach a server: packets to it are dropped on the Home
  * Assistant OS host, so a connection hangs as it does when a server is down.
  * @param {string} hostname a name on the internet, or the IP address of an add-on
@@ -97,20 +145,12 @@ export const p1Address = async () =>
  * @template T
  */
 export async function withServerUnreachable(hostname, action) {
-  let addresses = [hostname];
-  if (!/^[\d.]+$|:/.test(hostname)) {
-    const { stdout } = await compose(['exec', '-T', 'haos', 'getent', 'ahosts', hostname]);
-    addresses = [...new Set(stdout.split('\n').map((line) => line.split(/\s+/)[0]).filter(Boolean))];
-  }
-  if (addresses.length === 0) throw new Error(`Found no address for ${hostname}`);
-  const rules = addresses.map((address) => `${address.includes(':') ? 'ip6tables' : 'iptables'} %s FORWARD -d ${address} -j DROP`);
-  const each = (flag) => rules.map((rule) => rule.replace('%s', flag));
-  // -C first, so a rule left behind by an interrupted run is not added twice.
-  await ssh(each('-C').map((check, index) => `${check} 2>/dev/null || ${each('-I')[index]}`).join(' && '));
+  const rules = (await addressesOf(hostname)).map((address) => `${iptables(address)} %s FORWARD -d ${address} -j DROP`);
+  await insertRules(rules);
   try {
     return await action();
   } finally {
-    await ssh(each('-D').join('; '), { check: false });
+    await ssh(rules.map((rule) => rule.replace('%s', '-D')).join('; '), { check: false });
   }
 }
 
@@ -184,4 +224,5 @@ export async function requireVm() {
   if (code !== 0) {
     throw new Error('The Home Assistant OS VM is not running. Start it with: ./e2e/haos.mjs up');
   }
+  await refuseUpdateServer();
 }
