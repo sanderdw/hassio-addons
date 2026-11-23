@@ -1,30 +1,49 @@
 # Home Assistant App: DSMR Datalogger
 
-## Prepare API
-Make sure to prepare the API at the DSMR-reader instance you’ll forward the telegrams to. For more information configuring it, see the API settings (https://dsmr-reader.readthedocs.io/en/v5/reference/api.html).
+The datalogger reads the telegrams of your smart meter and sends them to a DSMR Reader elsewhere,
+through its API. That DSMR Reader stores and shows the readings.
+
+## Prepare DSMR Reader
+
+Switch on the API of the DSMR Reader that receives the telegrams, and copy its API key. See
+[DSMR Reader's REST API](https://dsmr-reader.readthedocs.io/en/latest/reference/rest-api/).
+
+For a DSMR 2 or 3 meter, or a meter from outside the Netherlands, also set the meter's DSMR
+version in that DSMR Reader's datalogger settings.
 
 ## Configure the app
 
-The app needs to know where your P1 reader can be found, and therefore,
-you'll need to configure the app to point to the right device.
+1. On the **Configuration** tab, set **DSMR Reader address** to the receiving DSMR Reader, for
+   example `http://192.168.1.10:7777`.
+2. Set **API key** to the key from step one of "Prepare DSMR Reader".
+3. Choose the **Input**:
+   - `serial`: the P1 cable is connected to this device. Set **Serial port** to it. Home
+     Assistant lists the ports under **Settings** -> **System** -> **Hardware**. A
+     `/dev/serial/by-id/...` path stays the same when you plug in other USB devices.
+   - `ipv4`: the P1 cable is connected to another device in your network, for example with
+     ser2net. Set **Network host** and **Network port** to that device.
+4. Click **Save** and start the app.
 
-If you're using Home Assistant you may find the correct value for this on the
-`Supervisor -> System -> Host system -> Hardware` page.
+The app stops with an error when the address or the API key is still the example, or when input
+`ipv4` has no network host or port. The **Log** tab says what to change.
 
-1. When updated, please reset configuration to it's default first ("RESET TO DEFAULTS" on the Configuration tab after installing/updating).
-2. Replace `/dev/ttyUSBX` in the **Serial port** option in the app configuration and specify
-   the device name.
-3. Specifiy the correct `http(s)://<YOUR_DSMR_HOST>:<PORT>` url in the **DSMR Reader address** option in the app configuration.
-4. Replace `<YOUR_API_KEY>` in the **API key** option to your API key (see https://dsmr-reader.readthedocs.io/en/v4/api.html for help).
-5. Click on "SAVE" to save the app configuration.
-6. Start the app.
+To send the telegrams to more than one DSMR Reader, separate the addresses with commas, and the
+API keys too, in the same order.
 
-### Note for DSMR v2/3 try to use this configuration:
+### DSMR 2 and 3 meters
 
 Set **Baud rate** to 9600, **Byte size** to 7 and **Parity** to E. In YAML mode:
 
+```yaml
+DATALOGGER_SERIAL_BAUDRATE: 9600
+DATALOGGER_SERIAL_BYTESIZE: 7
+DATALOGGER_SERIAL_PARITY: E
 ```
-DATALOGGER_SERIAL_BAUDRATE: '9600'
-DATALOGGER_SERIAL_BYTESIZE: '7'
-DATALOGGER_SERIAL_PARITY: 'E'
-```
+
+## Troubleshooting
+
+Switch on **Debug logging** to see every telegram and every answer from DSMR Reader in the
+**Log** tab. Switch it off again afterwards: it writes a lot.
+
+When the P1 cable is pulled out, or the meter or DSMR Reader does not answer for a while, the
+datalogger stops and starts again every 10 seconds, with the reason in the log.

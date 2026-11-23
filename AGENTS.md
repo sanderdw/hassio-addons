@@ -87,6 +87,9 @@ The release skills run the add-on's test files on the release branch:
   - `No valid ingress session`: the test "refuses a visitor without an ingress session".
   - `Home Assistant has no MQTT service` from DSMR Reader: the MQTT test starts it without Mosquitto.
   - `could not open port /dev/ttyUSB0` and DSMR Datalogger exit code 1: the cable was unplugged.
+  - `App DSMR Datalogger exited with non-zero exit code 1` in the Supervisor log, with
+    `DATALOGGER_NETWORK_PORT` in the app's log: the test "stops with an error that names the
+    missing network port".
   - `Connection refused` to `local-dsmr-reader` from DSMR Datalogger: the next test file stopped
     DSMR Reader before the Datalogger.
   - `Ingress error: Cannot connect to host …:8099` once, seconds after Metabase starts: the test
