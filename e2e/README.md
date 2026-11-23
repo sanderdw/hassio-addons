@@ -89,6 +89,11 @@ from `p1Address()` in [lib/vm.mjs](lib/vm.mjs).
 Every add-on test also builds and installs the add-on from the working tree, and starts it while
 its update server is unreachable.
 
+The VM never reaches the update server (`api-check.duckdns.org`): it counts every add-on start
+as usage, and test runs must not show up there. `up`, `install` and every test file refuse
+connections to it at once (`refuseUpdateServer()` in `lib/vm.mjs`, an nftables table `inet e2e`
+on the Home Assistant OS host), so add-ons log "Update check failed" on every start.
+
 A test file reinstalls its add-on, empties the add-on's data and stops the add-ons it does not
 need. It leaves its own add-on running, so after `./e2e/haos.mjs test e2e/tests/dsmr-reader.test.mjs`
 DSMR Reader is on http://127.0.0.1:17777 and in Home Assistant through ingress.
