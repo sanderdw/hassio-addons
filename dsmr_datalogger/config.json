@@ -1,6 +1,6 @@
 {
   "name": "DSMR Datalogger",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "slug": "dsmr_datalogger",
   "description": "The datalogger only option of DSMR (https://dsmr-reader.readthedocs.io)",
   "arch": ["aarch64", "amd64"],
@@ -22,16 +22,16 @@
     "DATALOGGER_TIMEOUT": 20
   },
   "schema": {
-    "DATALOGGER_INPUT_METHOD": "str",
+    "DATALOGGER_INPUT_METHOD": "list(serial|ipv4)",
     "DATALOGGER_API_HOSTS": "str",
-    "DATALOGGER_API_KEYS": "str",
+    "DATALOGGER_API_KEYS": "password",
     "DATALOGGER_SERIAL_PORT": "str",
     "DATALOGGER_SERIAL_BAUDRATE": "int",
     "DATALOGGER_SERIAL_BYTESIZE": "int",
-    "DATALOGGER_SERIAL_PARITY": "str",
+    "DATALOGGER_SERIAL_PARITY": "list(N|E|O|M|S)",
     "DATALOGGER_SLEEP": "float",
     "DATALOGGER_NETWORK_HOST": "str?",
-    "DATALOGGER_NETWORK_PORT": "int?",
+    "DATALOGGER_NETWORK_PORT": "port?",
     "DATALOGGER_DEBUG_LOGGING": "bool",
     "DATALOGGER_MIN_SLEEP_FOR_RECONNECT": "float",
     "DATALOGGER_TIMEOUT": "float"

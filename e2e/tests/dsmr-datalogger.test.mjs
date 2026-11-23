@@ -10,6 +10,7 @@ import {
   UPDATE_SERVER,
   addonExec,
   addonInfo,
+  addonLogs,
   configureAddon,
   installLocalAddon,
   secondsToStart,
@@ -33,6 +34,7 @@ import {
   plugP1Cable,
   requireVm,
   ssh,
+  supervisor,
   unplugP1Cable,
   waitFor,
   withServerUnreachable,
@@ -140,6 +142,22 @@ describe('DSMR Datalogger add-on', () => {
       });
       await secondsToStart(SLUG, aNewReading(), { timeout: 120 });
       await assertNewestReadingsMatchMeter(3);
+    });
+
+    it('stops with an error that names the missing network port', async () => {
+      await stopAddon(SLUG);
+      // DATALOGGER_NETWORK_PORT has no default: leaving it out leaves it empty.
+      await configureAddon(SLUG, {
+        options: { ...options, DATALOGGER_INPUT_METHOD: 'ipv4', DATALOGGER_NETWORK_HOST: await p1Address() },
+      });
+      // The app may stop before the Supervisor's start request returns, which then fails.
+      await supervisor('post', `/addons/${SLUG}/start`, undefined, { timeout: 600 }).catch(() => {});
+      await waitFor('the app to stop with an error', async () => (await addonInfo(SLUG)).state === 'error', {
+        timeout: 60,
+      });
+      const log = await addonLogs(SLUG);
+      assert.match(log, /DATALOGGER_NETWORK_PORT/, `the log names the option:\n${log}`);
+      assert.doesNotMatch(log, /Traceback/, `the datalogger did not start:\n${log}`);
     });
   });
 

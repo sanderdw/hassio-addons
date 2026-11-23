@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.3.1
+
+- The app stops with a clear message in its log when an option still needs a value: the DSMR Reader address or API key is still the example, or input `ipv4` has no network host or port. Before, it tried again every 10 seconds with a Python error.
+- The Configuration tab offers **Input** and **Parity** as a choice, checks the **Network port**, and hides the **API key**. Your settings stay as they are.
+- The datalogger script is the current one of DSMR Reader v6. It refuses an input other than `serial` or `ipv4`, and its "Failed to connect" message is readable now.
+- Technical: the datalogger runs as the service's own process instead of under a shell, so the stop signal reaches it.
+- The documentation is up to date with Home Assistant's menus and links to DSMR Reader v6's documentation.
+- Technical: requests 2.34.2.
+
 ## 1.3.0
 
 - Python 3.14 on Alpine Linux 3.24 (`ghcr.io/home-assistant/base-python:3.14-alpine3.24`). Alpine 3.21 is no longer supported since 1 November 2026.
